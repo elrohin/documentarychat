@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<title>Seattle — a personal list</title>
+<meta name="description" content="A hand-kept list of places in Seattle. Personal notes only, no reviews.">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='42' fill='%23C1442E'/></svg>">
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.9.0/mapbox-gl.css" rel="stylesheet">
+<style>
+:root{
+  --eat:#C1442E; --drink:#2E6E8E; --sweets:#8A5A2B; --music:#6B4E9E;
+  --shop:#1F7A5A; --groc:#8F6310; --act:#A03C6E;
+  --ink:#16181A; --ink2:#4A4F55; --ink3:#767C84;
+  --line:#E4E6E9; --line2:#EFF0F2; --bg:#fff; --chip:#fff;
+  --radius:14px;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --header-h:132px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%}
+body{font-family:var(--sans);color:var(--ink);background:var(--bg);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+a{color:inherit}
+
+/* ---------- header ---------- */
+header{position:fixed;top:0;left:0;right:0;z-index:40;background:rgba(255,255,255,.92);
+  backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);
+  border-bottom:1px solid var(--line)}
+.hrow{display:flex;align-items:center;gap:18px;padding:14px 24px 12px;max-width:2000px;margin:0 auto}
+.brand{display:flex;flex-direction:column;line-height:1.15;flex-shrink:0}
+.brand b{font-size:17px;font-weight:650;letter-spacing:-.02em}
+.brand span{font-size:11.5px;color:var(--ink3);letter-spacing:.02em}
+.searchwrap{flex:1;display:flex;justify-content:center;min-width:0}
+.search{display:flex;align-items:center;gap:9px;width:100%;max-width:420px;
+  border:1px solid var(--line);border-radius:999px;padding:9px 16px;background:#fff;
+  box-shadow:0 1px 2px rgba(0,0,0,.04);transition:box-shadow .18s,border-color .18s}
+.search:focus-within{box-shadow:0 2px 10px rgba(0,0,0,.09);border-color:#CFD3D8}
+.search svg{flex-shrink:0;color:var(--ink3)}
+.search input{border:0;outline:0;font-size:14px;width:100%;background:transparent;color:var(--ink)}
+.search input::placeholder{color:var(--ink3)}
+.hood{flex-shrink:0;position:relative}
+.hood select{appearance:none;-webkit-appearance:none;border:1px solid var(--line);background:#fff;
+  border-radius:999px;padding:9px 34px 9px 16px;font-size:13.5px;outline:0;cursor:pointer;
+  max-width:210px;text-overflow:ellipsis;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.hood::after{content:"";position:absolute;right:14px;top:50%;width:7px;height:7px;pointer-events:none;
+  border-right:1.6px solid var(--ink2);border-bottom:1.6px solid var(--ink2);
+  transform:translateY(-70%) rotate(45deg)}
+
+.pills{display:flex;gap:8px;padding:0 24px 13px;overflow-x:auto;scrollbar-width:none;max-width:2000px;margin:0 auto}
+.pills::-webkit-scrollbar{display:none}
+.pill{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;flex-shrink:0;
+  border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:13.5px;
+  background:var(--chip);color:var(--ink2);transition:all .16s;font-weight:450}
+.pill:hover{border-color:#C9CDD2;background:#FAFAFB}
+.pill .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.pill.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:500}
+.pill.on .dot{box-shadow:0 0 0 1.5px rgba(255,255,255,.55)}
+.pill .n{font-size:11.5px;opacity:.6;font-variant-numeric:tabular-nums}
+
+/* ---------- layout ---------- */
+main{position:fixed;top:var(--header-h);left:0;right:0;bottom:0;display:flex}
+#listpane{width:44%;max-width:760px;min-width:360px;overflow-y:auto;overscroll-behavior:contain;
+  border-right:1px solid var(--line);scroll-behavior:smooth}
+#mappane{flex:1;position:relative;background:#EAEAEA}
+#map{position:absolute;inset:0}
+
+.listhead{padding:20px 26px 10px;display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.listhead h1{font-size:20px;margin:0;font-weight:640;letter-spacing:-.025em}
+.listhead .sub{font-size:13px;color:var(--ink3);margin-top:3px}
+.moveto{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink2);cursor:pointer;
+  flex-shrink:0;user-select:none}
+.moveto input{accent-color:var(--ink);width:15px;height:15px;cursor:pointer}
+
+.cards{padding:6px 16px 60px;display:flex;flex-direction:column}
+.card{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;padding:15px 12px;
+  border-radius:var(--radius);cursor:pointer;transition:background .15s;position:relative;text-align:left;width:100%}
+.card+.card{box-shadow:inset 0 1px 0 var(--line2)}
+.card:hover,.card.hot{background:#F7F7F8}
+.card.sel{background:#F2F3F4}
+.tile{width:52px;height:52px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;
+  color:#fff;position:relative;overflow:hidden}
+.tile svg{width:24px;height:24px}
+.card h3{margin:0;font-size:15.5px;font-weight:590;letter-spacing:-.012em;line-height:1.3}
+.meta{font-size:13px;color:var(--ink3);margin-top:3px;line-height:1.45}
+.note{font-size:13.5px;color:var(--ink2);margin-top:7px;line-height:1.5}
+.price{font-size:13.5px;margin-top:7px;font-weight:520}
+.tag{display:inline-block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--ink3);border:1px solid var(--line);border-radius:5px;padding:2px 6px;margin-top:8px}
+.empty{padding:60px 26px;color:var(--ink3);font-size:14px;text-align:center;line-height:1.6}
+.empty b{display:block;color:var(--ink);font-size:15px;margin-bottom:6px;font-weight:560}
+
+/* ---------- markers ---------- */
+.mk{cursor:pointer;will-change:transform}
+.mk .dot{width:13px;height:13px;border-radius:50%;border:2.5px solid #fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.32);transition:transform .16s}
+.mk .lab{display:none;align-items:center;gap:6px;background:#fff;border-radius:999px;
+  padding:5px 11px 5px 8px;box-shadow:0 2px 7px rgba(0,0,0,.18);white-space:nowrap;
+  font-size:12.5px;font-weight:540;letter-spacing:-.008em;max-width:200px;transition:transform .16s}
+.mk .lab i{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.mk .lab span{overflow:hidden;text-overflow:ellipsis}
+.mk .lab em{font-style:normal;font-weight:420;color:var(--ink3);font-size:11.5px}
+body.zlab .mk .dot{display:none}
+body.zlab .mk .lab{display:inline-flex}
+.mk.clash .lab{display:none}
+body.zlab .mk.clash .dot{display:block;width:9px;height:9px;border-width:2px;opacity:.75}
+body.zlab .mk.clash.sel .lab,body.zlab .mk.clash:hover .lab{display:inline-flex}
+body.zlab .mk.clash.sel .dot,body.zlab .mk.clash:hover .dot{display:none}
+.mk:hover{z-index:5}
+.mk:hover .dot{transform:scale(1.35)}
+.mk:hover .lab{transform:scale(1.06)}
+.mk.hot{z-index:6}
+.mk.hot .dot{transform:scale(1.45)}
+.mk.hot .lab{transform:scale(1.08);box-shadow:0 4px 14px rgba(0,0,0,.24)}
+.mk.sel{z-index:8}
+.mk.sel .dot{transform:scale(1.5)}
+.mk.sel .lab{background:var(--ink);color:#fff;transform:scale(1.1)}
+.mk.sel .lab em{color:rgba(255,255,255,.7)}
+.mk.dim{opacity:.28}
+
+/* ---------- detail sheet ---------- */
+#sheet{position:absolute;left:20px;bottom:20px;width:344px;max-width:calc(100% - 40px);
+  background:#fff;border-radius:18px;box-shadow:0 8px 34px rgba(0,0,0,.19);z-index:20;
+  opacity:0;transform:translateY(14px) scale(.98);pointer-events:none;transition:all .22s cubic-bezier(.2,.8,.3,1);
+  overflow:hidden}
+#sheet.on{opacity:1;transform:none;pointer-events:auto}
+.sh-top{height:66px;position:relative;display:flex;align-items:center;padding:0 18px;gap:13px}
+.sh-top .tile{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.22)}
+.sh-top .tile svg{width:20px;height:20px}
+.sh-top h2{margin:0;font-size:16.5px;font-weight:620;color:#fff;letter-spacing:-.02em;
+  text-shadow:0 1px 2px rgba(0,0,0,.18);line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sh-body{padding:15px 18px 18px}
+.sh-row{display:flex;gap:9px;font-size:13.5px;color:var(--ink2);line-height:1.5;margin-bottom:9px}
+.sh-row:last-child{margin-bottom:0}
+.sh-row svg{flex-shrink:0;margin-top:2px;color:var(--ink3)}
+.sh-note{background:#F7F7F8;border-radius:11px;padding:12px 13px;font-size:13.5px;
+  line-height:1.55;color:var(--ink);margin-top:12px}
+.sh-note b{display:block;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:5px;font-weight:600}
+#shclose{position:absolute;top:11px;right:11px;width:26px;height:26px;border-radius:50%;
+  background:rgba(255,255,255,.9);display:grid;place-items:center;color:#333;font-size:15px;line-height:1}
+#shclose:hover{background:#fff}
+
+/* ---------- map ui ---------- */
+.mapbtns{position:absolute;top:16px;right:16px;z-index:15;display:flex;flex-direction:column;gap:8px}
+.mbtn{width:38px;height:38px;border-radius:10px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.16);
+  display:grid;place-items:center;color:var(--ink);transition:background .15s}
+.mbtn:hover{background:#F6F6F7}
+.hint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:14;
+  background:rgba(22,24,26,.9);color:#fff;font-size:12.5px;padding:8px 15px;border-radius:999px;
+  box-shadow:0 3px 12px rgba(0,0,0,.24);pointer-events:none;transition:opacity .4s;white-space:nowrap}
+.hint.off{opacity:0}
+.mapboxgl-ctrl-logo,.mapboxgl-ctrl-attrib{font-size:10px}
+
+/* ---------- mobile ---------- */
+#mobtog{display:none}
+@media (max-width:900px){
+  :root{--header-h:112px}
+  .hrow{padding:11px 15px 9px;gap:11px}
+  .brand span{display:none}
+  .pills{padding:0 15px 11px}
+  .pills .hood select{border-radius:999px;padding:7px 30px 7px 14px;font-size:13px;max-width:158px}
+  main{display:block}
+  #listpane{width:100%;max-width:none;min-width:0;height:100%;border:0}
+  #mappane{position:absolute;inset:0;z-index:5;visibility:hidden}
+  body.mapview #listpane{visibility:hidden}
+  body.mapview #mappane{visibility:visible}
+  #sheet{left:12px;right:12px;bottom:12px;width:auto;max-width:none}
+  #mobtog{display:flex;align-items:center;gap:8px;position:fixed;bottom:22px;left:50%;
+    transform:translateX(-50%);z-index:60;background:var(--ink);color:#fff;border-radius:999px;
+    padding:12px 20px;font-size:14px;font-weight:520;box-shadow:0 5px 18px rgba(0,0,0,.3)}
+  .listhead{padding:16px 18px 8px;flex-wrap:wrap}
+  .cards{padding:4px 8px 90px}
+  .hint{bottom:76px}
+  .mapbtns{top:12px;right:12px}
+}
+@media (max-width:900px) and (orientation:landscape){ :root{--header-h:104px} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hrow">
+    <div class="brand"><b>Seattle</b><span>rohin's list</span></div>
+    <div class="searchwrap">
+      <label class="search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Search places, food, notes…" autocomplete="off" spellcheck="false">
+      </label>
+    </div>
+    <div class="hood"><select id="hood"></select></div>
+  </div>
+  <div class="pills" id="pills"></div>
+</header>
+
+<main>
+  <section id="listpane">
+    <div class="listhead">
+      <div>
+        <h1 id="count">—</h1>
+        <div class="sub" id="sub">across Seattle and around</div>
+      </div>
+      <label class="moveto"><input type="checkbox" id="movesearch"> search this area</label>
+    </div>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <section id="mappane">
+    <div id="map"></div>
+    <div class="mapbtns">
+      <button class="mbtn" id="reset" title="Reset view" aria-label="Reset view">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+      </button>
+    </div>
+    <div class="hint" id="hint">Zoom in to see names and notes</div>
+    <div id="sheet">
+      <div class="sh-top" id="shtop">
+        <div class="tile" id="shicon"></div>
+        <h2 id="shname"></h2>
+        <button id="shclose" aria-label="Close">&times;</button>
+      </div>
+      <div class="sh-body">
+        <div class="sh-row" id="shmeta"></div>
+        <div class="sh-row" id="shaddr"></div>
+        <div class="sh-row" id="shprice"></div>
+        <div class="sh-note" id="shnote"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<button id="mobtog">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3z"/><path d="M9 3v15M15 6v15"/></svg>
+  <span id="mobtxt">Map</span>
+</button>
+
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.9.0/mapbox-gl.js"></script>
+<script>
+const MAPBOX_TOKEN = "pk.eyJ1IjoiZWxyb2hpbiIsImEiOiJjbXQwaTBjYm0wNGo3Mnlwdno3bmR5Zm1hIn0.P8B9rpnYn0Xc6V3via-6wg";
+const PLACES = [{"name":"Baker's","neighborhood":"Ballard","type":"Cocktail Bar","bucket":"Drink","lon":-122.3982,"lat":47.67554,"price":"$18 per drink","address":"6408 32nd Ave NW, Seattle"},{"name":"Smoke Shop","neighborhood":"Ballard","type":"Dive Bar","bucket":"Drink","lon":-122.38611,"lat":47.66824,"price":"$6-10 per drink","address":"5439 Ballard Ave NW, Seattle"},{"name":"Tractor Tavern","neighborhood":"Ballard","type":"Music Venue","bucket":"Music & Film","lon":-122.38269,"lat":47.66594,"price":"$20-30 shows","notes":"Leans Country","address":"5213 Ballard Ave NW, Seattle"},{"name":"Stumbletown Ballard","neighborhood":"Ballard","type":"Sandwiches","bucket":"Eat","lon":-122.36046,"lat":47.67585,"price":"$15 sandos","notes":"Simple italian sandos","address":"6256 3rd Ave NW, Seattle"},{"name":"George & Dragon","neighborhood":"Ballard","type":"Soccer Bar","bucket":"Drink","lon":-122.35617,"lat":47.65293,"price":"$10 drinks","notes":"Opens early for soccer","address":"206 N 36th St, Seattle"},{"name":"Secret Savory","neighborhood":"Ballard","type":"Thai","bucket":"Eat","lon":-122.38539,"lat":47.66848,"price":"$30 pp","notes":"Very Extensive Menu","address":"2213 NW Market St Unit 100, Seattle"},{"name":"The Walrus and the Carpenter","neighborhood":"Ballard","type":"Seafood","bucket":"Eat","lon":-122.38013,"lat":47.66357,"price":"$60 pp","notes":"Good happy hour","address":"4743 Ballard Ave NW #300, Seattle"},{"name":"Lucky Envelope Brewing","neighborhood":"Ballard","type":"Brewery","bucket":"Drink","lon":-122.36921,"lat":47.66481,"notes":"next to many other breweries","address":"907 NW 50th St, Seattle"},{"name":"Ballard Homestead","neighborhood":"Ballard","type":"Music Venue","bucket":"Music & Film","lon":-122.38664,"lat":47.67703,"address":"6541 Jones Ave NW, Seattle"},{"name":"Fair Isle Brewery","neighborhood":"Ballard","type":"Brewery","bucket":"Drink","lon":-122.37012,"lat":47.66456,"address":"936 NW 49th St, Seattle"},{"name":"Lucky Dry Goods","neighborhood":"Ballard","type":"Vintage","bucket":"Shopping","lon":-122.38563,"lat":47.66832,"price":"Spendy","notes":"Best quality vintage clothes","address":"5424 Ballard Ave NW, Seattle"},{"name":"SPARKLEBARN","neighborhood":"Ballard","type":"Furniture","bucket":"Shopping","lon":-122.39076,"lat":47.66858,"price":"Spendy","notes":"MCM","address":"2611 NW Market St, Seattle"},{"name":"Musang","neighborhood":"Beacon Hill","type":"Filipino","bucket":"Eat","lon":-122.3128,"lat":47.58035,"price":"$75 pp min","address":"2524 Beacon Ave S, Seattle"},{"name":"FamilyFriend","neighborhood":"Beacon Hill","type":"Guam","bucket":"Eat","lon":-122.30904,"lat":47.57357,"price":"$75 pp min","address":"3315 Beacon Ave S, Seattle"},{"name":"Homer","neighborhood":"Beacon Hill","type":"","bucket":"Eat","lon":-122.31016,"lat":47.57658,"address":"3013 Beacon Ave S, Seattle"},{"name":"Xiao Chi Jie","neighborhood":"Bellevue","type":"Dumplings","bucket":"Eat","lon":-122.19865,"lat":47.61266,"price":"$15 pp","notes":"Sheng Jian Bao","address":"278 106th Ave NE, Bellevue"},{"name":"Roquette","neighborhood":"Belltown","type":"Cocktail Bar","bucket":"Drink","lon":-122.34603,"lat":47.61342,"price":"$18-25 per drink","address":"2232 1st Ave, Seattle"},{"name":"Phocific Standard Time","neighborhood":"Belltown","type":"Cocktail Bar","bucket":"Drink","lon":-122.33736,"lat":47.61478,"price":"$18 per drink","notes":"Has some Vietnamese snacks","address":"1923 7th Ave, Seattle"},{"name":"MOTO Pizza","neighborhood":"Belltown","type":"Pizza","bucket":"Eat","lon":-122.35748,"lat":47.61833,"price":"$30 pizza","notes":"Detroit Style","address":"3131 Western Ave #301, Seattle"},{"name":"Cinerama","neighborhood":"Belltown","type":"Movie Theater","bucket":"Music & Film","lon":-122.34137,"lat":47.61418,"price":"$15","address":"2100 4th Ave, Seattle"},{"name":"Bangrak","neighborhood":"Belltown","type":"Thai","bucket":"Eat","lon":-122.3465,"lat":47.61433,"price":"$30 pp","notes":"Open late","address":"2319 2nd Ave, Seattle"},{"name":"Asian Family Market","neighborhood":"Bitter Lake","type":"Grocery Store","bucket":"Groceries","lon":-122.34359,"lat":47.72481,"notes":"Chinese go-to","address":"13200 Aurora Ave N Ste A, Seattle"},{"name":"European Foods","neighborhood":"Bitter Lake","type":"Grocery Store","bucket":"Groceries","lon":-122.34445,"lat":47.7275,"notes":"Favorite piroshki","address":"13520 Aurora Ave N, Seattle"},{"name":"The Bine Beer & Food","neighborhood":"Bothell","type":"Gastropub","bucket":"Eat","lon":-122.20423,"lat":47.76001,"price":"$50 pp","address":"10127 Main St Ste A, Bothell"},{"name":"El Cabrito","neighborhood":"Burien","type":"Mexican","bucket":"Eat","lon":-122.34733,"lat":47.47117,"price":"$20 pp","notes":"Good mole (supposedly)","address":"14631 Ambaum Blvd SW, Burien"},{"name":"Glasswing","neighborhood":"Capitol Hill","type":"Clothing","bucket":"Shopping","lon":-122.32804,"lat":47.61464,"price":"$150 T-Shirts (so you can guess cost of other things)","notes":"Good USA/Japan/German made clothes for men and women","address":"1525 Melrose Ave, Seattle"},{"name":"Rondo Japanese Kitchen","neighborhood":"Capitol Hill","type":"Japanese","bucket":"Eat","lon":-122.32052,"lat":47.62072,"price":"$50pp","notes":"Good happy hour","address":"224 Broadway E, Seattle"},{"name":"Aviv Hummus Bar","neighborhood":"Capitol Hill","type":"Levantine","bucket":"Eat","lon":-122.31295,"lat":47.61883,"price":"$20","notes":"sabich, raki, green zhoug","address":"107 15th Ave E, Seattle"},{"name":"Anne & Valentin Eyewear","neighborhood":"Capitol Hill","type":"Glasses Store","bucket":"Shopping","lon":-122.31957,"lat":47.61494,"price":"$750+ glasses","notes":"Cool brands","address":"1527 10th Ave, Seattle"},{"name":"SIFF Cinema Egyptian","neighborhood":"Capitol Hill","type":"Movie Theater","bucket":"Music & Film","lon":-122.32176,"lat":47.615,"price":"$15","address":"805 E Pine St, Seattle"},{"name":"Spinasse","neighborhood":"Capitol Hill","type":"Italian","bucket":"Eat","lon":-122.31439,"lat":47.61509,"price":"$75pp","notes":"bar seating is first come first serve","address":"1531 14th Ave, Seattle"},{"name":"Zions Gate Records","neighborhood":"Capitol Hill","type":"Record Store","bucket":"Music & Film","lon":-122.31781,"lat":47.61421,"price":"Varies","address":"1100 E Pike St, Seattle"},{"name":"Cornelly","neighborhood":"Capitol Hill","type":"Pizza","bucket":"Eat","lon":-122.32545,"lat":47.62449,"price":"$50pp","address":"601 Summit Ave E #103, Seattle"},{"name":"Island Soul Rum Bar & Soul Shack","neighborhood":"Columbia City","type":"Caribbean","bucket":"Eat","lon":-122.28551,"lat":47.55812,"price":"$30","notes":"Platter for 2 is good","address":"4869 Rainier Ave S, Seattle"},{"name":"Twilight Rainier","neighborhood":"Columbia City","type":"Dive Bar","bucket":"Drink","lon":-122.27812,"lat":47.55161,"price":"$8 drinks","address":"5609 Rainier Ave S, Seattle"},{"name":"Billiard Hoang","neighborhood":"Columbia City","type":"Vietnamese","bucket":"Eat","lon":-122.29015,"lat":47.5573,"price":"$15 food, $8 drinks","notes":"Vietnamese Pool Hall","address":"3220 S Hudson St, Seattle"},{"name":"Off-Alley","neighborhood":"Columbia City","type":"Contemporary American","bucket":"Eat","lon":-122.28512,"lat":47.55766,"price":"$150 at least","notes":"offal focused","address":"4903 Rainier Ave S, Seattle"},{"name":"Nine Way","neighborhood":"Crossroads","type":"Chinese","bucket":"Eat","lon":-122.14222,"lat":47.63221,"price":"$20 pp","notes":"Noodles","address":"14808 NE 24th St A, Redmond"},{"name":"Supreme Dumplings","neighborhood":"Crossroads","type":"Dumplings","bucket":"Eat","lon":-122.145,"lat":47.62676,"price":"$50 pp","address":"14603 NE 20th St #4B, Bellevue"},{"name":"Liuyishou Hotpot","neighborhood":"Crossroads","type":"Hot Pot","bucket":"Eat","lon":-122.15314,"lat":47.62542,"price":"$50 pp","address":"1644 140th Ave NE, Bellevue"},{"name":"Tofu 101","neighborhood":"Factoria","type":"Taiwanese","bucket":"Eat","lon":-122.16869,"lat":47.57639,"address":"12816 SE 38th St Unit G, Bellevue"},{"name":"Daebak Wang Mandoo Korean Dumplings","neighborhood":"Federal Way","type":"Korean","bucket":"Eat","lon":-122.31274,"lat":47.30522,"price":"$30 pp","notes":"Korean Dumplings","address":"33100 Pacific Hwy S #5, Federal Way"},{"name":"So Moon Nan Jib","neighborhood":"Federal Way","type":"Korean","bucket":"Eat","lon":-122.31255,"lat":47.30199,"notes":"BBQ","address":"33324 Pacific Hwy S #203, Federal Way"},{"name":"Blue Owl","neighborhood":"Fremont","type":"Clothing","bucket":"Shopping","lon":-122.35871,"lat":47.65257,"price":"$100 T-Shirts (so you can guess cost of other things)","notes":"Good USA/Japan made clothes for men","address":"124 NW Canal St, Seattle"},{"name":"Tivoli","neighborhood":"Fremont","type":"Pizza","bucket":"Eat","lon":-122.34847,"lat":47.64959,"price":"$30 pp","notes":"Dough is good, too much toppings","address":"730 N 34th St, Seattle"},{"name":"Local Tide","neighborhood":"Fremont","type":"Seafood","bucket":"Eat","lon":-122.35389,"lat":47.65195,"price":"$40 crab sando","address":"401 N 36th St Unit 103, Seattle"},{"name":"RockCreek Seafood & Spirits","neighborhood":"Fremont","type":"Seafood","bucket":"Eat","lon":-122.34957,"lat":47.65944,"price":"$75 pp min","address":"4300 Fremont Ave N, Seattle"},{"name":"High Dive","neighborhood":"Fremont","type":"Music Venue","bucket":"Music & Film","lon":-122.35171,"lat":47.65137,"address":"513 N 36th St, Seattle"},{"name":"Sea Wolf","neighborhood":"Fremont","type":"Bakeries","bucket":"Coffee & Sweets","lon":-122.3432,"lat":47.65111,"notes":"Best Sourdough","address":"3617 Stone Way N Ste 101, Seattle"},{"name":"Haerfest","neighborhood":"Fremont","type":"Italian","bucket":"Eat","lon":-122.34205,"lat":47.65716,"notes":"Agnolotti","address":"4106 Stone Way N Ste 104, Seattle"},{"name":"Hannyatou","neighborhood":"Fremont","type":"Sake Bar","bucket":"Drink","lon":-122.34422,"lat":47.65394,"notes":"Good happy hour snacks","address":"1060 N 39th St, Seattle"},{"name":"Maruta Shoten","neighborhood":"Georgetown","type":"Grocery Store","bucket":"Groceries","lon":-122.31888,"lat":47.54799,"price":"$10 sushi","notes":"Best grocery store sushi","address":"1024 S Bailey St, Seattle"},{"name":"Deep Sea Sugar And Salt","neighborhood":"Georgetown","type":"Pastries","bucket":"Coffee & Sweets","lon":-122.31467,"lat":47.54772,"address":"6235 Airport Way S, Seattle"},{"name":"Calozzi's Cheesesteaks","neighborhood":"Georgetown","type":"Cheesesteaks","bucket":"Eat","lon":-122.32257,"lat":47.5403,"price":"$15 pp","address":"7016 E Marginal Way S, Seattle"},{"name":"9lb Hammer","neighborhood":"Georgetown","type":"Dive Bar","bucket":"Drink","lon":-122.31684,"lat":47.54899,"price":"$10 per drink","address":"6009 Airport Way S, Seattle"},{"name":"Atlantic Crossing","neighborhood":"Green Lake","type":"Soccer Bar","bucket":"Drink","lon":-122.32449,"lat":47.68069,"price":"$10 drinks","notes":"Opens early for soccer","address":"7200 Woodlawn Ave NE, Seattle"},{"name":"Eight Row","neighborhood":"Green Lake","type":"Contemporary American","bucket":"Eat","lon":-122.32782,"lat":47.67811,"price":"$100 at least","notes":"Local/In-season","address":"6800 E Green Lake Way N, Seattle"},{"name":"Rickshaw","neighborhood":"Greenwood","type":"Chinese-American","bucket":"Eat","lon":-122.35449,"lat":47.70528,"price":"$15 for food, $8-10 for drinks","notes":"Karaoke at 9PM every night","address":"322 N 105th St, Seattle"},{"name":"FlintCreek Cattle Co.","neighborhood":"Greenwood","type":"Contemporary American","bucket":"Eat","lon":-122.35551,"lat":47.69049,"price":"$100 pp min","address":"8421 Greenwood Ave N, Seattle"},{"name":"The Chicken Supply","neighborhood":"Greenwood","type":"Fried Chicken","bucket":"Eat","lon":-122.35506,"lat":47.68287,"price":"$6 per piece","notes":"3 pieces will make you very full","address":"7410 Greenwood Ave N, Seattle"},{"name":"Cornuto Pizzeria","neighborhood":"Greenwood","type":"Pizza","bucket":"Eat","lon":-122.35508,"lat":47.68276,"price":"$30 pp","notes":"Favorite neopolitan - puttanesca on secret menu","address":"7404 Greenwood Ave N, Seattle"},{"name":"Coindexter's","neighborhood":"Greenwood","type":"Bar","bucket":"Drink","lon":-122.35497,"lat":47.69156,"price":"$8 drinks","notes":"arcade bar","address":"8556 Greenwood Ave N, Seattle"},{"name":"Vientiane Grocery","neighborhood":"Hillman City","type":"Laos","bucket":"Eat","lon":-122.28444,"lat":47.5462,"price":"$20 pp","notes":"5 star will be spicy","address":"3828 S Graham St Unit C, Seattle"},{"name":"Fort St. George","neighborhood":"International District","type":"Bar","bucket":"Drink","lon":-122.32605,"lat":47.59819,"price":"$10 drinks, $15 food","notes":"Japanese-American food, low-key","address":"601 S King St Unit 202, Seattle"},{"name":"Canton Wonton House","neighborhood":"International District","type":"Chinese","bucket":"Eat","lon":-122.32593,"lat":47.59761,"price":"$15 food","notes":"Congee","address":"608 S Weller St, Seattle"},{"name":"Gan Bei","neighborhood":"International District","type":"Chinese-American","bucket":"Eat","lon":-122.32413,"lat":47.59768,"price":"$20 for food, $12 for drinks","address":"670 S Weller St, Seattle"},{"name":"Kilig","neighborhood":"International District","type":"Filipino","bucket":"Eat","lon":-122.32219,"lat":47.59647,"price":"$20 for food","address":"710 8th Ave S, Seattle"},{"name":"Hong Kong Bistro","neighborhood":"International District","type":"Dim Sum","bucket":"Eat","lon":-122.32502,"lat":47.59796,"price":"$30 pp","notes":"Has squab","address":"507 Maynard Ave S #511C, Seattle"},{"name":"Lam's Seafood Asian Market","neighborhood":"International District","type":"Grocery Store","bucket":"Groceries","lon":-122.31622,"lat":47.59813,"notes":"Vietnamese go-to","address":"1221 S King St, Seattle"},{"name":"Madras Dosa Corner","neighborhood":"Issaquah","type":"Indian","bucket":"Eat","lon":-122.05531,"lat":47.54406,"price":"$30 pp","address":"1175 NW Gilman Blvd, Issaquah"},{"name":"BiBi Mediterranean Inspired Food and Specialties","neighborhood":"Kirkland","type":"Persian","bucket":"Eat","lon":-122.19728,"lat":47.66699,"price":"$40 pp","address":"10724 NE 68th St, Kirkland"},{"name":"Man'oushe Express","neighborhood":"Lake City","type":"Levantine","bucket":"Eat","lon":-122.29251,"lat":47.72908,"price":"$15","address":"13721 Lake City Way NE, Seattle"},{"name":"Goodies Market","neighborhood":"Lake City","type":"Grocery Store","bucket":"Groceries","lon":-122.29256,"lat":47.72917,"notes":"Middle Eastern","address":"13721 Lake City Way NE, Seattle"},{"name":"Temple Pastries","neighborhood":"Leschi","type":"Pastries","bucket":"Coffee & Sweets","lon":-122.29889,"lat":47.59941,"price":"$5 pastries","address":"2524 S Jackson St #104, Seattle"},{"name":"Hello Em","neighborhood":"Little Saigon","type":"Coffee","bucket":"Coffee & Sweets","lon":-122.31547,"lat":47.5974,"price":"$6 per drink","notes":"Vietnamese, has snacks","address":"1227 S Weller St, Seattle"},{"name":"Hương Bình Restaurant","neighborhood":"Little Saigon","type":"Vietnamese","bucket":"Eat","lon":-122.31635,"lat":47.59889,"notes":"Bun beo","address":"1207 S Jackson St #104, Seattle"},{"name":"Pho So 1","neighborhood":"Little Saigon","type":"Vietnamese","bucket":"Eat","lon":-122.31655,"lat":47.59887,"price":"$15 for food","notes":"Best Bun Bo Hue","address":"1207 S Jackson St #107, Seattle"},{"name":"Saigon Deli","neighborhood":"Little Saigon","type":"Vietnamese","bucket":"Eat","lon":-122.3156,"lat":47.59904,"price":"$6 banh mi","address":"1237 S Jackson St, Seattle"},{"name":"Vietnam House","neighborhood":"Little Saigon","type":"Vietnamese","bucket":"Eat","lon":-122.3178,"lat":47.59973,"notes":"Bun Rieu","address":"1038 S Jackson St, Seattle"},{"name":"Streamline Tavern","neighborhood":"Lower Queen Anne (Uptown)","type":"Dive Bar","bucket":"Drink","lon":-122.353,"lat":47.62561,"price":"$6-10 per drink","address":"174 Roy St, Seattle"},{"name":"The Toledo","neighborhood":"Lower Queen Anne (Uptown)","type":"Dive Bar","bucket":"Drink","lon":-122.34217,"lat":47.63386,"price":"$8 drinks, $15 food","address":"1628 Dexter Ave N Ste B, Seattle"},{"name":"Bapmukja","neighborhood":"Lynnwood","type":"Bar","bucket":"Drink","lon":-122.30585,"lat":47.83025,"price":"$12 soju","notes":"Plaza with many korean bars","address":"18623 Hwy 99, Lynnwood"},{"name":"Countryside Donut LLC","neighborhood":"Lynnwood","type":"Donuts","bucket":"Coffee & Sweets","lon":-122.32103,"lat":47.79983,"price":"$2 donuts","address":"21919 66th Ave W Ste I, Mountlake Terrace"},{"name":"Eunia Plaza","neighborhood":"Lynnwood","type":"Plaza","bucket":"Drink","lon":-122.3062,"lat":47.8299,"price":"Varies","notes":"Lots of Korean bars/restaurants","address":"18623 Hwy 99, Lynnwood"},{"name":"Fil Cuisine","neighborhood":"Lynnwood","type":"Filipino","bucket":"Eat","lon":-122.27923,"lat":47.83331,"price":"$35 pp","address":"3333 184th St SW, Lynnwood"},{"name":"Vons Chicken","neighborhood":"Lynnwood","type":"Fried Chicken","bucket":"Eat","lon":-122.28665,"lat":47.82131,"price":"$20 pp","notes":"Korean Style","address":"3925 196th St SW, Lynnwood"},{"name":"New Seoul","neighborhood":"Lynnwood","type":"Korean","bucket":"Eat","lon":-122.27467,"lat":47.82881,"price":"$50 pp","address":"3000 184th St SW, Lynnwood"},{"name":"Traditional Korean Beef Soup","neighborhood":"Lynnwood","type":"Korean","bucket":"Eat","lon":-122.31283,"lat":47.32111,"price":"$20 pp","notes":"Seolleong Tang, opens early","address":"31248 Pacific Hwy S, Federal Way"},{"name":"Omar's Taqueria #3","neighborhood":"Lynnwood","type":"Mexican","bucket":"Eat","lon":-122.32377,"lat":47.8102,"price":"$15 pp","address":"20801 Hwy 99 #102, Lynnwood"},{"name":"Boo Han Oriental Market","neighborhood":"Lynnwood","type":"Grocery Store","bucket":"Groceries","lon":-122.33742,"lat":47.79339,"notes":"Korean go-to","address":"22618 Hwy 99, Edmonds"},{"name":"Mt. Bagel","neighborhood":"Madison Park","type":"Bagels","bucket":"Eat","lon":-122.2989,"lat":47.62603,"price":"$3 bagels","notes":"Good enough","address":"801 26th Ave E, Seattle"},{"name":"Sushi Suzuki","neighborhood":"Madison Park","type":"Japanese","bucket":"Eat","lon":-122.27901,"lat":47.63536,"price":"$200 pp","address":"4116 E Madison St, Seattle"},{"name":"Dick's","neighborhood":"Many","type":"Burgers","bucket":"Eat","lon":-122.32117,"lat":47.61936,"price":"$4 burger","notes":"Seattle Staple","address":"115 Broadway E, Seattle","multi":true},{"name":"Taylor Shellfish","neighborhood":"Many","type":"Seafood","bucket":"Eat","lon":-122.32813,"lat":47.61459,"price":"$60 pp","notes":"Staple for Oysters/local seafood","address":"1521 Melrose Ave, Seattle","multi":true},{"name":"Grand Central Bakery","neighborhood":"Many","type":"Bakery","bucket":"Coffee & Sweets","lon":-122.33382,"lat":47.60039,"notes":"Go-to baguette","address":"214 1st Ave S, Seattle","multi":true},{"name":"Jeff's Texas Style BBQ","neighborhood":"Marysville","type":"BBQ","bucket":"Eat","lon":-122.1753,"lat":48.07951,"price":"$30 pp","notes":"Best BBQ","address":"9214 State Ave, Marysville"},{"name":"Vivienne's Bistro","neighborhood":"Mercer Island","type":"Chinese","bucket":"Eat","lon":-122.23857,"lat":47.58772,"price":"$50 pp","notes":"Peking duck is good","address":"2441 76th Ave SE, Mercer Island"},{"name":"Cafe Lago","neighborhood":"Montlake","type":"Italian-American","bucket":"Eat","lon":-122.30234,"lat":47.63969,"price":"$35pp","address":"2305 24th Ave E, Seattle"},{"name":"Jebena Cafe","neighborhood":"Northgate","type":"Ethiopian","bucket":"Eat","lon":-122.31191,"lat":47.71412,"price":"$25 pp","address":"1510 NE 117th St, Seattle"},{"name":"Loxicha Authentic Oaxacan Food","neighborhood":"Northgate","type":"Mexican","bucket":"Eat","lon":-122.31239,"lat":47.7137,"price":"$20 pp","address":"11546 15th Ave NE, Seattle"},{"name":"Caroline Tavern","neighborhood":"Northgate","type":"Dive Bar","bucket":"Drink","lon":-122.31243,"lat":47.72865,"price":"$8 drinks","address":"13702 15th Ave NE, Seattle"},{"name":"A.K Pizza","neighborhood":"Othello","type":"Pizza","bucket":"Eat","lon":-122.28327,"lat":47.54026,"price":"$50 pizza?","notes":"Best NY-ish style pizza","address":"6901 Martin Luther King Jr Way S Ste A, Seattle"},{"name":"Windy City Pie","neighborhood":"Phinney","type":"Pizza","bucket":"Eat","lon":-122.354,"lat":47.67286,"price":"$40 pizza","notes":"Chicago Style","address":"5918 Phinney Ave N, Seattle"},{"name":"Tres' House of Cheesesteaks","neighborhood":"Phinney","type":"Cheesesteaks","bucket":"Eat","lon":-122.36692,"lat":47.69089,"price":"$15 cheesesteaks","notes":"best cheesesteaks","address":"820 NW 85th St, Seattle"},{"name":"ZigZag Cafe","neighborhood":"Pike Place","type":"Cocktail Bar","bucket":"Drink","lon":-122.34165,"lat":47.60824,"price":"$18 drinks","notes":"Good if you are in area","address":"1501 Western Ave Ste 202, Seattle"},{"name":"Showbox","neighborhood":"Pike Place","type":"Music Venue","bucket":"Music & Film","lon":-122.33944,"lat":47.60851,"price":"$30+ for show","address":"1426 1st Ave, Seattle"},{"name":"Sushi Kashiba","neighborhood":"Pike Place","type":"Sushi","bucket":"Eat","lon":-122.34155,"lat":47.60982,"price":"$200pp min","notes":"Line up before 4.30PM to get seat assignment","address":"86 Pine St Ste 1, Seattle"},{"name":"JarrBar","neighborhood":"Pike Place","type":"Tapas Bar","bucket":"Eat","lon":-122.34073,"lat":47.60825,"price":"$12 drinks/food","notes":"Good if you are in area","address":"1432 Western Ave, Seattle"},{"name":"maíz","neighborhood":"Pike Place","type":"Mexican","bucket":"Eat","lon":-122.34262,"lat":47.61009,"price":"$20pp","address":"1914 Pike Pl, Seattle"},{"name":"Owl N' Thistle","neighborhood":"Pike Place","type":"Irish Pub","bucket":"Drink","lon":-122.3356,"lat":47.60325,"price":"$10 per drink","notes":"good for irish music","address":"808 Post Ave, Seattle"},{"name":"Post Alley Pizza","neighborhood":"Pike Place","type":"Pizza","bucket":"Eat","lon":-122.3381,"lat":47.60573,"price":"$10","notes":"possibly best pizza by the slice, hoagie is good!","address":"1123 Post Ave, Seattle"},{"name":"Greg Kucera Gallery","neighborhood":"Pioneer Square","type":"Art Gallery","bucket":"Shopping","lon":-122.32989,"lat":47.60046,"price":"Body part","address":"212 3rd Ave S, Seattle"},{"name":"Foster/White Gallery","neighborhood":"Pioneer Square","type":"Art Gallery","bucket":"Shopping","lon":-122.32989,"lat":47.60025,"price":"Body part","address":"220 3rd Ave S #100, Seattle"},{"name":"Spinnaker Chocolate","neighborhood":"Ravenna","type":"Chocolate","bucket":"Coffee & Sweets","lon":-122.3431,"lat":47.64985,"price":"$10 chocolate bars","notes":"Best","address":"3509 Stone Way N, Seattle"},{"name":"Wataru","neighborhood":"Ravenna","type":"Sushi","bucket":"Eat","lon":-122.3015,"lat":47.67595,"price":"$200 pp","address":"2400 NE 65th St, Seattle"},{"name":"Burnett's Pub","neighborhood":"Renton","type":"Dive Bar","bucket":"Drink","lon":-122.20762,"lat":47.47843,"price":"$10 drinks","notes":"Vietnamese Wings","address":"340 Burnett Ave S, Renton"},{"name":"Three Sacks Full","neighborhood":"Roosevelt","type":"Contemporary American","bucket":"Eat","lon":-122.31787,"lat":47.6751,"price":"$100 pp","notes":"Good ingredients and has promise, execution not there yet","address":"918 NE 64th St Ste 2, Seattle"},{"name":"Scarecrow Video","neighborhood":"Roosevelt","type":"Movie Rental","bucket":"Music & Film","lon":-122.31717,"lat":47.66591,"price":"$4 for rental","notes":"BOGO Wednesdays","address":"5030 Roosevelt Way NE, Seattle"},{"name":"Monkey Pub","neighborhood":"Roosevelt","type":"Dive Bar","bucket":"Drink","lon":-122.31754,"lat":47.66729,"price":"$8 per drink","address":"5305 Roosevelt Way NE, Seattle"},{"name":"Milpa Masa Company","neighborhood":"Roxhill","type":"Tortillas","bucket":"Eat","lon":-122.37608,"lat":47.53573,"price":"$10","notes":"Tortillas from scratch","address":"3416 SW Webster St, Seattle"},{"name":"Lander Street Vintage","neighborhood":"SODO","type":"Vintage","bucket":"Shopping","lon":-122.33119,"lat":47.57943,"price":"Varies","address":"241 S Lander St, Seattle"},{"name":"Hooverville Bar","neighborhood":"SODO","type":"Dive Bar","bucket":"Drink","lon":-122.3345,"lat":47.58757,"price":"$8 per drink","notes":"Best for pregame/postgame in SODO","address":"1721 1st Ave S, Seattle"},{"name":"Pasteleria Y Panaderia La Ideal","neighborhood":"South Park","type":"Pastries","bucket":"Coffee & Sweets","lon":-122.3155,"lat":47.52357,"notes":"Mexican pastries","address":"8909 14th Ave S, Seattle"},{"name":"Howdy Bagel","neighborhood":"Tacoma","type":"Bagels","bucket":"Eat","lon":-122.48344,"lat":47.20726,"price":"$3 bagels, $14 bagel sandos","notes":"Best","address":"5421 S Tacoma Way, Tacoma"},{"name":"Tho Tuong BBQ","neighborhood":"Tacoma","type":"Vietnamese","bucket":"Eat","lon":-122.4415,"lat":47.22315,"price":"$15","notes":"BBQ","address":"715 S 38th St, Tacoma"},{"name":"Tacoma Pie","neighborhood":"Tacoma","type":"Pizza","bucket":"Eat","lon":-122.49708,"lat":47.25538,"notes":"Detroit Style","address":"4417 6th Ave, Tacoma"},{"name":"Spice Bridge","neighborhood":"Tukwila","type":"Food Court","bucket":"Eat","lon":-122.28342,"lat":47.47506,"address":"14200 Tukwila International Blvd Ste 141, Tukwila"},{"name":"Magus Books","neighborhood":"University District","type":"Bookstore","bucket":"Shopping","lon":-122.31288,"lat":47.65844,"address":"1408 NE 42nd St, Seattle"},{"name":"Chili's","neighborhood":"University District","type":"Indian","bucket":"Eat","lon":-122.31307,"lat":47.65898,"price":"$30 pp","address":"4220 University Way NE, Seattle"},{"name":"Grand Illusion Cinema","neighborhood":"University District","type":"Movie Theater","bucket":"Music & Film","lon":-122.31271,"lat":47.66475,"price":"$15","address":"1403 NE 50th St, Seattle"},{"name":"Master Bing","neighborhood":"University District","type":"Chinese","bucket":"Eat","lon":-122.31321,"lat":47.66237,"price":"$12 jianbing","address":"4537A University Way NE, Seattle"},{"name":"Bar Miriam","neighborhood":"Queen Anne","type":"Cocktail Bar","bucket":"Drink","lon":-122.36149,"lat":47.63948,"address":"307 W McGraw St, Seattle"},{"name":"Tom's Watch Bar","neighborhood":"Lower Queen Anne (Uptown)","type":"Sports Bar","bucket":"Drink","lon":-122.35406,"lat":47.62092,"notes":"food mid, infinite TVs","address":"105 Lenny Wilkens Way, Seattle"},{"name":"Young Tea","neighborhood":"Wallingford","type":"Bubble Tea","bucket":"Coffee & Sweets","lon":-122.33309,"lat":47.6615,"price":"$8 tea","notes":"They brew the tea","address":"2110 N 45th St, Seattle"},{"name":"Al's Tavern","neighborhood":"Wallingford","type":"Dive Bar","bucket":"Drink","lon":-122.33114,"lat":47.66118,"price":"$8 per drink","address":"2303 N 45th St, Seattle"},{"name":"Sisi Kay Thai Eatery and Bar","neighborhood":"Wallingford","type":"Thai","bucket":"Eat","lon":-122.33858,"lat":47.66156,"price":"$20 pp","notes":"Kua Gai","address":"1612 N 45th St, Seattle"},{"name":"West of Chicago Pizza Company","neighborhood":"West Seattle","type":"Pizza","bucket":"Eat","lon":-122.37964,"lat":47.56127,"price":"$30","notes":"Tavern style pizza","address":"3770 SW Alaska St, Seattle"},{"name":"Crawfish House","neighborhood":"White Center","type":"Seafood","bucket":"Eat","lon":-122.35491,"lat":47.51476,"price":"$30 pp","notes":"spice level goes to 20","address":"9826 16th Ave SW, Seattle"},{"name":"Southgate Roller Rink","neighborhood":"White Center","type":"Roller Rink","bucket":"Activities","lon":-122.35614,"lat":47.5161,"price":"$20 pp","address":"9646 17th Ave SW, Seattle"},{"name":"Carniceria El Paisano","neighborhood":"White Center","type":"Grocery Store","bucket":"Groceries","lon":-122.35423,"lat":47.51649,"notes":"Mexican, can get suadero meat","address":"9629 15th Ave SW, Seattle"},{"name":"Shirafuji Sake Brewery Company","neighborhood":"Woodinville","type":"Sake Brewery","bucket":"Drink","lon":-122.14986,"lat":47.76406,"address":"18800 142nd Ave NE, Woodinville"},{"name":"Warr-King Wines","neighborhood":"Woodinville","type":"Winery","bucket":"Drink","lon":-122.14986,"lat":47.7688,"address":"19495 144th Ave NE Ste B205, Woodinville"},{"name":"Cafe Sabah","neighborhood":"Renton","type":"Turkish","bucket":"Eat","lon":-122.1634,"lat":47.50327,"price":"$40 pp","address":"4201 NE Sunset Blvd, Renton"}];
+</script>
+<script>
+/* Seattle map — personal list. No external reviews or ratings; notes are the author's own. */
+(function () {
+  "use strict";
+
+  var BUCKETS = [
+    { key: "Eat",             color: "#C1442E", icon: "utensils" },
+    { key: "Drink",           color: "#2E6E8E", icon: "glass" },
+    { key: "Coffee & Sweets", color: "#8A5A2B", icon: "cup" },
+    { key: "Music & Film",    color: "#6B4E9E", icon: "note" },
+    { key: "Shopping",        color: "#1F7A5A", icon: "bag" },
+    { key: "Groceries",       color: "#8F6310", icon: "basket" },
+    { key: "Activities",      color: "#A03C6E", icon: "star" }
+  ];
+  var BC = {}; BUCKETS.forEach(function (b) { BC[b.key] = b; });
+
+  var ICONS = {
+    utensils: '<path d="M4 3v7a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V3M6 12v9M17 3c-1.7 1-2.5 3-2.5 5.5S15.3 13 17 13v8"/>',
+    glass:    '<path d="M5 4h14l-6 8v6h3M11 18H8m3 0v-6L5 4"/>',
+    cup:      '<path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8zM17 9h1.5a2.5 2.5 0 0 1 0 5H17M6 3v2M10 2v3M14 3v2"/>',
+    note:     '<circle cx="7" cy="18" r="3"/><circle cx="18" cy="15" r="3"/><path d="M10 18V6l11-2v11"/>',
+    bag:      '<path d="M4 8h16l-1.2 12.2a1 1 0 0 1-1 .8H6.2a1 1 0 0 1-1-.8L4 8z"/><path d="M8.5 8V6a3.5 3.5 0 0 1 7 0v2"/>',
+    basket:   '<path d="M3 9h18l-1.6 9.3a1 1 0 0 1-1 .7H5.6a1 1 0 0 1-1-.7L3 9z"/><path d="M8 9 10 3M16 9 14 3M10 13v3M14 13v3"/>',
+    star:     '<path d="m12 3 2.7 5.9 6.3.8-4.7 4.4 1.3 6.4L12 17.3 6.4 20.5l1.3-6.4L3 9.7l6.3-.8L12 3z"/>'
+  };
+  function svg(name) {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" ' +
+           'stroke-linecap="round" stroke-linejoin="round">' + (ICONS[name] || ICONS.star) + '</svg>';
+  }
+  function shorten(s, n) {
+    s = String(s);
+    return s.length <= n ? s : s.slice(0, n - 1).replace(/[\s,;:.-]+$/, "") + "…";
+  }
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  var HOME = { center: [-122.335, 47.625], zoom: 10.6 };
+  var LABEL_ZOOM = 13.2;   // pins become named pills
+  var NOTE_ZOOM  = 14.6;   // pills also show the note
+
+  var state = { bucket: "All", hood: "All", q: "", sel: null, moveSearch: false, bounds: null };
+  var markers = [], cardEls = [];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var cardsEl = $("cards"), countEl = $("count"), subEl = $("sub");
+
+  /* ---------------- map ---------------- */
+  mapboxgl.accessToken = MAPBOX_TOKEN;
+  var map = new mapboxgl.Map({
+    container: "map",
+    style: "mapbox://styles/mapbox/light-v11",
+    center: HOME.center,
+    zoom: HOME.zoom,
+    minZoom: 8,
+    maxZoom: 18,
+    attributionControl: true,
+    cooperativeGestures: false
+  });
+  map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "bottom-right");
+  map.addControl(new mapboxgl.GeolocateControl({ positionOptions: { enableHighAccuracy: true }, trackUserLocation: false }), "bottom-right");
+
+  /* ---------------- markers ---------------- */
+  PLACES.forEach(function (p, i) {
+    p._i = i;
+    var b = BC[p.bucket] || BUCKETS[0];
+    var el = document.createElement("div");
+    el.className = "mk";
+    el.innerHTML =
+      '<div class="dot" style="background:' + b.color + '"></div>' +
+      '<div class="lab"><i style="background:' + b.color + '"></i>' +
+      '<span>' + esc(p.name) + '</span>' +
+      (p.notes ? ' <em class="nt">' + esc(shorten(p.notes, 34)) + '</em>' : '') +
+      '</div>';
+    el.addEventListener("click", function (e) { e.stopPropagation(); select(i, true); });
+    el.addEventListener("mouseenter", function () { hover(i, true); });
+    el.addEventListener("mouseleave", function () { hover(i, false); });
+    var m = new mapboxgl.Marker({ element: el, anchor: "center" })
+      .setLngLat([p.lon, p.lat]).addTo(map);
+    markers.push({ el: el, m: m, p: p });
+  });
+
+  function applyZoomClass() {
+    var z = map.getZoom();
+    document.body.classList.toggle("zlab", z >= LABEL_ZOOM);
+    var showNotes = z >= NOTE_ZOOM;
+    markers.forEach(function (mk) {
+      var nt = mk.el.querySelector(".nt");
+      if (nt) nt.style.display = showNotes ? "" : "none";
+    });
+  }
+
+  /* Hide labels that would overlap, so the map never looks like a pile of pills.
+     Priority: the selected place first, then whatever is nearest the map centre. */
+  var declutterPending = false;
+  function declutter() {
+    declutterPending = false;
+    if (!document.body.classList.contains("zlab")) {
+      markers.forEach(function (mk) { mk.el.classList.remove("clash"); });
+      return;
+    }
+    var pane = document.getElementById("map").getBoundingClientRect();
+    var cx = pane.left + pane.width / 2, cy = pane.top + pane.height / 2;
+    var live = [];
+    markers.forEach(function (mk) {
+      mk.el.classList.remove("clash");
+      if (mk.el.style.display === "none") return;
+      var r = mk.el.getBoundingClientRect();
+      if (r.width === 0 || r.right < pane.left || r.left > pane.right ||
+          r.bottom < pane.top || r.top > pane.bottom) return;
+      var dx = (r.left + r.right) / 2 - cx, dy = (r.top + r.bottom) / 2 - cy;
+      live.push({ mk: mk, r: r, d: Math.sqrt(dx * dx + dy * dy), sel: mk.p._i === state.sel });
+    });
+    live.sort(function (a, b) { return (b.sel - a.sel) || (a.d - b.d); });
+    var placed = [];
+    live.forEach(function (o) {
+      var r = o.r, pad = 3, hit = false;
+      for (var i = 0; i < placed.length; i++) {
+        var q = placed[i];
+        if (r.left - pad < q.right && r.right + pad > q.left &&
+            r.top - pad < q.bottom && r.bottom + pad > q.top) { hit = true; break; }
+      }
+      if (hit) o.mk.el.classList.add("clash");
+      else placed.push(r);
+    });
+  }
+  function queueDeclutter() {
+    if (declutterPending) return;
+    declutterPending = true;
+    requestAnimationFrame(declutter);
+  }
+
+  map.on("zoom", function () { applyZoomClass(); queueDeclutter(); });
+  map.on("move", queueDeclutter);
+  map.on("load", function () { applyZoomClass(); render(); queueDeclutter(); });
+  map.on("moveend", function () {
+    if (state.moveSearch) { state.bounds = map.getBounds(); render(); }
+    queueDeclutter();
+  });
+  map.on("click", function () { select(null); });
+
+  /* ---------------- filtering ---------------- */
+  function visible() {
+    var q = state.q.trim().toLowerCase();
+    return PLACES.filter(function (p) {
+      if (state.bucket !== "All" && p.bucket !== state.bucket) return false;
+      if (state.hood !== "All" && p.neighborhood !== state.hood) return false;
+      if (q) {
+        var hay = (p.name + " " + p.type + " " + p.neighborhood + " " + (p.notes || "") + " " + (p.price || "")).toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
+      if (state.moveSearch && state.bounds) {
+        var b = state.bounds;
+        if (p.lon < b.getWest() || p.lon > b.getEast() || p.lat < b.getSouth() || p.lat > b.getNorth()) return false;
+      }
+      return true;
+    });
+  }
+
+  function render() {
+    var list = visible();
+    var on = {}; list.forEach(function (p) { on[p._i] = 1; });
+
+    markers.forEach(function (mk) {
+      var show = on[mk.p._i];
+      mk.el.style.display = show ? "" : "none";
+      mk.el.classList.toggle("dim", false);
+    });
+
+    countEl.textContent = list.length + (list.length === 1 ? " place" : " places");
+    var bits = [];
+    if (state.bucket !== "All") bits.push(state.bucket.toLowerCase());
+    if (state.hood !== "All") bits.push("in " + state.hood);
+    if (state.q.trim()) bits.push('matching "' + state.q.trim() + '"');
+    subEl.textContent = bits.length ? bits.join(" ") : "across Seattle and around";
+
+    cardsEl.innerHTML = "";
+    cardEls = [];
+    if (!list.length) {
+      cardsEl.innerHTML = '<div class="empty"><b>Nothing here yet</b>Try a different category, neighborhood, or search.</div>';
+      return;
+    }
+    var frag = document.createDocumentFragment();
+    list.forEach(function (p) {
+      var b = BC[p.bucket] || BUCKETS[0];
+      var el = document.createElement("button");
+      el.className = "card";
+      el.type = "button";
+      el.innerHTML =
+        '<div class="tile" style="background:' + b.color + '">' + svg(b.icon) + '</div>' +
+        '<div>' +
+          '<h3>' + esc(p.name) + '</h3>' +
+          '<div class="meta">' + esc(p.type) + ' &middot; ' + esc(p.neighborhood) + '</div>' +
+          (p.notes ? '<div class="note">' + esc(p.notes) + '</div>' : '') +
+          (p.price ? '<div class="price">' + esc(p.price) + '</div>' : '') +
+          (p.multi ? '<div class="tag">multiple locations</div>' : '') +
+        '</div>';
+      el.addEventListener("click", function () { select(p._i, false, true); });
+      el.addEventListener("mouseenter", function () { hover(p._i, true); });
+      el.addEventListener("mouseleave", function () { hover(p._i, false); });
+      cardEls[p._i] = el;
+      frag.appendChild(el);
+    });
+    cardsEl.appendChild(frag);
+    if (state.sel != null && cardEls[state.sel]) cardEls[state.sel].classList.add("sel");
+    queueDeclutter();
+  }
+
+  function hover(i, on) {
+    if (markers[i]) markers[i].el.classList.toggle("hot", on);
+    if (cardEls[i]) cardEls[i].classList.toggle("hot", on);
+  }
+
+  /* ---------------- selection + detail ---------------- */
+  var sheet = $("sheet");
+  function select(i, fromMarker, fromCard) {
+    if (state.sel != null) {
+      if (markers[state.sel]) markers[state.sel].el.classList.remove("sel");
+      if (cardEls[state.sel]) cardEls[state.sel].classList.remove("sel");
+    }
+    state.sel = i;
+    if (i == null) { sheet.classList.remove("on"); return; }
+
+    var p = PLACES[i], b = BC[p.bucket] || BUCKETS[0];
+    if (markers[i]) markers[i].el.classList.add("sel");
+    if (cardEls[i]) {
+      cardEls[i].classList.add("sel");
+      if (fromMarker) cardEls[i].scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+
+    $("shtop").style.background = b.color;
+    $("shicon").innerHTML = svg(b.icon);
+    $("shname").textContent = p.name;
+    $("shmeta").innerHTML =
+      '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ICONS.star.replace(/stroke-width="[^"]*"/, "") + '</svg>' +
+      '<div>' + esc(p.type) + ' &middot; ' + esc(p.neighborhood) + '</div>';
+    $("shaddr").innerHTML = p.address
+      ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>' +
+        '<div>' + esc(p.address) + (p.multi ? ' <span style="color:var(--ink3)">(one of several)</span>' : '') + '</div>'
+      : "";
+    $("shaddr").style.display = p.address ? "" : "none";
+    $("shprice").innerHTML = p.price
+      ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 6.5c0-2-2.2-3-5-3s-5 1-5 3 2.2 2.8 5 3.5 5 1.5 5 3.5-2.2 3-5 3-5-1-5-3"/></svg>' +
+        '<div>' + esc(p.price) + '</div>'
+      : "";
+    $("shprice").style.display = p.price ? "" : "none";
+    var noteEl = $("shnote");
+    if (p.notes) { noteEl.innerHTML = "<b>My note</b>" + esc(p.notes); noteEl.style.display = ""; }
+    else { noteEl.style.display = "none"; }
+    sheet.classList.add("on");
+
+    if (fromCard) {
+      if (window.innerWidth <= 900) document.body.classList.add("mapview"), syncToggle();
+      map.flyTo({ center: [p.lon, p.lat], zoom: Math.max(map.getZoom(), NOTE_ZOOM), speed: 1.5, curve: 1.3, essential: true });
+    } else if (fromMarker) {
+      var z = map.getZoom();
+      if (z < LABEL_ZOOM) map.easeTo({ center: [p.lon, p.lat], zoom: LABEL_ZOOM + 0.4, duration: 600 });
+    }
+  }
+  $("shclose").addEventListener("click", function (e) { e.stopPropagation(); select(null); });
+  sheet.addEventListener("click", function (e) { e.stopPropagation(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") select(null); });
+
+  /* ---------------- controls ---------------- */
+  var pillsEl = $("pills");
+  function counts() {
+    var c = { All: PLACES.length };
+    PLACES.forEach(function (p) { c[p.bucket] = (c[p.bucket] || 0) + 1; });
+    return c;
+  }
+  (function buildPills() {
+    var c = counts();
+    var items = [{ key: "All", color: null }].concat(BUCKETS);
+    items.forEach(function (b) {
+      var el = document.createElement("button");
+      el.className = "pill" + (b.key === "All" ? " on" : "");
+      el.innerHTML = (b.color ? '<span class="dot" style="background:' + b.color + '"></span>' : "") +
+                     esc(b.key) + ' <span class="n">' + (c[b.key] || 0) + "</span>";
+      el.addEventListener("click", function () {
+        state.bucket = b.key;
+        [].forEach.call(pillsEl.children, function (x) { x.classList.remove("on"); });
+        el.classList.add("on");
+        select(null); render(); $("listpane").scrollTop = 0;
+      });
+      pillsEl.appendChild(el);
+    });
+  })();
+
+  (function buildHoods() {
+    var hs = {};
+    PLACES.forEach(function (p) { hs[p.neighborhood] = (hs[p.neighborhood] || 0) + 1; });
+    var keys = Object.keys(hs).sort();
+    var sel = $("hood");
+    sel.innerHTML = '<option value="All">All neighborhoods</option>' +
+      keys.map(function (k) { return '<option value="' + esc(k) + '">' + esc(k) + " (" + hs[k] + ")</option>"; }).join("");
+    sel.addEventListener("change", function () {
+      state.hood = sel.value;
+      select(null); render(); $("listpane").scrollTop = 0;
+      var list = visible();
+      if (list.length) {
+        var bb = new mapboxgl.LngLatBounds();
+        list.forEach(function (p) { bb.extend([p.lon, p.lat]); });
+        map.fitBounds(bb, { padding: 90, maxZoom: 15, duration: 800 });
+      }
+    });
+  })();
+
+  var qEl = $("q"), qt;
+  qEl.addEventListener("input", function () {
+    clearTimeout(qt);
+    qt = setTimeout(function () { state.q = qEl.value; select(null); render(); $("listpane").scrollTop = 0; }, 140);
+  });
+
+  $("movesearch").addEventListener("change", function () {
+    state.moveSearch = this.checked;
+    state.bounds = this.checked ? map.getBounds() : null;
+    render();
+  });
+
+  $("reset").addEventListener("click", function () {
+    select(null);
+    map.flyTo({ center: HOME.center, zoom: HOME.zoom, speed: 1.4, essential: true });
+  });
+
+  /* ---------------- mobile toggle ---------------- */
+  function syncToggle() {
+    var onMap = document.body.classList.contains("mapview");
+    $("mobtxt").textContent = onMap ? "List" : "Map";
+  }
+  $("mobtog").addEventListener("click", function () {
+    document.body.classList.toggle("mapview");
+    syncToggle();
+    if (document.body.classList.contains("mapview")) setTimeout(function () { map.resize(); }, 60);
+  });
+  syncToggle();
+
+  /* ---------------- hint ---------------- */
+  var hintEl = $("hint"), hintDone = false;
+  function killHint() { if (!hintDone) { hintDone = true; hintEl.classList.add("off"); } }
+  map.on("zoom", function () { if (map.getZoom() >= LABEL_ZOOM) killHint(); });
+  setTimeout(killHint, 7000);
+
+  /* keep the neighborhood filter reachable on small screens */
+  var hoodEl = document.querySelector(".hood"), hrowEl = document.querySelector(".hrow");
+  function placeHood() {
+    var small = window.innerWidth <= 900;
+    if (small && hoodEl.parentNode !== pillsEl) pillsEl.insertBefore(hoodEl, pillsEl.firstChild);
+    else if (!small && hoodEl.parentNode !== hrowEl) hrowEl.appendChild(hoodEl);
+  }
+  placeHood();
+
+  window.addEventListener("resize", function () { map.resize(); placeHood(); queueDeclutter(); });
+  render();
+})();
+
+</script>
+</body>
+</html>

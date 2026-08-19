@@ -1,0 +1,13 @@
+{
+  "_comment": "Edit sheetCsvUrl after you publish your Google Sheet to the web as CSV. Everything else can stay as-is.",
+
+  "sheetCsvUrl": "PASTE_YOUR_PUBLISHED_CSV_URL_HERE",
+
+  "mapboxToken": "pk.eyJ1IjoiZWxyb2hpbiIsImEiOiJjbXQwaTBjYm0wNGo3Mnlwdno3bmR5Zm1hIn0.P8B9rpnYn0Xc6V3via-6wg",
+
+  "multiLocation": ["Dick's", "Taylor Shellfish", "Grand Central Bakery"],
+
+  "closed": ["Brouwer's Cafe", "Livbud"],
+
+  "region": { "west": -122.9, "south": 46.9, "east": -121.7, "north": 48.4 }
+}
