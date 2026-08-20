@@ -6,7 +6,7 @@ on:
     - cron: "0 15 * * 1"
   workflow_dispatch:
 
-# lets the action commit the rebuilt index.html back to the repo
+# lets the action commit the rebuilt pages back to the repo
 permissions:
   contents: write
 
@@ -20,17 +20,20 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Rebuild the site from the sheet
+      - name: Rebuild the Seattle site from the sheet
         run: node build/build.mjs
+
+      - name: Rebuild the New York page
+        run: node build/build-nyc.mjs
 
       - name: Commit if anything changed
         run: |
-          if git diff --quiet -- index.html build/coords.json build/unpinned.txt; then
-            echo "No changes - the sheet matches what is already published."
+          if git diff --quiet -- index.html nyc/index.html build/coords.json build/unpinned.txt build/nyc-coords.json build/nyc-unpinned.txt && [ -z "$(git status --porcelain nyc)" ]; then
+            echo "No changes - everything matches what is already published."
             exit 0
           fi
           git config user.name  "map-bot"
           git config user.email "map-bot@users.noreply.github.com"
-          git add index.html build/coords.json build/unpinned.txt
-          git commit -m "Update map from spreadsheet"
+          git add -A index.html nyc build/coords.json build/unpinned.txt build/nyc-coords.json build/nyc-unpinned.txt
+          git commit -m "Update maps"
           git push
