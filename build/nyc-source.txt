@@ -1,3 +1,88 @@
+Henan Feng Wei|Flushing|Queens|Henan|Eat|$12 pp|cash only, hand-pulled noodles
+Tantou King's Fuzhou Fish Ball|Flushing|Queens|Fujianese|Eat|$10 pp|fish ball noodle soup
+Tarim Uyghur Food|Flushing|Queens|Uyghur|Eat|$18 pp|hand-pulled laghman
+Joe's Steam Rice Roll|Flushing|Queens|Cheung Fun|Eat|$8 pp|stone-milled rice rolls
+Szechuan Mountain House|Flushing|Queens|Sichuan|Eat|$35 pp|toothpick lamb
+Hahm Ji Bach|Flushing|Queens|Korean BBQ|Eat|$45 pp|galbi
+Little Pepper|College Point|Queens|Sichuan|Eat|$30 pp|dan dan noodles
+Zaab Zaab|Elmhurst|Queens|Isaan Thai|Eat|$30 pp|gai yang
+Khao Kang|Elmhurst|Queens|Thai|Eat|$12 pp|point-and-pick steam table
+Taste Good Malaysian Cuisine|Elmhurst|Queens|Malaysian|Eat|$20 pp|roti canai
+Awang Kitchen|Elmhurst|Queens|Indonesian|Eat|$20 pp|nasi campur
+Lao Bei Fang Dumpling House|Elmhurst|Queens|Dumplings|Eat|$10 pp|Dongbei
+Eaterniti|Elmhurst|Queens|Burmese|Eat|$20 pp|tea leaf salad
+Lhasa Fast Food|Jackson Heights|Queens|Tibetan|Eat|$10 pp|behind the phone shop
+Phayul|Jackson Heights|Queens|Tibetan|Eat|$18 pp|2nd floor, beef tsel momo
+Nepali Bhanchha Ghar|Jackson Heights|Queens|Nepali|Eat|$20 pp|goat sekuwa
+Mustang Thakali Kitchen|Jackson Heights|Queens|Nepali|Eat|$18 pp|thakali thali
+Merit Kabab Palace|Jackson Heights|Queens|Bangladeshi|Eat|$12 pp|steam table, open late
+Taqueria Coatzingo|Jackson Heights|Queens|Mexican|Eat|$12 pp|cemitas, open late
+Arepa Lady|Jackson Heights|Queens|Colombian|Eat|$8 pp|arepa de choclo
+Urubamba|Jackson Heights|Queens|Peruvian|Eat|$25 pp|lomo saltado
+Birria-Landia|Jackson Heights|Queens|Tacos|Eat|$4 tacos|truck, cash only
+SriPraPhai|Woodside|Queens|Thai|Eat|$30 pp|crispy watercress salad
+Renee's Kitchenette & Grill|Woodside|Queens|Filipino|Eat|$20 pp|kare-kare
+Tito Rad's Grill|Woodside|Queens|Filipino|Eat|$25 pp|grilled pork belly
+Sik Gaek|Woodside|Queens|Korean|Eat|$40 pp|live octopus seafood pot
+De Mole|Sunnyside|Queens|Mexican|Eat|$20 pp|mole poblano
+La Morenita Ecuatoriana|Corona|Queens|Ecuadorian|Eat|$15 pp|hornado
+Cheburechnaya|Rego Park|Queens|Bukharian|Eat|$30 pp|lamb kebab, kosher
+Registan Kitchen|Rego Park|Queens|Uzbek|Eat|$25 pp|plov
+Nick's Pizza|Forest Hills|Queens|Pizza|Eat|$25 pizza|thin crust, no slices
+Singh's Roti Shop & Bar|Richmond Hill|Queens|Indo-Guyanese|Eat|$15 pp|goat roti, bar in back
+Sybil's Bakery & Restaurant|Richmond Hill|Queens|Guyanese|Eat|$12 pp|pine tart, cheese roll
+Trini Delite Roti Shop|Richmond Hill|Queens|Trinidadian|Eat|$10 pp|doubles
+Spicy Lanka|Richmond Hill|Queens|Sri Lankan|Eat|$18 pp|kottu roti
+Ghoroa|Jamaica|Queens|Bangladeshi|Eat|$15 pp|beef bhuna
+New Park Pizza|Howard Beach|Queens|Pizza|Eat|$4 slices|ask for it well done
+Don Peppe|Ozone Park|Queens|Italian|Eat|$45 pp|linguine with clams, cash only
+Kabab Cafe|Astoria|Queens|Egyptian|Eat|$45 pp|no menu, ask Ali
+Mombar|Astoria|Queens|Egyptian|Eat|$40 pp|cash only
+Sabry's Seafood|Astoria|Queens|Egyptian Seafood|Eat|$35 pp|grilled branzino, BYOB
+Taverna Kyclades|Astoria|Queens|Greek|Eat|$45 pp|grilled octopus, no reservations
+Telly's Taverna|Astoria|Queens|Greek|Eat|$45 pp|whole grilled fish
+Djerdan Burek|Astoria|Queens|Balkan|Eat|$10 pp|meat burek by the pound
+Astoria Seafood|Long Island City|Queens|Seafood|Eat|$35 pp|pick fish from the case
+Rizzo's Fine Pizza|Astoria|Queens|Pizza|Eat|$4 slices|thin crust square
+Rolo's|Ridgewood|Queens|New American|Eat|$45 pp|wood-fired, garden seats
+Rockaway Beach Surf Club|Rockaway Beach|Queens|Tacos|Eat|$6 tacos|seasonal, fish tacos
+Bohemian Hall & Beer Garden|Astoria|Queens|Beer Garden|Drink|$9 drinks|Czech pilsner, outdoor
+Gottscheer Hall|Ridgewood|Queens|Beer Hall|Drink|$7 drinks|old Gottschee club
+Neir's Tavern|Woodhaven|Queens|Dive Bar|Drink|$7 drinks|opened 1829
+Donovan's Pub|Woodside|Queens|Irish Pub|Drink|$20 for food, $8 for drinks|burger in the wood booths
+Sean Og's Tavern|Woodside|Queens|Irish Bar|Drink|$7 drinks|GAA on the TVs
+Connolly's Bar|Rockaway Beach|Queens|Dive Bar|Drink|$10 drinks|frozen pina colada
+Dutch Kills|Long Island City|Queens|Cocktail Bar|Drink|$18 drinks|hand-cut ice
+Sweet Afton|Astoria|Queens|Bar|Drink|$10 drinks|burger, backyard
+SingleCut Beersmiths|Astoria|Queens|Brewery|Drink|$9 drinks|taproom, live music
+Cronin & Phelan's|Astoria|Queens|Irish Bar|Drink|$7 drinks|no-frills, long bar
+Molly Blooms|Sunnyside|Queens|Irish Bar|Drink|$8 drinks|trad sessions some nights
+The Keep|Ridgewood|Queens|Bar|Drink|$12 drinks|back-room film screenings
+Onderdonk & Sons|Ridgewood|Queens|Bar|Drink|$12 drinks|backyard
+Fifth Hammer Brewing|Long Island City|Queens|Brewery|Drink|$9 drinks|taproom under the tracks
+The Baroness Bar|Astoria|Queens|Cocktail Bar|Drink|$14 drinks|dark, small, late
+Eddie's Sweet Shop|Forest Hills|Queens|Ice Cream|Coffee & Sweets|$9 sundaes|marble counter, cash only
+Max & Mina's|Flushing|Queens|Ice Cream|Coffee & Sweets|$6 scoops|odd flavors, kosher
+Cannelle Patisserie|East Elmhurst|Queens|Bakery|Coffee & Sweets|$5 pastries|in a strip mall
+La Gran Uruguaya Bakery|Jackson Heights|Queens|Bakery|Coffee & Sweets|$4 pastries|alfajores
+Sweetleaf|Long Island City|Queens|Coffee|Coffee & Sweets|$5 coffee|Rocket Fuel cold brew
+Martha's Country Bakery|Forest Hills|Queens|Bakery|Coffee & Sweets|$6 pastries|open late
+Patel Brothers|Jackson Heights|Queens|Grocery Store|Groceries|Varies|go-to for Indian
+H Mart|Flushing|Queens|Grocery Store|Groceries|Varies|go-to for Korean
+Hong Kong Supermarket|Flushing|Queens|Grocery Store|Groceries|Varies|go-to for Chinese
+Titan Foods|Astoria|Queens|Grocery Store|Groceries|Varies|go-to for Greek
+Phil-Am Food Mart|Woodside|Queens|Grocery Store|Groceries|Varies|go-to for Filipino
+Apna Bazar Cash & Carry|Jackson Heights|Queens|Grocery Store|Groceries|Varies|go-to for Bangladeshi
+Nowadays|Ridgewood|Queens|Music Venue|Music & Film|$20 cover|outdoor, Sunday all day
+TV Eye|Ridgewood|Queens|Music Venue|Music & Film|$20 cover|punk and psych
+Trans-Pecos|Ridgewood|Queens|Music Venue|Music & Film|$15 cover|backyard shows
+Terraza 7|Elmhurst|Queens|Music Venue|Music & Film|$10 cover|band plays on a raised stage
+Kew Gardens Cinemas|Kew Gardens|Queens|Cinema|Music & Film|$15 tickets|indie and foreign
+Deep Cuts Record Store|Ridgewood|Queens|Record Store|Music & Film|Varies|used vinyl
+Topos Bookstore Cafe|Ridgewood|Queens|Bookstore|Shopping|Varies|used books, coffee
+Astoria Bookshop|Astoria|Queens|Bookstore|Shopping|Varies|readings most weeks
+Queens Night Market|Corona|Queens|Night Market|Groceries|$6 plates|Saturdays, April to October
+Spa Castle|College Point|Queens|Korean Spa|Activities|$60 entry|jjimjilbang, go on a weekday
 Great NY Noodletown|Chinatown|Manhattan|Cantonese|Eat|$15 pp|salt baked squid, open late
 Wah Fung Number 1 Fast Food|Chinatown|Manhattan|Cantonese|Eat|$8 pp|roast pork over rice, cash only
 Hop Kee|Chinatown|Manhattan|Cantonese|Eat|$25 pp|basement, cash only
