@@ -1,3 +1,70 @@
+Great NY Noodletown|Chinatown|Manhattan|Cantonese|Eat|$15 pp|salt baked squid, open late
+Wah Fung Number 1 Fast Food|Chinatown|Manhattan|Cantonese|Eat|$8 pp|roast pork over rice, cash only
+Hop Kee|Chinatown|Manhattan|Cantonese|Eat|$25 pp|basement, cash only
+Shu Jiao Fu Zhou|Chinatown|Manhattan|Fuzhounese|Eat|$6 pp|peanut butter noodles
+Super Taste|Chinatown|Manhattan|Lanzhou|Eat|$12 pp|hand-pulled lamb noodle
+Lan Zhou Handmade Noodle|Chinatown|Manhattan|Lanzhou|Eat|$12 pp|knife-cut noodles
+Kong Sihk Tong|Chinatown|Manhattan|HK Cafe|Eat|$15 pp|milk tea, French toast
+Deluxe Green Bo|Chinatown|Manhattan|Shanghainese|Eat|$20 pp|soup dumplings
+Hop Shing|Chinatown|Manhattan|Dim Sum|Eat|$10 pp|opens early, cash only
+Yi Ji Shi Mo|Chinatown|Manhattan|Cheung Fun|Eat|$8 pp|stone-ground rice rolls
+Vanessa's Dumpling House|Lower East Side|Manhattan|Dumplings|Eat|$8 pp|sesame pancake sandwich
+Congee Village|Lower East Side|Manhattan|Cantonese|Eat|$20 pp|congee, karaoke rooms
+Cheeky Sandwiches|Lower East Side|Manhattan|Sandwiches|Eat|$12 pp|fried chicken biscuit
+Scarr's Pizza|Lower East Side|Manhattan|Pizza|Eat|$5 slices|house-milled flour
+Kiki's|Two Bridges|Manhattan|Greek|Eat|$30 pp|no reservations
+Streecha|East Village|Manhattan|Ukrainian|Eat|$8 pp|church basement, cash only
+Rai Rai Ken|East Village|Manhattan|Ramen|Eat|$16 pp|shoyu, counter only
+Sobaya|East Village|Manhattan|Soba|Eat|$25 pp|house-made soba
+Curry-Ya|East Village|Manhattan|Japanese|Eat|$20 pp|katsu curry, counter
+Zum Schneider|East Village|Manhattan|German|Eat|$25 pp|liter steins
+Superiority Burger|East Village|Manhattan|Vegetarian|Eat|$18 pp|old Odessa diner space
+Kafana|East Village|Manhattan|Serbian|Eat|$30 pp|cevapi
+Cha An|East Village|Manhattan|Tea House|Coffee & Sweets|$18 pp|second floor, matcha
+Esperanto|Alphabet City|Manhattan|Brazilian|Eat|$28 pp|live samba weekends
+Villa Mosconi|Greenwich Village|Manhattan|Italian|Eat|$45 pp|old-school red sauce
+Bar Pitti|West Village|Manhattan|Italian|Eat|$45 pp|cash only, sidewalk tables
+Malatesta Trattoria|West Village|Manhattan|Italian|Eat|$30 pp|cash only
+Tea & Sympathy|West Village|Manhattan|British|Eat|$25 pp|shepherd's pie
+Mary's Fish Camp|West Village|Manhattan|Seafood|Eat|$45 pp|lobster roll, no reservations
+Anton's|West Village|Manhattan|American|Eat|$50 pp|burger, dark room
+Emilio's Ballato|Nolita|Manhattan|Italian|Eat|$50 pp|knock and wait
+Rubirosa|Nolita|Manhattan|Pizza|Eat|$26 pizza|vodka slice, thin crust
+Nha Trang One|Chinatown|Manhattan|Vietnamese|Eat|$15 pp|bun cha gio
+Thai Diner|Nolita|Manhattan|Thai|Eat|$28 pp|opens early, roti
+Le Sia|Lower East Side|Manhattan|Seafood|Eat|$40 pp|crawfish boil, late
+Milano's|Nolita|Manhattan|Dive Bar|Drink|$7 drinks|narrow, jukebox
+Blue & Gold Tavern|East Village|Manhattan|Dive Bar|Drink|$6 drinks|cheap pours
+Sophie's|East Village|Manhattan|Dive Bar|Drink|$6 drinks|cash only, jukebox
+Mona's|East Village|Manhattan|Dive Bar|Drink|$7 drinks|Monday jazz jam, late
+International Bar|East Village|Manhattan|Dive Bar|Drink|$7 drinks|narrow, back garden
+Doc Holliday's|East Village|Manhattan|Dive Bar|Drink|$6 drinks|honky tonk
+Lucy's|East Village|Manhattan|Dive Bar|Drink|$6 drinks|cash only
+Fanelli Cafe|SoHo|Manhattan|Bar|Drink|$10 drinks|1847, tin ceiling
+Ear Inn|Hudson Square|Manhattan|Dive Bar|Drink|$9 drinks|1817 building
+Botanica Bar|Nolita|Manhattan|Dive Bar|Drink|$8 drinks|basement, no sign
+Tom & Jerry's|NoHo|Manhattan|Bar|Drink|$9 drinks|wide bar, low key
+124 Old Rabbit Club|Greenwich Village|Manhattan|Beer Bar|Drink|$10 beers|unmarked door
+Attaboy|Lower East Side|Manhattan|Cocktail Bar|Drink|$20 drinks|no menu, ring the bell
+Mr. Fong's|Two Bridges|Manhattan|Cocktail Bar|Drink|$16 drinks|small, open late
+Bar Goto|Lower East Side|Manhattan|Cocktail Bar|Drink|$18 drinks|sake cocktails, okonomiyaki
+Sake Bar Decibel|East Village|Manhattan|Sake Bar|Drink|$12 pours|basement, graffiti walls
+Aria Wine Bar|West Village|Manhattan|Wine Bar|Drink|$14 glasses|cash only
+Clandestino|Two Bridges|Manhattan|Bar|Drink|$10 drinks|back room DJs
+Veniero's|East Village|Manhattan|Italian Pastry|Coffee & Sweets|$6 pastry|since 1894, cannoli
+Caffe Reggio|Greenwich Village|Manhattan|Coffee|Coffee & Sweets|$6 coffee|1902 espresso machine
+Kossar's Bagels & Bialys|Lower East Side|Manhattan|Bagels|Eat|$3 bialys|bialys, not bagels
+Economy Candy|Lower East Side|Manhattan|Candy|Coffee & Sweets|Varies|since 1937
+Abraco|East Village|Manhattan|Coffee|Coffee & Sweets|$5 coffee|olive oil cake
+Deluxe Food Market|Chinatown|Manhattan|Grocery Store|Groceries|Varies|go-to for Chinese, hot counter
+Sunrise Mart|East Village|Manhattan|Grocery Store|Groceries|Varies|go-to for Japanese, 2nd floor
+Anthology Film Archives|East Village|Manhattan|Movie Theater|Music & Film|$12 screenings|avant-garde, 16mm
+Metrograph|Lower East Side|Manhattan|Movie Theater|Music & Film|$17 screenings|35mm, bar upstairs
+Nublu|Alphabet City|Manhattan|Music Venue|Music & Film|$15 cover|late sets
+A1 Record Shop|East Village|Manhattan|Record Store|Music & Film|Varies|soul and jazz bins
+Generation Records|Greenwich Village|Manhattan|Record Store|Music & Film|Varies|punk and metal, basement
+Dashwood Books|NoHo|Manhattan|Bookstore|Shopping|Varies|photo books, basement
+Russian & Turkish Baths|East Village|Manhattan|Bathhouse|Activities|$60 entry|platza, check co-ed hours
 Karczma|Greenpoint|Brooklyn|Polish|Eat|$18 pp|pierogi platter
 Retro Polish Restaurant|Greenpoint|Brooklyn|Polish|Eat|$15 pp|placki ziemniaczane
 Gottlieb's Restaurant|Williamsburg|Brooklyn|Kosher Deli|Eat|$20 pp|kugel
