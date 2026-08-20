@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<title>New York — a personal list</title>
+<meta name="description" content="A hand-kept list of places in Seattle. Personal notes only, no reviews.">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='42' fill='%23C1442E'/></svg>">
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.9.0/mapbox-gl.css" rel="stylesheet">
+<style>
+:root{
+  --eat:#C1442E; --drink:#2E6E8E; --sweets:#8A5A2B; --music:#6B4E9E;
+  --shop:#1F7A5A; --groc:#8F6310; --act:#A03C6E;
+  --ink:#16181A; --ink2:#4A4F55; --ink3:#767C84;
+  --line:#E4E6E9; --line2:#EFF0F2; --bg:#fff; --chip:#fff;
+  --radius:14px;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --header-h:132px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%}
+body{font-family:var(--sans);color:var(--ink);background:var(--bg);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+a{color:inherit}
+
+/* ---------- header ---------- */
+header{position:fixed;top:0;left:0;right:0;z-index:40;background:rgba(255,255,255,.92);
+  backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);
+  border-bottom:1px solid var(--line)}
+.hrow{display:flex;align-items:center;gap:18px;padding:14px 24px 12px;max-width:2000px;margin:0 auto}
+.brand{display:flex;flex-direction:column;line-height:1.15;flex-shrink:0}
+.brand b{font-size:17px;font-weight:650;letter-spacing:-.02em}
+.brand span{font-size:11.5px;color:var(--ink3);letter-spacing:.02em}
+.searchwrap{flex:1;display:flex;justify-content:center;min-width:0}
+.search{display:flex;align-items:center;gap:9px;width:100%;max-width:420px;
+  border:1px solid var(--line);border-radius:999px;padding:9px 16px;background:#fff;
+  box-shadow:0 1px 2px rgba(0,0,0,.04);transition:box-shadow .18s,border-color .18s}
+.search:focus-within{box-shadow:0 2px 10px rgba(0,0,0,.09);border-color:#CFD3D8}
+.search svg{flex-shrink:0;color:var(--ink3)}
+.search input{border:0;outline:0;font-size:14px;width:100%;background:transparent;color:var(--ink)}
+.search input::placeholder{color:var(--ink3)}
+.hood{flex-shrink:0;position:relative}
+.hood select{appearance:none;-webkit-appearance:none;border:1px solid var(--line);background:#fff;
+  border-radius:999px;padding:9px 34px 9px 16px;font-size:13.5px;outline:0;cursor:pointer;
+  max-width:210px;text-overflow:ellipsis;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.hood::after{content:"";position:absolute;right:14px;top:50%;width:7px;height:7px;pointer-events:none;
+  border-right:1.6px solid var(--ink2);border-bottom:1.6px solid var(--ink2);
+  transform:translateY(-70%) rotate(45deg)}
+
+.pills{display:flex;gap:8px;padding:0 24px 13px;overflow-x:auto;scrollbar-width:none;max-width:2000px;margin:0 auto}
+.pills::-webkit-scrollbar{display:none}
+.pill{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;flex-shrink:0;
+  border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:13.5px;
+  background:var(--chip);color:var(--ink2);transition:all .16s;font-weight:450}
+.pill:hover{border-color:#C9CDD2;background:#FAFAFB}
+.pill .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.pill.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:500}
+.pill.on .dot{box-shadow:0 0 0 1.5px rgba(255,255,255,.55)}
+.pill .n{font-size:11.5px;opacity:.6;font-variant-numeric:tabular-nums}
+
+/* ---------- layout ---------- */
+main{position:fixed;top:var(--header-h);left:0;right:0;bottom:0;display:flex}
+#listpane{width:44%;max-width:760px;min-width:360px;overflow-y:auto;overscroll-behavior:contain;
+  border-right:1px solid var(--line);scroll-behavior:smooth}
+#mappane{flex:1;position:relative;background:#EAEAEA}
+#map{position:absolute;inset:0}
+
+.listhead{padding:20px 26px 10px;display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.listhead h1{font-size:20px;margin:0;font-weight:640;letter-spacing:-.025em}
+.listhead .sub{font-size:13px;color:var(--ink3);margin-top:3px}
+.moveto{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink2);cursor:pointer;
+  flex-shrink:0;user-select:none}
+.moveto input{accent-color:var(--ink);width:15px;height:15px;cursor:pointer}
+
+.cards{padding:6px 16px 60px;display:flex;flex-direction:column}
+.card{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;padding:15px 12px;
+  border-radius:var(--radius);cursor:pointer;transition:background .15s;position:relative;text-align:left;width:100%}
+.card+.card{box-shadow:inset 0 1px 0 var(--line2)}
+.card:hover,.card.hot{background:#F7F7F8}
+.card.sel{background:#F2F3F4}
+.tile{width:52px;height:52px;border-radius:12px;display:grid;place-items:center;flex-shrink:0;
+  color:#fff;position:relative;overflow:hidden}
+.tile svg{width:24px;height:24px}
+.card h3{margin:0;font-size:15.5px;font-weight:590;letter-spacing:-.012em;line-height:1.3}
+.meta{font-size:13px;color:var(--ink3);margin-top:3px;line-height:1.45}
+.note{font-size:13.5px;color:var(--ink2);margin-top:7px;line-height:1.5}
+.price{font-size:13.5px;margin-top:7px;font-weight:520}
+.tag{display:inline-block;font-size:11px;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--ink3);border:1px solid var(--line);border-radius:5px;padding:2px 6px;margin-top:8px}
+.empty{padding:60px 26px;color:var(--ink3);font-size:14px;text-align:center;line-height:1.6}
+.empty b{display:block;color:var(--ink);font-size:15px;margin-bottom:6px;font-weight:560}
+
+/* ---------- markers ---------- */
+.mk{cursor:pointer;will-change:transform}
+.mk .dot{width:13px;height:13px;border-radius:50%;border:2.5px solid #fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.32);transition:transform .16s}
+.mk .lab{display:none;align-items:center;gap:6px;background:#fff;border-radius:999px;
+  padding:5px 11px 5px 8px;box-shadow:0 2px 7px rgba(0,0,0,.18);white-space:nowrap;
+  font-size:12.5px;font-weight:540;letter-spacing:-.008em;max-width:200px;transition:transform .16s}
+.mk .lab i{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.mk .lab span{overflow:hidden;text-overflow:ellipsis}
+.mk .lab em{font-style:normal;font-weight:420;color:var(--ink3);font-size:11.5px}
+body.zlab .mk .dot{display:none}
+body.zlab .mk .lab{display:inline-flex}
+.mk.clash .lab{display:none}
+body.zlab .mk.clash .dot{display:block;width:9px;height:9px;border-width:2px;opacity:.75}
+body.zlab .mk.clash.sel .lab,body.zlab .mk.clash:hover .lab{display:inline-flex}
+body.zlab .mk.clash.sel .dot,body.zlab .mk.clash:hover .dot{display:none}
+.mk:hover{z-index:5}
+.mk:hover .dot{transform:scale(1.35)}
+.mk:hover .lab{transform:scale(1.06)}
+.mk.hot{z-index:6}
+.mk.hot .dot{transform:scale(1.45)}
+.mk.hot .lab{transform:scale(1.08);box-shadow:0 4px 14px rgba(0,0,0,.24)}
+.mk.sel{z-index:8}
+.mk.sel .dot{transform:scale(1.5)}
+.mk.sel .lab{background:var(--ink);color:#fff;transform:scale(1.1)}
+.mk.sel .lab em{color:rgba(255,255,255,.7)}
+.mk.dim{opacity:.28}
+
+/* ---------- detail sheet ---------- */
+#sheet{position:absolute;left:20px;bottom:20px;width:344px;max-width:calc(100% - 40px);
+  background:#fff;border-radius:18px;box-shadow:0 8px 34px rgba(0,0,0,.19);z-index:20;
+  opacity:0;transform:translateY(14px) scale(.98);pointer-events:none;transition:all .22s cubic-bezier(.2,.8,.3,1);
+  overflow:hidden}
+#sheet.on{opacity:1;transform:none;pointer-events:auto}
+.sh-top{height:66px;position:relative;display:flex;align-items:center;padding:0 18px;gap:13px}
+.sh-top .tile{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.22)}
+.sh-top .tile svg{width:20px;height:20px}
+.sh-top h2{margin:0;font-size:16.5px;font-weight:620;color:#fff;letter-spacing:-.02em;
+  text-shadow:0 1px 2px rgba(0,0,0,.18);line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sh-body{padding:15px 18px 18px}
+.sh-row{display:flex;gap:9px;font-size:13.5px;color:var(--ink2);line-height:1.5;margin-bottom:9px}
+.sh-row:last-child{margin-bottom:0}
+.sh-row svg{flex-shrink:0;margin-top:2px;color:var(--ink3)}
+.sh-note{background:#F7F7F8;border-radius:11px;padding:12px 13px;font-size:13.5px;
+  line-height:1.55;color:var(--ink);margin-top:12px}
+.sh-note b{display:block;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:5px;font-weight:600}
+#shclose{position:absolute;top:11px;right:11px;width:26px;height:26px;border-radius:50%;
+  background:rgba(255,255,255,.9);display:grid;place-items:center;color:#333;font-size:15px;line-height:1}
+#shclose:hover{background:#fff}
+
+/* ---------- map ui ---------- */
+.mapbtns{position:absolute;top:16px;right:16px;z-index:15;display:flex;flex-direction:column;gap:8px}
+.mbtn{width:38px;height:38px;border-radius:10px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.16);
+  display:grid;place-items:center;color:var(--ink);transition:background .15s}
+.mbtn:hover{background:#F6F6F7}
+.hint{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:14;
+  background:rgba(22,24,26,.9);color:#fff;font-size:12.5px;padding:8px 15px;border-radius:999px;
+  box-shadow:0 3px 12px rgba(0,0,0,.24);pointer-events:none;transition:opacity .4s;white-space:nowrap}
+.hint.off{opacity:0}
+.mapboxgl-ctrl-logo,.mapboxgl-ctrl-attrib{font-size:10px}
+
+/* ---------- mobile ---------- */
+#mobtog{display:none}
+@media (max-width:900px){
+  :root{--header-h:112px}
+  .hrow{padding:11px 15px 9px;gap:11px}
+  .brand span{display:none}
+  .pills{padding:0 15px 11px}
+  .pills .hood select{border-radius:999px;padding:7px 30px 7px 14px;font-size:13px;max-width:158px}
+  main{display:block}
+  #listpane{width:100%;max-width:none;min-width:0;height:100%;border:0}
+  #mappane{position:absolute;inset:0;z-index:5;visibility:hidden}
+  body.mapview #listpane{visibility:hidden}
+  body.mapview #mappane{visibility:visible}
+  #sheet{left:12px;right:12px;bottom:12px;width:auto;max-width:none}
+  #mobtog{display:flex;align-items:center;gap:8px;position:fixed;bottom:22px;left:50%;
+    transform:translateX(-50%);z-index:60;background:var(--ink);color:#fff;border-radius:999px;
+    padding:12px 20px;font-size:14px;font-weight:520;box-shadow:0 5px 18px rgba(0,0,0,.3)}
+  .listhead{padding:16px 18px 8px;flex-wrap:wrap}
+  .cards{padding:4px 8px 90px}
+  .hint{bottom:76px}
+  .mapbtns{top:12px;right:12px}
+}
+@media (max-width:900px) and (orientation:landscape){ :root{--header-h:104px} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hrow">
+    <div class="brand"><b>New York</b><span><a href="/">&larr; Seattle</a></span></div>
+    <div class="searchwrap">
+      <label class="search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Search places, food, notes…" autocomplete="off" spellcheck="false">
+      </label>
+    </div>
+    <div class="hood"><select id="hood"></select></div>
+  </div>
+  <div class="pills" id="pills"></div>
+</header>
+
+<main>
+  <section id="listpane">
+    <div class="listhead">
+      <div>
+        <h1 id="count">—</h1>
+        <div class="sub" id="sub">across the five boroughs</div>
+      </div>
+      <label class="moveto"><input type="checkbox" id="movesearch"> search this area</label>
+    </div>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <section id="mappane">
+    <div id="map"></div>
+    <div class="mapbtns">
+      <button class="mbtn" id="reset" title="Reset view" aria-label="Reset view">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+      </button>
+    </div>
+    <div class="hint" id="hint">Zoom in to see names and notes</div>
+    <div id="sheet">
+      <div class="sh-top" id="shtop">
+        <div class="tile" id="shicon"></div>
+        <h2 id="shname"></h2>
+        <button id="shclose" aria-label="Close">&times;</button>
+      </div>
+      <div class="sh-body">
+        <div class="sh-row" id="shmeta"></div>
+        <div class="sh-row" id="shaddr"></div>
+        <div class="sh-row" id="shprice"></div>
+        <div class="sh-note" id="shnote"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<button id="mobtog">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3z"/><path d="M9 3v15M15 6v15"/></svg>
+  <span id="mobtxt">Map</span>
+</button>
+
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.9.0/mapbox-gl.js"></script>
+<script>
+const MAPBOX_TOKEN = "pk.eyJ1IjoiZWxyb2hpbiIsImEiOiJjbXQwaTBjYm0wNGo3Mnlwdno3bmR5Zm1hIn0.P8B9rpnYn0Xc6V3via-6wg";
+const PLACES = [{"name":"Jimmy's Corner","neighborhood":"Midtown, Manhattan","type":"Dive Bar","bucket":"Drink","lon":-73.98477,"lat":40.75667,"price":"$7 drinks","notes":"boxing photos, narrow","address":"140 W 44th St, New York, NY"},{"name":"Rudy's Bar & Grill","neighborhood":"Hell's Kitchen, Manhattan","type":"Dive Bar","bucket":"Drink","lon":-73.99179,"lat":40.76003,"price":"$6 drinks","notes":"free hot dogs","address":"627 9th Ave, New York, NY"},{"name":"Smith's Bar","neighborhood":"Hell's Kitchen, Manhattan","type":"Dive Bar","bucket":"Drink","lon":-73.98239,"lat":40.73923,"price":"$9 drinks","notes":"old neon sign","address":"200 E 24th St Ste 101, New York, NY"},{"name":"Subway Inn","neighborhood":"Midtown East, Manhattan","type":"Dive Bar","bucket":"Drink","lon":-73.99454,"lat":40.76412,"price":"$8 drinks","notes":"same red booths","address":"538 W 48th St, New York, NY"},{"name":"P.J. Clarke's","neighborhood":"Midtown East, Manhattan","type":"Bar","bucket":"Drink","lon":-73.96827,"lat":40.75901,"price":"$12 drinks","notes":"1884 saloon, burger","address":"915 3rd Ave, New York, NY"},{"name":"The Ginger Man","neighborhood":"Murray Hill, Manhattan","type":"Beer Bar","bucket":"Drink","lon":-73.98286,"lat":40.74936,"price":"$10 beers","notes":"70 taps","address":"11 E 36th St, New York, NY"},{"name":"Totto Ramen","neighborhood":"Hell's Kitchen, Manhattan","type":"Ramen","bucket":"Eat","lon":-73.98688,"lat":40.76163,"price":"$18 pp","notes":"paitan, small counter","address":"811 8th Ave, New York, NY"},{"name":"Pure Thai Cookhouse","neighborhood":"Hell's Kitchen, Manhattan","type":"Thai","bucket":"Eat","lon":-73.9882,"lat":40.76429,"price":"$22 pp","notes":"ratchaburi noodles","address":"766 9th Ave, New York, NY"},{"name":"Empanada Mama","neighborhood":"Hell's Kitchen, Manhattan","type":"Colombian","bucket":"Eat","lon":-73.98854,"lat":40.76444,"price":"$15 pp","notes":"open late","address":"765 9th Ave, New York, NY"},{"name":"Szechuan Gourmet","neighborhood":"Midtown West, Manhattan","type":"Sichuan","bucket":"Eat","lon":-73.98356,"lat":40.75235,"price":"$28 pp","notes":"cumin lamb","address":"21 W 39th St, New York, NY"},{"name":"Keens Steakhouse","neighborhood":"Midtown, Manhattan","type":"Steakhouse","bucket":"Eat","lon":-73.98648,"lat":40.75075,"price":"$120 pp","notes":"mutton chop, pipe ceiling","address":"72 W 36th St., New York, NY"},{"name":"Hangawi","neighborhood":"Murray Hill, Manhattan","type":"Korean Vegetarian","bucket":"Eat","lon":-73.98482,"lat":40.74654,"price":"$50 pp","notes":"shoes off","address":"12 E 32nd St, New York, NY"},{"name":"Her Name is Han","neighborhood":"Murray Hill, Manhattan","type":"Korean","bucket":"Eat","lon":-73.98475,"lat":40.74614,"price":"$35 pp","notes":"banchan, no reservations","address":"17 E 31st St, New York, NY"},{"name":"Woorijip","neighborhood":"Koreatown, Manhattan","type":"Korean","bucket":"Eat","lon":-73.98652,"lat":40.74735,"price":"$12 pp","notes":"steam table, cheap","address":"12 W 32nd St, New York, NY"},{"name":"Charles Pan-Fried Chicken","neighborhood":"Harlem, Manhattan","type":"Fried Chicken","bucket":"Eat","lon":-73.9552,"lat":40.81257,"price":"$20 pp","notes":"pan-fried to order","address":"439 W 125th St, New York, NY"},{"name":"Melba's","neighborhood":"Harlem, Manhattan","type":"Southern","bucket":"Eat","lon":-73.95663,"lat":40.80311,"price":"$30 pp","notes":"chicken and waffles","address":"300 W 114th St, New York, NY"},{"name":"Amy Ruth's","neighborhood":"Harlem, Manhattan","type":"Southern","bucket":"Eat","lon":-73.9502,"lat":40.8026,"price":"$25 pp","notes":"waffles named after people","address":"113 W 116th St, New York, NY"},{"name":"Ponty Bistro","neighborhood":"Harlem, Manhattan","type":"Senegalese","bucket":"Eat","lon":-73.94158,"lat":40.8176,"price":"$30 pp","notes":"thiebou djen","address":"2375 Adam Clayton Powell Jr Blvd, New York, NY"},{"name":"Le Baobab","neighborhood":"Harlem, Manhattan","type":"Senegalese","bucket":"Eat","lon":-73.95109,"lat":40.80234,"price":"$18 pp","notes":"cash only","address":"120 W 116th St, New York, NY"},{"name":"Patisserie des Ambassades","neighborhood":"Harlem, Manhattan","type":"Senegalese Bakery","bucket":"Coffee & Sweets","lon":-73.95418,"lat":40.80613,"price":"$12 pp","notes":"beignets, open late","address":"2200 Frederick Douglass Blvd, New York, NY"},{"name":"Patsy's Pizzeria","neighborhood":"East Harlem, Manhattan","type":"Pizza","bucket":"Eat","lon":-73.93488,"lat":40.79715,"price":"$4 slices","notes":"coal oven, the original","address":"2287 1st Ave, New York, NY"},{"name":"Malecon","neighborhood":"Washington Heights, Manhattan","type":"Dominican","bucket":"Eat","lon":-73.93862,"lat":40.8464,"price":"$18 pp","notes":"rotisserie chicken, garlic sauce","address":"4141 Broadway, New York, NY"},{"name":"La Casa Del Mofongo","neighborhood":"Washington Heights, Manhattan","type":"Dominican","bucket":"Eat","lon":-73.93328,"lat":40.85116,"price":"$25 pp","notes":"three floors, late","address":"1447 St Nicholas Ave, New York, NY"},{"name":"Mamajuana Cafe","neighborhood":"Inwood, Manhattan","type":"Dominican","bucket":"Eat","lon":-73.92803,"lat":40.86649,"price":"$30 pp","notes":"live music weekends","address":"247 Dyckman St, New York, NY"},{"name":"Absolute Bagels","neighborhood":"Upper West Side, Manhattan","type":"Bagels","bucket":"Eat","lon":-73.96742,"lat":40.80251,"price":"$3 bagels","notes":"cash only, still warm","address":"2788 Broadway, New York, NY"},{"name":"Barney Greengrass","neighborhood":"Upper West Side, Manhattan","type":"Jewish Deli","bucket":"Eat","lon":-73.97457,"lat":40.78796,"price":"$30 pp","notes":"sturgeon, cash only","address":"541 Amsterdam Ave, New York, NY"},{"name":"Gray's Papaya","neighborhood":"Upper West Side, Manhattan","type":"Hot Dogs","bucket":"Eat","lon":-73.98157,"lat":40.77839,"price":"$5 pp","notes":"recession special","address":"2090 Broadway, New York, NY"},{"name":"Jin Ramen","neighborhood":"Morningside Heights, Manhattan","type":"Ramen","bucket":"Eat","lon":-73.95852,"lat":40.81541,"price":"$18 pp","notes":"small room","address":"3183 Broadway, New York, NY"},{"name":"Massawa","neighborhood":"Morningside Heights, Manhattan","type":"Eritrean","bucket":"Eat","lon":-73.95863,"lat":40.80981,"price":"$25 pp","notes":"injera platters","address":"1239 Amsterdam Ave, New York, NY"},{"name":"Hungarian Pastry Shop","neighborhood":"Morningside Heights, Manhattan","type":"Pastries","bucket":"Coffee & Sweets","lon":-73.96369,"lat":40.80358,"price":"$5 pastry","notes":"no wifi, cash only","address":"1030 Amsterdam Ave, New York, NY"},{"name":"Heidelberg Restaurant","neighborhood":"Upper East Side, Manhattan","type":"German","bucket":"Eat","lon":-73.95173,"lat":40.77744,"price":"$35 pp","notes":"schnitzel, boot of beer","address":"1648 2nd Ave, New York, NY"},{"name":"J.G. Melon","neighborhood":"Upper East Side, Manhattan","type":"Burgers","bucket":"Eat","lon":-73.95941,"lat":40.77111,"price":"$22 burger","notes":"cash only","address":"1291 3rd Ave, New York, NY"},{"name":"Schaller & Weber","neighborhood":"Upper East Side, Manhattan","type":"Grocery Store","bucket":"Groceries","lon":-73.95202,"lat":40.77756,"price":"Varies","notes":"go-to for German sausage","address":"1654 2nd Ave #1, New York, NY"},{"name":"Zabar's","neighborhood":"Upper West Side, Manhattan","type":"Grocery Store","bucket":"Groceries","lon":-73.97577,"lat":40.75225,"price":"Varies","notes":"go-to for smoked fish","address":"89 E 42nd St, New York, NY"},{"name":"Paris Theater","neighborhood":"Midtown, Manhattan","type":"Movie Theater","bucket":"Music & Film","lon":-73.97425,"lat":40.76383,"price":"$18 screenings","notes":"single screen, 1948","address":"4 W 58th St, New York, NY"},{"name":"Minton's Playhouse","neighborhood":"Harlem, Manhattan","type":"Music Venue","bucket":"Music & Film","lon":-73.95261,"lat":40.81141,"price":"$20 cover","notes":"jazz, historic room","address":"321 St Nicholas Ave, New York, NY"},{"name":"Shrine World Music","neighborhood":"Harlem, Manhattan","type":"Music Venue","bucket":"Music & Film","lon":-73.94424,"lat":40.8144,"price":"$10 cover","notes":"free early sets","address":"2271 Adam Clayton Powell Jr Blvd, New York, NY"},{"name":"Westsider Records","neighborhood":"Upper West Side, Manhattan","type":"Record Store","bucket":"Music & Film","lon":-73.98276,"lat":40.77925,"price":"Varies","notes":"cramped, classical and jazz","address":"233 W 72nd St, New York, NY"},{"name":"Argosy Book Store","neighborhood":"Midtown East, Manhattan","type":"Bookstore","bucket":"Shopping","lon":-73.96787,"lat":40.76297,"price":"Varies","notes":"rare books, since 1925","address":"116 E 59th St, New York, NY"},{"name":"Inwood Hill Park","neighborhood":"Inwood, Manhattan","type":"Park","bucket":"Activities","lon":-73.92477,"lat":40.87218,"price":"Free","notes":"last old-growth forest","address":"Payson Ave. &, New York, NY"},{"name":"Tanoreen","neighborhood":"Bay Ridge, Brooklyn","type":"Palestinian","bucket":"Eat","lon":-74.02779,"lat":40.63079,"price":"$35 pp","notes":"musakhan","address":"7523 3rd Ave, Brooklyn, NY"},{"name":"Ayat","neighborhood":"Bay Ridge, Brooklyn","type":"Palestinian","bucket":"Eat","lon":-74.03094,"lat":40.62422,"price":"$30 pp","notes":"lamb, open late","address":"8504 3rd Avenue, Brooklyn, NY"},{"name":"Yemen Cafe","neighborhood":"Bay Ridge, Brooklyn","type":"Yemeni","bucket":"Eat","lon":-74.02192,"lat":40.63046,"price":"$20 pp","notes":"lamb haneeth","address":"7317 5th Ave, Brooklyn, NY"},{"name":"Karam","neighborhood":"Bay Ridge, Brooklyn","type":"Lebanese","bucket":"Eat","lon":-73.99652,"lat":40.63882,"price":"$15 pp","notes":"shawarma, cash only","address":"4719 Fort Hamilton Pkwy, Brooklyn, NY"},{"name":"Nablus Sweets","neighborhood":"Bay Ridge, Brooklyn","type":"Middle Eastern Sweets","bucket":"Coffee & Sweets","lon":-74.021,"lat":40.63391,"price":"$8 pp","notes":"knafeh","address":"6812 5th Ave, Brooklyn, NY"},{"name":"Paneantico Bakery","neighborhood":"Bay Ridge, Brooklyn","type":"Italian Bakery","bucket":"Coffee & Sweets","lon":-74.03287,"lat":40.61948,"price":"$12 sandwich","notes":"prosciutto bread","address":"9124 3rd Ave, Brooklyn, NY"},{"name":"L&B Spumoni Gardens","neighborhood":"Gravesend, Brooklyn","type":"Pizza","bucket":"Eat","lon":-73.9814,"lat":40.59489,"price":"$4 slices","notes":"Sicilian square, spumoni","address":"2725 86th St, Brooklyn, NY"},{"name":"J&V Pizzeria","neighborhood":"Bensonhurst, Brooklyn","type":"Pizza","bucket":"Eat","lon":-73.98967,"lat":40.61994,"price":"$4 slices","notes":"old-school square","address":"6322 18th Ave, Brooklyn, NY"},{"name":"Villabate Alba","neighborhood":"Bensonhurst, Brooklyn","type":"Italian Bakery","bucket":"Coffee & Sweets","lon":-73.99293,"lat":40.61604,"price":"$6 pastry","notes":"cannoli, marzipan fruit","address":"7001 18th Ave, Brooklyn, NY"},{"name":"Royal Crown Bakery","neighborhood":"Bensonhurst, Brooklyn","type":"Italian Bakery","bucket":"Coffee & Sweets","lon":-73.99842,"lat":40.62563,"price":"$8 loaf","notes":"lard bread","address":"6308 14th Ave, Brooklyn, NY"},{"name":"Cafe Kashkar","neighborhood":"Brighton Beach, Brooklyn","type":"Uyghur","bucket":"Eat","lon":-73.95551,"lat":40.57776,"price":"$20 pp","notes":"lagman, samsa","address":"1141 Brighton Beach Avenue, Brooklyn, NY"},{"name":"Skovorodka","neighborhood":"Brighton Beach, Brooklyn","type":"Russian","bucket":"Eat","lon":-73.96098,"lat":40.57794,"price":"$25 pp","notes":"pelmeni","address":"615 Brighton Beach Ave, Brooklyn, NY"},{"name":"Tashkent Supermarket","neighborhood":"Brighton Beach, Brooklyn","type":"Grocery Store","bucket":"Groceries","lon":-73.96012,"lat":40.57806,"price":"Varies","notes":"go-to for Central Asian, hot bar","address":"713 Brighton Beach Ave, Brooklyn, NY"},{"name":"Brighton Bazaar","neighborhood":"Brighton Beach, Brooklyn","type":"Grocery Store","bucket":"Groceries","lon":-73.96514,"lat":40.57526,"price":"Varies","notes":"smoked fish, salad counter","address":"Brighton 2nd St. &, Brooklyn, NY"},{"name":"Randazzo's Clam Bar","neighborhood":"Sheepshead Bay, Brooklyn","type":"Seafood","bucket":"Eat","lon":-73.94762,"lat":40.58391,"price":"$30 pp","notes":"hot sauce, fried clams","address":"2017 Emmons Ave, Brooklyn, NY"},{"name":"Roll-N-Roaster","neighborhood":"Sheepshead Bay, Brooklyn","type":"Sandwiches","bucket":"Eat","lon":-73.93965,"lat":40.58409,"price":"$12 pp","notes":"cheese on anything","address":"2901 Emmons Ave, Brooklyn, NY"},{"name":"Tone Cafe","neighborhood":"Sheepshead Bay, Brooklyn","type":"Georgian","bucket":"Eat","lon":-73.96329,"lat":40.58139,"price":"$20 pp","notes":"khachapuri from the tone oven","address":"265 Neptune Ave, Brooklyn, NY"},{"name":"Nargis Cafe","neighborhood":"Sheepshead Bay, Brooklyn","type":"Uzbek","bucket":"Eat","lon":-73.95188,"lat":40.58651,"price":"$25 pp","notes":"lamb samsa","address":"1655 Sheepshead Bay Rd, Brooklyn, NY"},{"name":"Taci's Beyti","neighborhood":"Sheepshead Bay, Brooklyn","type":"Turkish","bucket":"Eat","lon":-73.96187,"lat":40.6092,"price":"$30 pp","notes":"lamb adana","address":"1953-1955 Coney Island Ave, Brooklyn, NY"},{"name":"Liman Restaurant","neighborhood":"Sheepshead Bay, Brooklyn","type":"Turkish Seafood","bucket":"Eat","lon":-73.97732,"lat":40.57556,"price":"$40 pp","notes":"whole grilled fish","address":"825 Surf Ave 2nd Floor, Brooklyn, NY"},{"name":"Farrell's Bar & Grill","neighborhood":"Windsor Terrace, Brooklyn","type":"Dive Bar","bucket":"Drink","lon":-73.9802,"lat":40.66019,"price":"$6 drinks","notes":"beer in styrofoam","address":"215 Prospect Park W, Brooklyn, NY"},{"name":"Buckley's","neighborhood":"Marine Park, Brooklyn","type":"Bar","bucket":"Drink","lon":-73.94308,"lat":40.60492,"price":"$8 drinks","notes":"neighborhood Irish","address":"2926 Ave. S, Brooklyn, NY"},{"name":"Mimi's Hummus","neighborhood":"Ditmas Park, Brooklyn","type":"Israeli","bucket":"Eat","lon":-73.96674,"lat":40.64032,"price":"$18 pp","notes":"hummus with beef","address":"1035 Cortelyou Rd, Brooklyn, NY"},{"name":"The Farm on Adderley","neighborhood":"Ditmas Park, Brooklyn","type":"New American","bucket":"Eat","lon":-73.98079,"lat":40.66815,"price":"$35 pp","notes":"backyard","address":"294 7th Ave, Brooklyn, NY"},{"name":"Sycamore Bar & Flowershop","neighborhood":"Ditmas Park, Brooklyn","type":"Bar","bucket":"Drink","lon":-73.96722,"lat":40.63972,"price":"$9 drinks","notes":"flower shop in front, backyard","address":"1118 Cortelyou Rd, Brooklyn, NY"},{"name":"Gloria's Caribbean","neighborhood":"Crown Heights, Brooklyn","type":"Trinidadian","bucket":"Eat","lon":-73.95048,"lat":40.67242,"price":"$12 pp","notes":"doubles, oxtail","address":"764 Nostrand Avenue, Brooklyn, NY"},{"name":"Zaytoons","neighborhood":"Boerum Hill, Brooklyn","type":"Middle Eastern","bucket":"Eat","lon":-73.96872,"lat":40.67871,"price":"$18 pp","notes":"taboon bread","address":"594 Vanderbilt Ave, Brooklyn, NY"},{"name":"Sahadi's","neighborhood":"Brooklyn Heights, Brooklyn","type":"Grocery Store","bucket":"Groceries","lon":-73.99341,"lat":40.69013,"price":"Varies","notes":"go-to for Middle Eastern","address":"187 Atlantic Ave, Brooklyn, NY"},{"name":"Bagel Hole","neighborhood":"Park Slope, Brooklyn","type":"Bagels","bucket":"Eat","lon":-73.9835,"lat":40.66483,"price":"$2 bagels","notes":"small and dense","address":"400 7th Ave #6, Brooklyn, NY"},{"name":"Thanh Da","neighborhood":"Sunset Park, Brooklyn","type":"Vietnamese","bucket":"Eat","lon":-74.01213,"lat":40.6366,"price":"$12 pp","notes":"bun bo hue","address":"6008 7th Ave, Brooklyn, NY"},{"name":"East Harbor Seafood Palace","neighborhood":"Sunset Park, Brooklyn","type":"Dim Sum","bucket":"Eat","lon":-74.01433,"lat":40.63354,"price":"$25 pp","notes":"carts on weekends","address":"714 65th St, Brooklyn, NY"},{"name":"Xin Fa Bakery","neighborhood":"Sunset Park, Brooklyn","type":"Chinese Bakery","bucket":"Coffee & Sweets","lon":-74.00738,"lat":40.63725,"price":"$2 buns","notes":"cash only","address":"5617 8th Ave, Brooklyn, NY"},{"name":"Bahia","neighborhood":"Sunset Park, Brooklyn","type":"Salvadoran","bucket":"Eat","lon":-74.02378,"lat":40.62603,"price":"$12 pp","notes":"pupusas","address":"7913 5th Ave, Brooklyn, NY"},{"name":"Don Paco Lopez Panaderia","neighborhood":"Sunset Park, Brooklyn","type":"Mexican Bakery","bucket":"Coffee & Sweets","lon":-74.01072,"lat":40.64785,"price":"$2 pastries","notes":"conchas","address":"4703 4th Ave, Brooklyn, NY"},{"name":"Nitehawk Prospect Park","neighborhood":"Park Slope, Brooklyn","type":"Movie Theater","bucket":"Music & Film","lon":-73.96444,"lat":40.6657,"price":"$17 screenings","notes":"dine-in, repertory","address":"450 Flatbush Ave, Brooklyn, NY"},{"name":"Green-Wood Cemetery","neighborhood":"Greenwood Heights, Brooklyn","type":"Cemetery","bucket":"Activities","lon":-73.99468,"lat":40.65812,"price":"Free","notes":"catacomb tours, wild parrots","address":"25th St, Brooklyn, NY"},{"name":"Arthur Avenue Retail Market","neighborhood":"Belmont, Bronx","type":"Market","bucket":"Groceries","lon":-73.88846,"lat":40.8543,"price":"Varies","notes":"cigar roller inside","address":"2344 Arthur Ave, Bronx, NY"},{"name":"Mike's Deli","neighborhood":"Belmont, Bronx","type":"Italian Deli","bucket":"Eat","lon":-73.88825,"lat":40.85423,"price":"$15 sandwich","notes":"inside the market","address":"Retail Market, Bronx, NY"},{"name":"Casa Della Mozzarella","neighborhood":"Belmont, Bronx","type":"Italian Grocer","bucket":"Groceries","lon":-73.88741,"lat":40.85532,"price":"$12 pp","notes":"mozzarella still warm, go early","address":"604 E 187th St, Bronx, NY"},{"name":"Borgatti's Ravioli & Egg Noodles","neighborhood":"Belmont, Bronx","type":"Pasta","bucket":"Eat","lon":-73.88656,"lat":40.85492,"price":"$8 lb","notes":"cut to order, cash only","address":"632 E 187th St, Bronx, NY"},{"name":"Madonia Brothers Bakery","neighborhood":"Belmont, Bronx","type":"Italian Bakery","bucket":"Coffee & Sweets","lon":-73.88828,"lat":40.85434,"price":"$6 loaf","notes":"lard bread, since 1918","address":"2348 Arthur Ave, Bronx, NY"},{"name":"Egidio Pastry Shop","neighborhood":"Belmont, Bronx","type":"Italian Pastry","bucket":"Coffee & Sweets","lon":-73.88681,"lat":40.85503,"price":"$5 pastry","notes":"since 1912","address":"622 E 187th St, Bronx, NY"},{"name":"Zero Otto Nove","neighborhood":"Belmont, Bronx","type":"Italian","bucket":"Eat","lon":-73.88847,"lat":40.85477,"price":"$35 pp","notes":"wood oven","address":"2357 Arthur Ave, Bronx, NY"},{"name":"Roberto's","neighborhood":"Belmont, Bronx","type":"Italian","bucket":"Eat","lon":-73.88839,"lat":40.85371,"price":"$45 pp","notes":"no reservations","address":"603 Crescent Avenue, Bronx, NY"},{"name":"Tra Di Noi","neighborhood":"Belmont, Bronx","type":"Italian","bucket":"Eat","lon":-73.88682,"lat":40.85501,"price":"$40 pp","notes":"tiny room","address":"622 E 187th St, Bronx, NY"},{"name":"Estrellita Poblana III","neighborhood":"Belmont, Bronx","type":"Mexican","bucket":"Eat","lon":-73.86754,"lat":40.86708,"price":"$15 pp","notes":"cemitas","address":"2819 White Plains Rd, Bronx, NY"},{"name":"La Morada","neighborhood":"Mott Haven, Bronx","type":"Oaxacan","bucket":"Eat","lon":-73.92154,"lat":40.8106,"price":"$18 pp","notes":"mole, cash only","address":"308 Willis Ave, Bronx, NY"},{"name":"Charlie's Bar & Kitchen","neighborhood":"Mott Haven, Bronx","type":"Bar","bucket":"Drink","lon":-73.92939,"lat":40.8078,"price":"$12 drinks","notes":"big backyard","address":"112 Lincoln Ave, Bronx, NY"},{"name":"The Bronx Brewery","neighborhood":"Port Morris, Bronx","type":"Brewery","bucket":"Drink","lon":-73.91068,"lat":40.80193,"price":"$9 drinks","notes":"backyard taproom","address":"856 E 136th St, Bronx, NY"},{"name":"Gun Hill Brewing","neighborhood":"Baychester, Bronx","type":"Brewery","bucket":"Drink","lon":-73.83572,"lat":40.86513,"price":"$8 drinks","notes":"taproom","address":"1733 E Gun Hill Rd, Bronx, NY"},{"name":"Havana Cafe","neighborhood":"Throgs Neck, Bronx","type":"Cuban","bucket":"Eat","lon":-73.83437,"lat":40.83782,"price":"$30 pp","notes":"ropa vieja","address":"3151 E Tremont Ave, Bronx, NY"},{"name":"Louie & Ernie's Pizza","neighborhood":"Throgs Neck, Bronx","type":"Pizza","bucket":"Eat","lon":-73.82874,"lat":40.83833,"price":"$4 slices","notes":"sausage pie, cash only","address":"1300 Crosby Ave, Bronx, NY"},{"name":"Johnny's Reef","neighborhood":"City Island, Bronx","type":"Seafood","bucket":"Eat","lon":-73.78258,"lat":40.83761,"price":"$25 pp","notes":"fried, cash only, outdoor","address":"2 City Island Ave, Bronx, NY"},{"name":"City Island Lobster House","neighborhood":"City Island, Bronx","type":"Seafood","bucket":"Eat","lon":-73.79105,"lat":40.85675,"price":"$40 pp","notes":"on the water","address":"691 Bridge St, Bronx, NY"},{"name":"Seis Vecinos","neighborhood":"Melrose, Bronx","type":"Dominican","bucket":"Eat","lon":-73.90324,"lat":40.8152,"price":"$20 pp","notes":"neighborhood room","address":"640 Prospect Ave, Bronx, NY"},{"name":"El Nuevo Bohio","neighborhood":"Longwood, Bronx","type":"Puerto Rican","bucket":"Eat","lon":-73.91079,"lat":40.83069,"price":"$18 pp","notes":"lechon","address":"1155 Webster Ave, Bronx, NY"},{"name":"Papaye","neighborhood":"Concourse, Bronx","type":"Ghanaian","bucket":"Eat","lon":-73.91776,"lat":40.83256,"price":"$18 pp","notes":"waakye","address":"196 McClellan St, Bronx, NY"},{"name":"Kingsbridge Social Club","neighborhood":"Kingsbridge, Bronx","type":"Pizza","bucket":"Eat","lon":-73.902,"lat":40.88458,"price":"$22 pizza","notes":"backyard","address":"3625 Kingsbridge Ave, Bronx, NY"},{"name":"An Beal Bocht Cafe","neighborhood":"Riverdale, Bronx","type":"Irish Bar","bucket":"Drink","lon":-73.90495,"lat":40.88737,"price":"$8 drinks","notes":"trad sessions, poetry nights","address":"445 W 238th St, Bronx, NY"},{"name":"Liebman's Deli","neighborhood":"Riverdale, Bronx","type":"Jewish Deli","bucket":"Eat","lon":-73.91056,"lat":40.88565,"price":"$20 pp","notes":"pastrami, kosher","address":"552 West 235th Street, Bronx, NY"},{"name":"Lloyd's Carrot Cake","neighborhood":"Kingsbridge, Bronx","type":"Bakery","bucket":"Coffee & Sweets","lon":-73.89666,"lat":40.894,"price":"$5 slice","notes":"carrot cake only","address":"6087 Broadway, Bronx, NY"},{"name":"Bronx Documentary Center","neighborhood":"Mott Haven, Bronx","type":"Art Gallery","bucket":"Shopping","lon":-73.9186,"lat":40.818,"price":"Free","notes":"photojournalism shows","address":"614 Courtlandt Ave, Bronx, NY"},{"name":"Wave Hill","neighborhood":"Riverdale, Bronx","type":"Garden","bucket":"Activities","lon":-73.91138,"lat":40.89777,"price":"$10 entry","notes":"views over the Hudson","address":"4900 Independence Ave, Bronx, NY"},{"name":"New York Botanical Garden","neighborhood":"Bedford Park, Bronx","type":"Garden","bucket":"Activities","lon":-73.87752,"lat":40.8623,"price":"$18 entry","notes":"old-growth forest inside","address":"2900 Southern Blvd, Bronx, NY"},{"name":"Orchard Beach","neighborhood":"Pelham Bay, Bronx","type":"Beach","bucket":"Activities","lon":-73.79315,"lat":40.86623,"price":"Free","notes":"the Bronx Riviera","address":"Park Dr, Bronx, NY"},{"name":"Denino's Pizzeria","neighborhood":"Port Richmond, Staten Island","type":"Pizza","bucket":"Eat","lon":-74.14025,"lat":40.63021,"price":"$22 pizza","notes":"thin crust, no slices","address":"524 Port Richmond Ave, Staten Island, NY"},{"name":"Joe & Pat's","neighborhood":"Castleton Corners, Staten Island","type":"Pizza","bucket":"Eat","lon":-74.1221,"lat":40.61294,"price":"$22 pizza","notes":"vodka pie, cracker crust","address":"1758 Victory Blvd, Staten Island, NY"},{"name":"Lee's Tavern","neighborhood":"Dongan Hills, Staten Island","type":"Pizza","bucket":"Eat","lon":-74.09519,"lat":40.58875,"price":"$20 pizza","notes":"clam pie, cash only","address":"60 Hancock St, Staten Island, NY"},{"name":"Lakruwana","neighborhood":"Tompkinsville, Staten Island","type":"Sri Lankan","bucket":"Eat","lon":-74.07531,"lat":40.62575,"price":"$25 pp","notes":"weekend buffet","address":"668 Bay St, Staten Island, NY"},{"name":"New Asha","neighborhood":"Tompkinsville, Staten Island","type":"Sri Lankan","bucket":"Eat","lon":-74.08532,"lat":40.6342,"price":"$10 pp","notes":"counter, cash only","address":"322 Victory Blvd, Staten Island, NY"},{"name":"Dosa Garden","neighborhood":"Tompkinsville, Staten Island","type":"South Indian","bucket":"Eat","lon":-74.09481,"lat":40.64133,"price":"$18 pp","notes":"paper dosa","address":"143 Lafayette Ave, Staten Island, NY"},{"name":"Ralph's Famous Italian Ices","neighborhood":"Port Richmond, Staten Island","type":"Italian Ices","bucket":"Coffee & Sweets","lon":-74.13948,"lat":40.63034,"price":"$4 pp","notes":"seasonal, since 1928","address":"501 Port Richmond Ave, Staten Island, NY"},{"name":"Egger's Ice Cream Parlor","neighborhood":"West Brighton, Staten Island","type":"Ice Cream","bucket":"Coffee & Sweets","lon":-74.10425,"lat":40.64309,"price":"$6 pp","notes":"since 1932","address":"1000 Richmond Ter Cottage C, Staten Island, NY"},{"name":"Killmeyer's Old Bavaria Inn","neighborhood":"Charleston, Staten Island","type":"German","bucket":"Eat","lon":-74.23718,"lat":40.53848,"price":"$30 pp","notes":"beer garden","address":"4254 Arthur Kill Rd, Staten Island, NY"},{"name":"Flagship Brewing","neighborhood":"Tompkinsville, Staten Island","type":"Brewery","bucket":"Drink","lon":-74.07566,"lat":40.63719,"price":"$8 drinks","notes":"taproom","address":"40 Minthorne St, Staten Island, NY"},{"name":"Kills Boro Brewing","neighborhood":"Stapleton, Staten Island","type":"Brewery","bucket":"Drink","lon":-74.09946,"lat":40.64452,"price":"$8 drinks","notes":"taproom","address":"814 Richmond Ter, Staten Island, NY"},{"name":"St. George Theatre","neighborhood":"St. George, Staten Island","type":"Music Venue","bucket":"Music & Film","lon":-74.07756,"lat":40.64223,"price":"$40 shows","notes":"1929 palace","address":"35 Hyatt St, Staten Island, NY"},{"name":"Alice Austen House","neighborhood":"Rosebank, Staten Island","type":"Museum","bucket":"Activities","lon":-74.06304,"lat":40.61518,"price":"$8 entry","notes":"photographer's cottage","address":"2 Hylan Blvd, Staten Island, NY"},{"name":"Snug Harbor Cultural Center","neighborhood":"Livingston, Staten Island","type":"Garden","bucket":"Activities","lon":-74.1027,"lat":40.64341,"price":"$5 entry","notes":"Chinese scholar's garden","address":"1000 Richmond Ter, Staten Island, NY"},{"name":"Jacques Marchais Museum of Tibetan Art","neighborhood":"Lighthouse Hill, Staten Island","type":"Museum","bucket":"Activities","lon":-74.13815,"lat":40.57632,"price":"$10 entry","notes":"hillside temple","address":"338 Lighthouse Ave, Staten Island, NY"},{"name":"Henan Feng Wei","neighborhood":"Flushing, Queens","type":"Henan","bucket":"Eat","lon":-73.82842,"lat":40.75892,"price":"$12 pp","notes":"cash only, hand-pulled noodles","address":"136-31 41st Ave, Flushing, NY"},{"name":"Joe's Steam Rice Roll","neighborhood":"Flushing, Queens","type":"Cheung Fun","bucket":"Eat","lon":-73.82857,"lat":40.76016,"price":"$8 pp","notes":"stone-milled rice rolls","address":"136-20 Roosevelt Ave # A1, Flushing, NY"},{"name":"Szechuan Mountain House","neighborhood":"Flushing, Queens","type":"Sichuan","bucket":"Eat","lon":-73.83229,"lat":40.75928,"price":"$35 pp","notes":"toothpick lamb","address":"39-16 Prince St g03, Flushing, NY"},{"name":"Hahm Ji Bach","neighborhood":"Flushing, Queens","type":"Korean BBQ","bucket":"Eat","lon":-73.81492,"lat":40.7631,"price":"$45 pp","notes":"galbi","address":"40-11 149th Pl, Flushing, NY"},{"name":"Little Pepper","neighborhood":"College Point, Queens","type":"Sichuan","bucket":"Eat","lon":-73.8461,"lat":40.78243,"price":"$30 pp","notes":"dan dan noodles","address":"18-24 College Point Blvd, College Point, NY"},{"name":"Zaab Zaab","neighborhood":"Elmhurst, Queens","type":"Isaan Thai","bucket":"Eat","lon":-73.88866,"lat":40.74326,"price":"$30 pp","notes":"gai yang","address":"76-04 Woodside Ave, Elmhurst, NY"},{"name":"Khao Kang","neighborhood":"Elmhurst, Queens","type":"Thai","bucket":"Eat","lon":-73.88803,"lat":40.74326,"price":"$12 pp","notes":"point-and-pick steam table","address":"76-20 Woodside Ave, Elmhurst, NY"},{"name":"Taste Good Malaysian Cuisine","neighborhood":"Elmhurst, Queens","type":"Malaysian","bucket":"Eat","lon":-73.88218,"lat":40.74161,"price":"$20 pp","notes":"roti canai","address":"82-18 45th Ave, Elmhurst, NY"},{"name":"Awang Kitchen","neighborhood":"Elmhurst, Queens","type":"Indonesian","bucket":"Eat","lon":-73.87899,"lat":40.73745,"price":"$20 pp","notes":"nasi campur","address":"84-05 Queens Blvd #1C, Elmhurst, NY"},{"name":"Lao Bei Fang Dumpling House","neighborhood":"Elmhurst, Queens","type":"Dumplings","bucket":"Eat","lon":-73.87986,"lat":40.74171,"price":"$10 pp","notes":"Dongbei","address":"83-05 Broadway, Elmhurst, NY"},{"name":"Eaterniti","neighborhood":"Elmhurst, Queens","type":"Burmese","bucket":"Eat","lon":-73.87344,"lat":40.73392,"price":"$20 pp","notes":"tea leaf salad","address":"Private parking lot on site, Elmhurst, NY"},{"name":"Lhasa Fast Food","neighborhood":"Jackson Heights, Queens","type":"Tibetan","bucket":"Eat","lon":-73.88973,"lat":40.7493,"price":"$10 pp","notes":"behind the phone shop","address":"76-03 37th Ave, Jackson Heights, NY"},{"name":"Phayul","neighborhood":"Jackson Heights, Queens","type":"Tibetan","bucket":"Eat","lon":-73.89138,"lat":40.74717,"price":"$18 pp","notes":"2nd floor, beef tsel momo","address":"37-65 74th St., Jackson Heights, NY"},{"name":"Nepali Bhanchha Ghar","neighborhood":"Jackson Heights, Queens","type":"Nepali","bucket":"Eat","lon":-73.89077,"lat":40.74706,"price":"$20 pp","notes":"goat sekuwa","address":"74-15 Roosevelt Avenue, Jackson Heights, NY"},{"name":"Merit Kabab Palace","neighborhood":"Jackson Heights, Queens","type":"Bangladeshi","bucket":"Eat","lon":-73.89123,"lat":40.74711,"price":"$12 pp","notes":"steam table, open late","address":"37-67 74th St., Jackson Heights, NY"},{"name":"Taqueria Coatzingo","neighborhood":"Jackson Heights, Queens","type":"Mexican","bucket":"Eat","lon":-73.89015,"lat":40.74714,"price":"$12 pp","notes":"cemitas, open late","address":"75-05 Roosevelt Ave, Jackson Heights, NY"},{"name":"Arepa Lady","neighborhood":"Jackson Heights, Queens","type":"Colombian","bucket":"Eat","lon":-73.88827,"lat":40.74943,"price":"$8 pp","notes":"arepa de choclo","address":"77-17 37th Ave, Jackson Heights, NY"},{"name":"Urubamba","neighborhood":"Jackson Heights, Queens","type":"Peruvian","bucket":"Eat","lon":-73.87999,"lat":40.75005,"price":"$25 pp","notes":"lomo saltado","address":"86-20 37th Ave, Jackson Heights, NY"},{"name":"Birria-Landia","neighborhood":"Jackson Heights, Queens","type":"Tacos","bucket":"Eat","lon":-73.89143,"lat":40.74685,"price":"$4 tacos","notes":"truck, cash only","address":"99 Roosevelt Avenue, Elmhurst, NY"},{"name":"SriPraPhai","neighborhood":"Woodside, Queens","type":"Thai","bucket":"Eat","lon":-73.89921,"lat":40.74649,"price":"$30 pp","notes":"crispy watercress salad","address":"64-13 39th Ave, Woodside, NY"},{"name":"Renee's Kitchenette & Grill","neighborhood":"Woodside, Queens","type":"Filipino","bucket":"Eat","lon":-73.89564,"lat":40.74615,"price":"$20 pp","notes":"kare-kare","address":"69-14 Roosevelt Ave, Woodside, NY"},{"name":"Tito Rad's Grill","neighborhood":"Woodside, Queens","type":"Filipino","bucket":"Eat","lon":-73.91554,"lat":40.74254,"price":"$25 pp","notes":"grilled pork belly","address":"49-10 Queens Blvd, Woodside, NY"},{"name":"Sik Gaek","neighborhood":"Woodside, Queens","type":"Korean","bucket":"Eat","lon":-73.91536,"lat":40.74335,"price":"$40 pp","notes":"live octopus seafood pot","address":"49-11 Roosevelt Ave, Woodside, NY"},{"name":"De Mole","neighborhood":"Sunnyside, Queens","type":"Mexican","bucket":"Eat","lon":-73.9203,"lat":40.73929,"price":"$20 pp","notes":"mole poblano","address":"45-02 48th Ave, Woodside, NY"},{"name":"La Morenita Ecuatoriana","neighborhood":"Corona, Queens","type":"Ecuadorian","bucket":"Eat","lon":-73.86803,"lat":40.75713,"price":"$15 pp","notes":"hornado","address":"100-08 Northern Blvd, Corona, NY"},{"name":"Cheburechnaya","neighborhood":"Rego Park, Queens","type":"Bukharian","bucket":"Eat","lon":-73.86409,"lat":40.72767,"price":"$30 pp","notes":"lamb kebab, kosher","address":"92-09 63rd Dr, Rego Park, NY"},{"name":"Registan Kitchen","neighborhood":"Rego Park, Queens","type":"Uzbek","bucket":"Eat","lon":-73.85062,"lat":40.72206,"price":"$25 pp","notes":"plov","address":"68-60 Austin St, Forest Hills, NY"},{"name":"Nick's Pizza","neighborhood":"Forest Hills, Queens","type":"Pizza","bucket":"Eat","lon":-73.84074,"lat":40.71774,"price":"$25 pizza","notes":"thin crust, no slices","address":"108-26 Ascan Ave, Forest Hills, NY"},{"name":"Singh's Roti Shop & Bar","neighborhood":"Richmond Hill, Queens","type":"Indo-Guyanese","bucket":"Eat","lon":-73.81424,"lat":40.69037,"price":"$15 pp","notes":"goat roti, bar in back","address":"131-18 Liberty Ave, South Richmond Hill, NY"},{"name":"Sybil's Bakery & Restaurant","neighborhood":"Richmond Hill, Queens","type":"Guyanese","bucket":"Eat","lon":-73.80187,"lat":40.70779,"price":"$12 pp","notes":"pine tart, cheese roll","address":"159-24 Hillside Ave., Jamaica, NY"},{"name":"Trini Delite Roti Shop","neighborhood":"Richmond Hill, Queens","type":"Trinidadian","bucket":"Eat","lon":-73.83189,"lat":40.68423,"price":"$10 pp","notes":"doubles","address":"110-02 Liberty Ave, South Richmond Hill, NY"},{"name":"Spicy Lanka","neighborhood":"Richmond Hill, Queens","type":"Sri Lankan","bucket":"Eat","lon":-73.83283,"lat":40.70032,"price":"$18 pp","notes":"kottu roti","address":"117-03 Hillside Ave., Richmond Hill, NY"},{"name":"Ghoroa","neighborhood":"Jamaica, Queens","type":"Bangladeshi","bucket":"Eat","lon":-73.79354,"lat":40.71086,"price":"$15 pp","notes":"beef bhuna","address":"168-41 Hillside Ave., Jamaica, NY"},{"name":"New Park Pizza","neighborhood":"Howard Beach, Queens","type":"Pizza","bucket":"Eat","lon":-73.84066,"lat":40.66278,"price":"$4 slices","notes":"ask for it well done","address":"156-71 Cross Bay Blvd, Howard Beach, NY"},{"name":"Don Peppe","neighborhood":"Ozone Park, Queens","type":"Italian","bucket":"Eat","lon":-73.82156,"lat":40.66893,"price":"$45 pp","notes":"linguine with clams, cash only","address":"135-58 Lefferts Blvd, South Ozone Park, NY"},{"name":"Kabab Cafe","neighborhood":"Astoria, Queens","type":"Egyptian","bucket":"Eat","lon":-73.91212,"lat":40.76771,"price":"$45 pp","notes":"no menu, ask Ali","address":"25-12 Steinway St, Astoria, NY"},{"name":"Mombar","neighborhood":"Astoria, Queens","type":"Egyptian","bucket":"Eat","lon":-73.9122,"lat":40.76739,"price":"$40 pp","notes":"cash only","address":"25-22 Steinway St, Astoria, NY"},{"name":"Sabry's Seafood","neighborhood":"Astoria, Queens","type":"Egyptian Seafood","bucket":"Eat","lon":-73.91118,"lat":40.76835,"price":"$35 pp","notes":"grilled branzino, BYOB","address":"24-25 Steinway St, Astoria, NY"},{"name":"Taverna Kyclades","neighborhood":"Astoria, Queens","type":"Greek","bucket":"Eat","lon":-73.90931,"lat":40.7752,"price":"$45 pp","notes":"grilled octopus, no reservations","address":"36-01 Ditmars Blvd, Astoria, NY"},{"name":"Telly's Taverna","neighborhood":"Astoria, Queens","type":"Greek","bucket":"Eat","lon":-73.91407,"lat":40.7754,"price":"$45 pp","notes":"whole grilled fish","address":"28-13 23rd Ave, Astoria, NY"},{"name":"Djerdan Burek","neighborhood":"Astoria, Queens","type":"Balkan","bucket":"Eat","lon":-73.92094,"lat":40.76304,"price":"$10 pp","notes":"meat burek by the pound","address":"34-04 31st Ave, Astoria, NY"},{"name":"Astoria Seafood","neighborhood":"Long Island City, Queens","type":"Seafood","bucket":"Eat","lon":-73.92985,"lat":40.754,"price":"$35 pp","notes":"pick fish from the case","address":"37-10 33rd St, Long Island City, NY"},{"name":"Rizzo's Fine Pizza","neighborhood":"Astoria, Queens","type":"Pizza","bucket":"Eat","lon":-73.91511,"lat":40.76336,"price":"$4 slices","notes":"thin crust square","address":"30-13 Steinway St, Astoria, NY"},{"name":"Rolo's","neighborhood":"Ridgewood, Queens","type":"New American","bucket":"Eat","lon":-73.90354,"lat":40.70194,"price":"$45 pp","notes":"wood-fired, garden seats","address":"8-53 Onderdonk Ave, Ridgewood, NY"},{"name":"Rockaway Beach Surf Club","neighborhood":"Rockaway Beach, Queens","type":"Tacos","bucket":"Eat","lon":-73.8122,"lat":40.58897,"price":"$6 tacos","notes":"seasonal, fish tacos","address":"3-02 Beach 87th St, Rockaway, NY"},{"name":"Bohemian Hall & Beer Garden","neighborhood":"Astoria, Queens","type":"Beer Garden","bucket":"Drink","lon":-73.91583,"lat":40.7729,"price":"$9 drinks","notes":"Czech pilsner, outdoor","address":"29-19 24th Ave, Astoria, NY"},{"name":"Gottscheer Hall","neighborhood":"Ridgewood, Queens","type":"Beer Hall","bucket":"Drink","lon":-73.9055,"lat":40.70683,"price":"$7 drinks","notes":"old Gottschee club","address":"6-57 Fairview Ave, Ridgewood, NY"},{"name":"Neir's Tavern","neighborhood":"Woodhaven, Queens","type":"Dive Bar","bucket":"Drink","lon":-73.86352,"lat":40.68981,"price":"$7 drinks","notes":"opened 1829","address":"87-48 78th St, Woodhaven, NY"},{"name":"Donovan's Pub","neighborhood":"Woodside, Queens","type":"Irish Pub","bucket":"Drink","lon":-73.90663,"lat":40.74535,"price":"$20 for food, $8 for drinks","notes":"burger in the wood booths","address":"57-24 Roosevelt Ave, Woodside, NY"},{"name":"Sean Og's Tavern","neighborhood":"Woodside, Queens","type":"Irish Bar","bucket":"Drink","lon":-73.90439,"lat":40.74485,"price":"$7 drinks","notes":"GAA on the TVs","address":"60-02 Woodside Ave, Woodside, NY"},{"name":"Connolly's Bar","neighborhood":"Rockaway Beach, Queens","type":"Dive Bar","bucket":"Drink","lon":-73.81664,"lat":40.58443,"price":"$10 drinks","notes":"frozen pina colada","address":"1-55 Beach 95th St, Rockaway, NY"},{"name":"Dutch Kills","neighborhood":"Long Island City, Queens","type":"Cocktail Bar","bucket":"Drink","lon":-73.94023,"lat":40.74773,"price":"$18 drinks","notes":"hand-cut ice","address":"27-24 Jackson Ave, Long Island City, NY"},{"name":"Sweet Afton","neighborhood":"Astoria, Queens","type":"Bar","bucket":"Drink","lon":-73.91903,"lat":40.76539,"price":"$10 drinks","notes":"burger, backyard","address":"30-09 34th St, Astoria, NY"},{"name":"SingleCut Beersmiths","neighborhood":"Astoria, Queens","type":"Brewery","bucket":"Drink","lon":-73.90183,"lat":40.77838,"price":"$9 drinks","notes":"taproom, live music","address":"19-33 37th St, Astoria, NY"},{"name":"Cronin & Phelan's","neighborhood":"Astoria, Queens","type":"Irish Bar","bucket":"Drink","lon":-73.91938,"lat":40.75897,"price":"$7 drinks","notes":"no-frills, long bar","address":"38-14 Broadway, Astoria, NY"},{"name":"The Keep","neighborhood":"Ridgewood, Queens","type":"Bar","bucket":"Drink","lon":-73.91968,"lat":40.70833,"price":"$12 drinks","notes":"back-room film screenings","address":"2-05 Cypress Ave, Ridgewood, NY"},{"name":"Fifth Hammer Brewing","neighborhood":"Long Island City, Queens","type":"Brewery","bucket":"Drink","lon":-73.95154,"lat":40.74649,"price":"$9 drinks","notes":"taproom under the tracks","address":"10-28 46th Avenue, Long Island City, NY"},{"name":"Eddie's Sweet Shop","neighborhood":"Forest Hills, Queens","type":"Ice Cream","bucket":"Coffee & Sweets","lon":-73.84732,"lat":40.71003,"price":"$9 sundaes","notes":"marble counter, cash only","address":"105-29 Metropolitan Ave #1, Forest Hills, NY"},{"name":"Cannelle Patisserie","neighborhood":"East Elmhurst, Queens","type":"Bakery","bucket":"Coffee & Sweets","lon":-73.89201,"lat":40.76008,"price":"$5 pastries","notes":"in a strip mall","address":"75-59 31st Ave, East Elmhurst, NY"},{"name":"La Gran Uruguaya Bakery","neighborhood":"Jackson Heights, Queens","type":"Bakery","bucket":"Coffee & Sweets","lon":-73.88128,"lat":40.74999,"price":"$4 pastries","notes":"alfajores","address":"85-06 37th Ave, Jackson Heights, NY"},{"name":"Sweetleaf","neighborhood":"Long Island City, Queens","type":"Coffee","bucket":"Coffee & Sweets","lon":-73.9565,"lat":40.74614,"price":"$5 coffee","notes":"Rocket Fuel cold brew","address":"46-15 Center Blvd, Long Island City, NY"},{"name":"Martha's Country Bakery","neighborhood":"Forest Hills, Queens","type":"Bakery","bucket":"Coffee & Sweets","lon":-73.84591,"lat":40.72055,"price":"$6 pastries","notes":"open late","address":"70-28 Austin St, Forest Hills, NY"},{"name":"Patel Brothers","neighborhood":"Jackson Heights, Queens","type":"Grocery Store","bucket":"Groceries","lon":-73.89154,"lat":40.74808,"price":"Varies","notes":"go-to for Indian","address":"37-27 74th St., Jackson Heights, NY"},{"name":"H Mart","neighborhood":"Flushing, Queens","type":"Grocery Store","bucket":"Groceries","lon":-73.82093,"lat":40.76485,"price":"Varies","notes":"go-to for Korean","address":"144-72 Northern Blvd, Flushing, NY"},{"name":"Hong Kong Supermarket","neighborhood":"Flushing, Queens","type":"Grocery Store","bucket":"Groceries","lon":-73.8225,"lat":40.76453,"price":"Varies","notes":"go-to for Chinese","address":"144-20 Northern Blvd, Flushing, NY"},{"name":"Titan Foods","neighborhood":"Astoria, Queens","type":"Grocery Store","bucket":"Groceries","lon":-73.90937,"lat":40.76982,"price":"Varies","notes":"go-to for Greek","address":"23-53 Steinway St, Astoria, NY"},{"name":"Phil-Am Food Mart","neighborhood":"Woodside, Queens","type":"Grocery Store","bucket":"Groceries","lon":-73.89527,"lat":40.74628,"price":"Varies","notes":"go-to for Filipino","address":"40-03 70th St, Woodside, NY"},{"name":"Apna Bazar Cash & Carry","neighborhood":"Jackson Heights, Queens","type":"Grocery Store","bucket":"Groceries","lon":-73.8929,"lat":40.74876,"price":"Varies","notes":"go-to for Bangladeshi","address":"72-30 37th Ave, Jackson Heights, NY"},{"name":"Nowadays","neighborhood":"Ridgewood, Queens","type":"Music Venue","bucket":"Music & Film","lon":-73.90173,"lat":40.69293,"price":"$20 cover","notes":"outdoor, Sunday all day","address":"56-06 Cooper Ave, Ridgewood, NY"},{"name":"TV Eye","neighborhood":"Ridgewood, Queens","type":"Music Venue","bucket":"Music & Film","lon":-73.90517,"lat":40.69783,"price":"$20 cover","notes":"punk and psych","address":"16-47 Weirfield St, Ridgewood, NY"},{"name":"Trans-Pecos","neighborhood":"Ridgewood, Queens","type":"Music Venue","bucket":"Music & Film","lon":-73.90626,"lat":40.69703,"price":"$15 cover","notes":"backyard shows","address":"9-15 Wyckoff Ave, Ridgewood, NY"},{"name":"Terraza 7","neighborhood":"Elmhurst, Queens","type":"Music Venue","bucket":"Music & Film","lon":-73.88202,"lat":40.74754,"price":"$10 cover","notes":"band plays on a raised stage","address":"40-19 Gleane St, Elmhurst, NY"},{"name":"Kew Gardens Cinemas","neighborhood":"Kew Gardens, Queens","type":"Cinema","bucket":"Music & Film","lon":-73.8298,"lat":40.70916,"price":"$15 tickets","notes":"indie and foreign","address":"81-05 Lefferts Blvd, Kew Gardens, NY"},{"name":"Deep Cuts Record Store","neighborhood":"Ridgewood, Queens","type":"Record Store","bucket":"Music & Film","lon":-73.90407,"lat":40.70088,"price":"Varies","notes":"used vinyl","address":"57-03 Catalpa Ave, Ridgewood, NY"},{"name":"Topos Bookstore Cafe","neighborhood":"Ridgewood, Queens","type":"Bookstore","bucket":"Shopping","lon":-73.90353,"lat":40.70348,"price":"Varies","notes":"used books, coffee","address":"7-88 Woodward Ave, Ridgewood, NY"},{"name":"Astoria Bookshop","neighborhood":"Astoria, Queens","type":"Bookstore","bucket":"Shopping","lon":-73.93074,"lat":40.75636,"price":"Varies","notes":"readings most weeks","address":"36-19 30th St, Astoria, NY"},{"name":"Queens Night Market","neighborhood":"Corona, Queens","type":"Night Market","bucket":"Groceries","lon":-73.85052,"lat":40.74806,"price":"$6 plates","notes":"Saturdays, April to October","address":"47-01 111th St, Corona, NY"},{"name":"Spa Castle","neighborhood":"College Point, Queens","type":"Korean Spa","bucket":"Activities","lon":-73.83697,"lat":40.78747,"price":"$60 entry","notes":"jjimjilbang, go on a weekday","address":"131-10 11th Ave, College Point, NY"},{"name":"Great NY Noodletown","neighborhood":"Chinatown, Manhattan","type":"Cantonese","bucket":"Eat","lon":-73.9969,"lat":40.71503,"price":"$15 pp","notes":"salt baked squid, open late","address":"28 Bowery, New York, NY"},{"name":"Wah Fung Number 1 Fast Food","neighborhood":"Chinatown, Manhattan","type":"Cantonese","bucket":"Eat","lon":-73.9945,"lat":40.71733,"price":"$8 pp","notes":"roast pork over rice, cash only","address":"79 Chrystie St, New York, NY"},{"name":"Shu Jiao Fu Zhou","neighborhood":"Chinatown, Manhattan","type":"Fuzhounese","bucket":"Eat","lon":-73.99205,"lat":40.7175,"price":"$6 pp","notes":"peanut butter noodles","address":"295 Grand St, New York, NY"},{"name":"Super Taste","neighborhood":"Chinatown, Manhattan","type":"Lanzhou","bucket":"Eat","lon":-73.99334,"lat":40.71507,"price":"$12 pp","notes":"hand-pulled lamb noodle","address":"26 Eldridge St, New York, NY"},{"name":"Kong Sihk Tong","neighborhood":"Chinatown, Manhattan","type":"HK Cafe","bucket":"Eat","lon":-73.99814,"lat":40.71538,"price":"$15 pp","notes":"milk tea, French toast","address":"65 Bayard St, New York, NY"},{"name":"Deluxe Green Bo","neighborhood":"Chinatown, Manhattan","type":"Shanghainese","bucket":"Eat","lon":-73.99801,"lat":40.71562,"price":"$20 pp","notes":"soup dumplings","address":"66 Bayard St, New York, NY"},{"name":"Hop Shing","neighborhood":"Chinatown, Manhattan","type":"Dim Sum","bucket":"Eat","lon":-73.99804,"lat":40.71399,"price":"$10 pp","notes":"opens early, cash only","address":"9 Chatham Square, New York, NY"},{"name":"Yi Ji Shi Mo","neighborhood":"Chinatown, Manhattan","type":"Cheung Fun","bucket":"Eat","lon":-73.99573,"lat":40.71817,"price":"$8 pp","notes":"stone-ground rice rolls","address":"88 Elizabeth St, New York, NY"},{"name":"Vanessa's Dumpling House","neighborhood":"Lower East Side, Manhattan","type":"Dumplings","bucket":"Eat","lon":-73.99176,"lat":40.71831,"price":"$8 pp","notes":"sesame pancake sandwich","address":"118A Eldridge St, New York, NY"},{"name":"Congee Village","neighborhood":"Lower East Side, Manhattan","type":"Cantonese","bucket":"Eat","lon":-73.99017,"lat":40.73132,"price":"$20 pp","notes":"congee, karaoke rooms","address":"85 4th Ave, New York, NY"},{"name":"Scarr's Pizza","neighborhood":"Lower East Side, Manhattan","type":"Pizza","bucket":"Eat","lon":-73.99154,"lat":40.71538,"price":"$5 slices","notes":"house-milled flour","address":"35 Orchard St, New York, NY"},{"name":"Kiki's","neighborhood":"Two Bridges, Manhattan","type":"Greek","bucket":"Eat","lon":-73.99186,"lat":40.71455,"price":"$30 pp","notes":"no reservations","address":"130 Division St, New York, NY"},{"name":"Streecha","neighborhood":"East Village, Manhattan","type":"Ukrainian","bucket":"Eat","lon":-73.98898,"lat":40.72842,"price":"$8 pp","notes":"church basement, cash only","address":"33 E 7th St, New York, NY"},{"name":"Sobaya","neighborhood":"East Village, Manhattan","type":"Soba","bucket":"Eat","lon":-73.98794,"lat":40.72961,"price":"$25 pp","notes":"house-made soba","address":"229 E 9th St, New York, NY"},{"name":"Zum Schneider","neighborhood":"East Village, Manhattan","type":"German","bucket":"Eat","lon":-73.95733,"lat":40.72537,"price":"$25 pp","notes":"liter steins","address":"12 Franklin St, Brooklyn, NY"},{"name":"Superiority Burger","neighborhood":"East Village, Manhattan","type":"Vegetarian","bucket":"Eat","lon":-73.978,"lat":40.72924,"price":"$18 pp","notes":"old Odessa diner space","address":"600 E 14th St, New York, NY"},{"name":"Kafana","neighborhood":"East Village, Manhattan","type":"Serbian","bucket":"Eat","lon":-73.97844,"lat":40.72432,"price":"$30 pp","notes":"cevapi","address":"116 Loisaida Ave, New York, NY"},{"name":"Cha An","neighborhood":"East Village, Manhattan","type":"Tea House","bucket":"Coffee & Sweets","lon":-73.98836,"lat":40.73766,"price":"$18 pp","notes":"second floor, matcha","address":"250 Park Ave S #6, New York, NY"},{"name":"Esperanto","neighborhood":"Alphabet City, Manhattan","type":"Brazilian","bucket":"Eat","lon":-73.96921,"lat":40.75017,"price":"$28 pp","notes":"live samba weekends","address":"777 United Nations Plaza, New York, NY"},{"name":"Villa Mosconi","neighborhood":"Greenwich Village, Manhattan","type":"Italian","bucket":"Eat","lon":-73.99585,"lat":40.73619,"price":"$45 pp","notes":"old-school red sauce","address":"35 W 13th St, New York, NY"},{"name":"Bar Pitti","neighborhood":"West Village, Manhattan","type":"Italian","bucket":"Eat","lon":-74.00214,"lat":40.72903,"price":"$45 pp","notes":"cash only, sidewalk tables","address":"268 6th Ave, New York, NY"},{"name":"Malatesta Trattoria","neighborhood":"West Village, Manhattan","type":"Italian","bucket":"Eat","lon":-74.00839,"lat":40.73286,"price":"$30 pp","notes":"cash only","address":"649 Washington St, New York, NY"},{"name":"Tea & Sympathy","neighborhood":"West Village, Manhattan","type":"British","bucket":"Eat","lon":-74.00196,"lat":40.73829,"price":"$25 pp","notes":"shepherd's pie","address":"108 Greenwich Avenue, New York, NY"},{"name":"Anton's","neighborhood":"West Village, Manhattan","type":"American","bucket":"Eat","lon":-74.00578,"lat":40.73577,"price":"$50 pp","notes":"burger, dark room","address":"570 Hudson St, New York, NY"},{"name":"Emilio's Ballato","neighborhood":"Nolita, Manhattan","type":"Italian","bucket":"Eat","lon":-73.99451,"lat":40.72462,"price":"$50 pp","notes":"knock and wait","address":"55 E Houston St, New York, NY"},{"name":"Rubirosa","neighborhood":"Nolita, Manhattan","type":"Pizza","bucket":"Eat","lon":-73.99614,"lat":40.72274,"price":"$26 pizza","notes":"vodka slice, thin crust","address":"235 Mulberry St, New York, NY"},{"name":"Nha Trang One","neighborhood":"Chinatown, Manhattan","type":"Vietnamese","bucket":"Eat","lon":-73.9999,"lat":40.71676,"price":"$15 pp","notes":"bun cha gio","address":"87 Baxter St, New York, NY"},{"name":"Thai Diner","neighborhood":"Nolita, Manhattan","type":"Thai","bucket":"Eat","lon":-73.99565,"lat":40.72071,"price":"$28 pp","notes":"opens early, roti","address":"186 Mott St, New York, NY"},{"name":"Milano's","neighborhood":"Nolita, Manhattan","type":"Dive Bar","bucket":"Drink","lon":-73.99448,"lat":40.72449,"price":"$7 drinks","notes":"narrow, jukebox","address":"51 E Houston St, New York, NY"},{"name":"Blue & Gold Tavern","neighborhood":"East Village, Manhattan","type":"Dive Bar","bucket":"Drink","lon":-73.98628,"lat":40.72733,"price":"$6 drinks","notes":"cheap pours","address":"79 E 7th St, New York, NY"},{"name":"Sophie's","neighborhood":"East Village, Manhattan","type":"Dive Bar","bucket":"Drink","lon":-73.98384,"lat":40.7248,"price":"$6 drinks","notes":"cash only, jukebox","address":"507 E 5th St, New York, NY"},{"name":"Mona's","neighborhood":"East Village, Manhattan","type":"Dive Bar","bucket":"Drink","lon":-73.97833,"lat":40.72912,"price":"$7 drinks","notes":"Monday jazz jam, late","address":"224 Avenue B Unit 14, New York, NY"},{"name":"International Bar","neighborhood":"East Village, Manhattan","type":"Dive Bar","bucket":"Drink","lon":-73.9859,"lat":40.72647,"price":"$7 drinks","notes":"narrow, back garden","address":"102 1st Ave, New York, NY"},{"name":"Doc Holliday's","neighborhood":"East Village, Manhattan","type":"Dive Bar","bucket":"Drink","lon":-73.98286,"lat":40.72721,"price":"$6 drinks","notes":"honky tonk","address":"141 Avenue A, New York, NY"},{"name":"Lucy's","neighborhood":"East Village, Manhattan","type":"Dive Bar","bucket":"Drink","lon":-73.98299,"lat":40.72699,"price":"$6 drinks","notes":"cash only","address":"135 Avenue A, New York, NY"},{"name":"Fanelli Cafe","neighborhood":"SoHo, Manhattan","type":"Bar","bucket":"Drink","lon":-73.99878,"lat":40.72463,"price":"$10 drinks","notes":"1847, tin ceiling","address":"94 Prince St, New York, NY"},{"name":"Ear Inn","neighborhood":"Hudson Square, Manhattan","type":"Dive Bar","bucket":"Drink","lon":-74.00948,"lat":40.72592,"price":"$9 drinks","notes":"1817 building","address":"326 Spring St, New York, NY"},{"name":"Botanica Bar","neighborhood":"Nolita, Manhattan","type":"Dive Bar","bucket":"Drink","lon":-73.99477,"lat":40.72466,"price":"$8 drinks","notes":"basement, no sign","address":"47 E Houston St, New York, NY"},{"name":"Tom & Jerry's","neighborhood":"NoHo, Manhattan","type":"Bar","bucket":"Drink","lon":-73.99341,"lat":40.72453,"price":"$9 drinks","notes":"wide bar, low key","address":"288 Elizabeth St, New York, NY"},{"name":"124 Old Rabbit Club","neighborhood":"Greenwich Village, Manhattan","type":"Beer Bar","bucket":"Drink","lon":-74.00047,"lat":40.73008,"price":"$10 beers","notes":"unmarked door","address":"124 MacDougal St, New York, NY"},{"name":"Attaboy","neighborhood":"Lower East Side, Manhattan","type":"Cocktail Bar","bucket":"Drink","lon":-73.99152,"lat":40.71899,"price":"$20 drinks","notes":"no menu, ring the bell","address":"134 Eldridge St, New York, NY"},{"name":"Mr. Fong's","neighborhood":"Two Bridges, Manhattan","type":"Cocktail Bar","bucket":"Drink","lon":-73.99425,"lat":40.71243,"price":"$16 drinks","notes":"small, open late","address":"40 Market St, New York, NY"},{"name":"Bar Goto","neighborhood":"Lower East Side, Manhattan","type":"Cocktail Bar","bucket":"Drink","lon":-73.98991,"lat":40.72278,"price":"$18 drinks","notes":"sake cocktails, okonomiyaki","address":"245 Eldridge St, New York, NY"},{"name":"Sake Bar Decibel","neighborhood":"East Village, Manhattan","type":"Sake Bar","bucket":"Drink","lon":-73.98775,"lat":40.7293,"price":"$12 pours","notes":"basement, graffiti walls","address":"240 E 9th St, New York, NY"},{"name":"Aria Wine Bar","neighborhood":"West Village, Manhattan","type":"Wine Bar","bucket":"Drink","lon":-74.00348,"lat":40.72913,"price":"$14 glasses","notes":"cash only","address":"16 Bedford St, New York, NY"},{"name":"Clandestino","neighborhood":"Two Bridges, Manhattan","type":"Bar","bucket":"Drink","lon":-73.99088,"lat":40.71471,"price":"$10 drinks","notes":"back room DJs","address":"35 Canal St, New York, NY"},{"name":"Veniero's","neighborhood":"East Village, Manhattan","type":"Italian Pastry","bucket":"Coffee & Sweets","lon":-73.98453,"lat":40.72947,"price":"$6 pastry","notes":"since 1894, cannoli","address":"342 E 11th St, New York, NY"},{"name":"Caffe Reggio","neighborhood":"Greenwich Village, Manhattan","type":"Coffee","bucket":"Coffee & Sweets","lon":-74.00037,"lat":40.73031,"price":"$6 coffee","notes":"1902 espresso machine","address":"119 MacDougal St, New York, NY"},{"name":"Kossar's Bagels & Bialys","neighborhood":"Lower East Side, Manhattan","type":"Bagels","bucket":"Eat","lon":-73.9888,"lat":40.71641,"price":"$3 bialys","notes":"bialys, not bagels","address":"367 Grand St, New York, NY"},{"name":"Economy Candy","neighborhood":"Lower East Side, Manhattan","type":"Candy","bucket":"Coffee & Sweets","lon":-73.98786,"lat":40.7201,"price":"Varies","notes":"since 1937","address":"108 Rivington St, New York, NY"},{"name":"Abraco","neighborhood":"East Village, Manhattan","type":"Coffee","bucket":"Coffee & Sweets","lon":-73.98623,"lat":40.72727,"price":"$5 coffee","notes":"olive oil cake","address":"81 E 7th St, New York, NY"},{"name":"Deluxe Food Market","neighborhood":"Chinatown, Manhattan","type":"Grocery Store","bucket":"Groceries","lon":-73.9962,"lat":40.71801,"price":"Varies","notes":"go-to for Chinese, hot counter","address":"79 Elizabeth St, New York, NY"},{"name":"Sunrise Mart","neighborhood":"East Village, Manhattan","type":"Grocery Store","bucket":"Groceries","lon":-74.00257,"lat":40.72326,"price":"Varies","notes":"go-to for Japanese, 2nd floor","address":"494 Broome St, New York, NY"},{"name":"Anthology Film Archives","neighborhood":"East Village, Manhattan","type":"Movie Theater","bucket":"Music & Film","lon":-73.99017,"lat":40.72469,"price":"$12 screenings","notes":"avant-garde, 16mm","address":"32 2nd Ave, New York, NY"},{"name":"Metrograph","neighborhood":"Lower East Side, Manhattan","type":"Movie Theater","bucket":"Music & Film","lon":-73.99117,"lat":40.71511,"price":"$17 screenings","notes":"35mm, bar upstairs","address":"7 Ludlow St, New York, NY"},{"name":"Nublu","neighborhood":"Alphabet City, Manhattan","type":"Music Venue","bucket":"Music & Film","lon":-73.97795,"lat":40.72562,"price":"$15 cover","notes":"late sets","address":"151 Loisaida Ave, New York, NY"},{"name":"A1 Record Shop","neighborhood":"East Village, Manhattan","type":"Record Store","bucket":"Music & Film","lon":-73.98445,"lat":40.7258,"price":"Varies","notes":"soul and jazz bins","address":"439 E 6th St, New York, NY"},{"name":"Generation Records","neighborhood":"Greenwich Village, Manhattan","type":"Record Store","bucket":"Music & Film","lon":-73.99907,"lat":40.72883,"price":"Varies","notes":"punk and metal, basement","address":"210 Thompson St, New York, NY"},{"name":"Dashwood Books","neighborhood":"NoHo, Manhattan","type":"Bookstore","bucket":"Shopping","lon":-73.99347,"lat":40.72619,"price":"Varies","notes":"photo books, basement","address":"33 Bond St, New York, NY"},{"name":"Russian & Turkish Baths","neighborhood":"East Village, Manhattan","type":"Bathhouse","bucket":"Activities","lon":-73.98358,"lat":40.72825,"price":"$60 entry","notes":"platza, check co-ed hours","address":"268 E 10th St, New York, NY"},{"name":"Karczma","neighborhood":"Greenpoint, Brooklyn","type":"Polish","bucket":"Eat","lon":-73.95512,"lat":40.73,"price":"$18 pp","notes":"pierogi platter","address":"136 Greenpoint Ave, Brooklyn, NY"},{"name":"Retro Polish Restaurant","neighborhood":"Greenpoint, Brooklyn","type":"Polish","bucket":"Eat","lon":-73.95402,"lat":40.72911,"price":"$15 pp","notes":"placki ziemniaczane","address":"853 Manhattan Ave, Brooklyn, NY"},{"name":"Gottlieb's Restaurant","neighborhood":"Williamsburg, Brooklyn","type":"Kosher Deli","bucket":"Eat","lon":-73.96136,"lat":40.70772,"price":"$20 pp","notes":"kugel","address":"352 Roebling St, Brooklyn, NY"},{"name":"Ba Xuyen","neighborhood":"Sunset Park, Brooklyn","type":"Vietnamese","bucket":"Eat","lon":-73.99967,"lat":40.64529,"price":"$10 banh mi","notes":"#1 special","address":"4222 8th Ave, Brooklyn, NY"},{"name":"Tacos Matamoros","neighborhood":"Sunset Park, Brooklyn","type":"Mexican","bucket":"Eat","lon":-74.00786,"lat":40.64788,"price":"$15 pp","notes":"al pastor","address":"4508 5th Ave, Brooklyn, NY"},{"name":"Yun Nan Flavour Garden","neighborhood":"Sunset Park, Brooklyn","type":"Chinese","bucket":"Eat","lon":-74.0046,"lat":40.64005,"price":"$12 pp","notes":"crossing-bridge noodles","address":"5121 8th Ave, Brooklyn, NY"},{"name":"Tortilleria Mexicana Los Hermanos","neighborhood":"Bushwick, Brooklyn","type":"Mexican","bucket":"Eat","lon":-73.92185,"lat":40.70657,"price":"$12 pp","notes":"back of tortilla factory","address":"271 Starr St, Brooklyn, NY"},{"name":"Bunna Cafe","neighborhood":"Bushwick, Brooklyn","type":"Ethiopian","bucket":"Eat","lon":-73.92791,"lat":40.70492,"price":"$25 pp","notes":"vegan combo","address":"1084 Flushing Ave, Brooklyn, NY"},{"name":"Ops","neighborhood":"Bushwick, Brooklyn","type":"Pizza","bucket":"Eat","lon":-73.91719,"lat":40.70262,"price":"$24 pizza","notes":"Neapolitan, natural wine","address":"346 Himrod St, Brooklyn, NY"},{"name":"Peaches HotHouse","neighborhood":"Bed-Stuy, Brooklyn","type":"Southern","bucket":"Eat","lon":-73.94376,"lat":40.68338,"price":"$25 pp","notes":"hot chicken","address":"415 Tompkins Ave, Brooklyn, NY"},{"name":"Saraghina","neighborhood":"Bed-Stuy, Brooklyn","type":"Pizza","bucket":"Eat","lon":-73.93539,"lat":40.68373,"price":"$22 pizza","notes":"Neapolitan, garden","address":"350 Lewis Ave, Brooklyn, NY"},{"name":"Cafe Rue Dix","neighborhood":"Bed-Stuy, Brooklyn","type":"Senegalese","bucket":"Eat","lon":-73.95381,"lat":40.67354,"price":"$25 pp","notes":"thieboudienne","address":"1451 Bedford Ave, Brooklyn, NY"},{"name":"Ras Plant Based","neighborhood":"Crown Heights, Brooklyn","type":"Ethiopian","bucket":"Eat","lon":-73.95679,"lat":40.67342,"price":"$28 pp","notes":"vegan combo platter","address":"739 Franklin Ave, Brooklyn, NY"},{"name":"Miss Ada","neighborhood":"Fort Greene, Brooklyn","type":"Israeli","bucket":"Eat","lon":-73.97238,"lat":40.68949,"price":"$45 pp","notes":"backyard","address":"184 Dekalb Ave, Brooklyn, NY"},{"name":"Sushi Katsuei","neighborhood":"Park Slope, Brooklyn","type":"Sushi","bucket":"Eat","lon":-73.97272,"lat":40.67774,"price":"$110 omakase","notes":"counter only","address":"335 Flatbush Ave, Brooklyn, NY"},{"name":"al di la Trattoria","neighborhood":"Park Slope, Brooklyn","type":"Italian","bucket":"Eat","lon":-73.98143,"lat":40.67531,"price":"$40 pp","notes":"malfatti, no reservations","address":"248 5th Ave, Brooklyn, NY"},{"name":"Insa","neighborhood":"Gowanus, Brooklyn","type":"Korean BBQ","bucket":"Eat","lon":-73.98259,"lat":40.67955,"price":"$45 pp","notes":"karaoke rooms","address":"328 Douglass St, Brooklyn, NY"},{"name":"F&F Pizzeria","neighborhood":"Carroll Gardens, Brooklyn","type":"Pizza","bucket":"Eat","lon":-73.99809,"lat":40.67732,"price":"$4 slice","notes":"square slice","address":"459 Court Street, Brooklyn, NY"},{"name":"Bar Ferdinando","neighborhood":"Carroll Gardens, Brooklyn","type":"Sicilian","bucket":"Eat","lon":-74.00185,"lat":40.68422,"price":"$35 pp","notes":"panelle special","address":"151 Union St, Brooklyn, NY"},{"name":"Court Street Grocers","neighborhood":"Carroll Gardens, Brooklyn","type":"Sandwiches","bucket":"Eat","lon":-73.99867,"lat":40.67621,"price":"$15 sandwich","notes":"the Reggie","address":"485 Court St, Brooklyn, NY"},{"name":"Mazzola Bakery","neighborhood":"Carroll Gardens, Brooklyn","type":"Italian Bakery","bucket":"Coffee & Sweets","lon":-73.99966,"lat":40.68331,"price":"$6 loaf","notes":"lard bread, opens early","address":"192 Union St, Brooklyn, NY"},{"name":"Defonte's","neighborhood":"Red Hook, Brooklyn","type":"Sandwiches","bucket":"Eat","lon":-74.00532,"lat":40.67896,"price":"$16 hero","notes":"potato & egg hero","address":"379 Columbia St, Brooklyn, NY"},{"name":"Brooklyn Ice House","neighborhood":"Red Hook, Brooklyn","type":"BBQ","bucket":"Eat","lon":-74.01105,"lat":40.67917,"price":"$12 pp","notes":"pulled pork, backyard","address":"318 Van Brunt St, Brooklyn, NY"},{"name":"Best Pizza","neighborhood":"Williamsburg, Brooklyn","type":"Pizza","bucket":"Eat","lon":-73.95348,"lat":40.71562,"price":"$4 slice","notes":"white slice","address":"33 Havemeyer St, Brooklyn, NY"},{"name":"Rule of Thirds","neighborhood":"Greenpoint, Brooklyn","type":"Japanese","bucket":"Eat","lon":-73.95528,"lat":40.72473,"price":"$55 pp","notes":"sake list","address":"171 Banker St, Brooklyn, NY"},{"name":"Peter Pan Donut & Pastry Shop","neighborhood":"Greenpoint, Brooklyn","type":"Donuts","bucket":"Coffee & Sweets","lon":-73.95231,"lat":40.72608,"price":"$2 donuts","notes":"red velvet, opens 4:30am","address":"727 Manhattan Ave, Brooklyn, NY"},{"name":"Fortunato Brothers","neighborhood":"Williamsburg, Brooklyn","type":"Italian Pastry","bucket":"Coffee & Sweets","lon":-73.94618,"lat":40.71372,"price":"$5 pastry","notes":"cannoli, cash only","address":"289 Manhattan Ave, Brooklyn, NY"},{"name":"Court Pastry Shop","neighborhood":"Cobble Hill, Brooklyn","type":"Italian Bakery","bucket":"Coffee & Sweets","lon":-73.99532,"lat":40.68405,"price":"$4 pastry","notes":"lobster tail, cash only","address":"298 Court St, Brooklyn, NY"},{"name":"Four & Twenty Blackbirds","neighborhood":"Gowanus, Brooklyn","type":"Pie","bucket":"Coffee & Sweets","lon":-73.99046,"lat":40.67203,"price":"$8 slice","notes":"salted honey pie","address":"439 3rd Ave, Brooklyn, NY"},{"name":"Sey Coffee","neighborhood":"Bushwick, Brooklyn","type":"Coffee","bucket":"Coffee & Sweets","lon":-73.93242,"lat":40.70532,"price":"$6 coffee","notes":"light roast","address":"18 Grattan St, Brooklyn, NY"},{"name":"Caputo's Fine Foods","neighborhood":"Carroll Gardens, Brooklyn","type":"Italian Grocer","bucket":"Groceries","lon":-73.9981,"lat":40.67828,"price":"$15 sandwich","notes":"fresh mozzarella","address":"460 Court St, Brooklyn, NY"},{"name":"Fei Long Market","neighborhood":"Sunset Park, Brooklyn","type":"Grocery Store","bucket":"Groceries","lon":-74.01096,"lat":40.63311,"price":"Varies","notes":"live seafood, food court","address":"6301 8th Ave, Brooklyn, NY"},{"name":"Sunny's Bar","neighborhood":"Red Hook, Brooklyn","type":"Dive Bar","bucket":"Drink","lon":-74.01689,"lat":40.67568,"price":"$8 drinks","notes":"Saturday bluegrass jam","address":"253 Conover St, Brooklyn, NY"},{"name":"Turkey's Nest Tavern","neighborhood":"Williamsburg, Brooklyn","type":"Dive Bar","bucket":"Drink","lon":-73.95499,"lat":40.7206,"price":"$6 drinks","notes":"styrofoam margaritas","address":"94 Bedford Ave, Brooklyn, NY"},{"name":"Alibi","neighborhood":"Fort Greene, Brooklyn","type":"Dive Bar","bucket":"Drink","lon":-73.96948,"lat":40.68938,"price":"$6 drinks","notes":"pool table","address":"242 Dekalb Ave, Brooklyn, NY"},{"name":"Sharlene's","neighborhood":"Prospect Heights, Brooklyn","type":"Dive Bar","bucket":"Drink","lon":-73.97213,"lat":40.67704,"price":"$7 drinks","notes":"back patio","address":"353 Flatbush Ave, Brooklyn, NY"},{"name":"Freddy's Bar","neighborhood":"Park Slope, Brooklyn","type":"Dive Bar","bucket":"Drink","lon":-73.99108,"lat":40.66329,"price":"$7 drinks","notes":"back room shows","address":"627 5th Ave, Brooklyn, NY"},{"name":"Pete's Candy Store","neighborhood":"Williamsburg, Brooklyn","type":"Dive Bar","bucket":"Drink","lon":-73.95019,"lat":40.7181,"price":"$8 drinks","notes":"free shows in the back car","address":"709 Lorimer St, Brooklyn, NY"},{"name":"Bar Great Harry","neighborhood":"Carroll Gardens, Brooklyn","type":"Beer Bar","bucket":"Drink","lon":-73.99358,"lat":40.68245,"price":"$9 beers","notes":"rotating taps","address":"280 Smith St, Brooklyn, NY"},{"name":"Doris","neighborhood":"Bed-Stuy, Brooklyn","type":"Cocktail Bar","bucket":"Drink","lon":-73.95735,"lat":40.68136,"price":"$14 cocktails","notes":"big backyard","address":"1088 Fulton St, Brooklyn, NY"},{"name":"The Long Island Bar","neighborhood":"Cobble Hill, Brooklyn","type":"Cocktail Bar","bucket":"Drink","lon":-73.99641,"lat":40.69063,"price":"$17 cocktails","notes":"gimlet, opens 5pm","address":"110 Atlantic Ave, Brooklyn, NY"},{"name":"Hotel Delmano","neighborhood":"Williamsburg, Brooklyn","type":"Cocktail Bar","bucket":"Drink","lon":-73.95802,"lat":40.71971,"price":"$18 cocktails","notes":"no reservations","address":"82 Berry St, Brooklyn, NY"},{"name":"Place des Fetes","neighborhood":"Clinton Hill, Brooklyn","type":"Natural Wine","bucket":"Drink","lon":-73.9629,"lat":40.68693,"price":"$18 glasses","notes":"small plates","address":"212 Greene Ave, Brooklyn, NY"},{"name":"Public Records","neighborhood":"Gowanus, Brooklyn","type":"Listening Bar","bucket":"Drink","lon":-73.98647,"lat":40.68207,"price":"$16 drinks","notes":"hi-fi sound room","address":"233 Butler St, Brooklyn, NY"},{"name":"Trad Room","neighborhood":"Bed-Stuy, Brooklyn","type":"Sake Bar","bucket":"Drink","lon":-73.92944,"lat":40.68389,"price":"$40 pp","notes":"sake flights","address":"266 Malcolm X Blvd, Brooklyn, NY"},{"name":"Market Hotel","neighborhood":"Bushwick, Brooklyn","type":"Music Venue","bucket":"Music & Film","lon":-73.93459,"lat":40.697,"price":"$20-30 shows","notes":"above the M train","address":"1140 Myrtle Ave, Brooklyn, NY"},{"name":"Light Industry","neighborhood":"Greenpoint, Brooklyn","type":"Movie Theater","bucket":"Music & Film","lon":-73.93434,"lat":40.71057,"price":"$12 screenings","notes":"one night only, 16mm","address":"361 Stagg St Ste 407, Brooklyn, NY"},{"name":"Human Head Records","neighborhood":"Bushwick, Brooklyn","type":"Record Store","bucket":"Music & Film","lon":-73.93635,"lat":40.709,"price":"Varies","notes":"used bins","address":"289 Meserole St, Brooklyn, NY"},{"name":"Front General Store","neighborhood":"Dumbo, Brooklyn","type":"Vintage","bucket":"Shopping","lon":-73.98728,"lat":40.7025,"price":"Varies","notes":"vintage workwear","address":"143 Front St, Brooklyn, NY"},{"name":"10 Ft Single by Stella Dallas","neighborhood":"Williamsburg, Brooklyn","type":"Vintage","bucket":"Shopping","lon":-73.95356,"lat":40.71443,"price":"Varies","notes":"denim, military surplus","address":"285 N 6th St, Brooklyn, NY"},{"name":"Melody Lanes","neighborhood":"Sunset Park, Brooklyn","type":"Bowling","bucket":"Activities","lon":-74.00306,"lat":40.65271,"price":"$8 per game","notes":"bar in back","address":"461 37th St, Brooklyn, NY"}];
+</script>
+<script>
+/* Seattle map — personal list. No external reviews or ratings; notes are the author's own. */
+(function () {
+  "use strict";
+
+  var BUCKETS = [
+    { key: "Eat",             color: "#C1442E", icon: "utensils" },
+    { key: "Drink",           color: "#2E6E8E", icon: "glass" },
+    { key: "Coffee & Sweets", color: "#8A5A2B", icon: "cup" },
+    { key: "Music & Film",    color: "#6B4E9E", icon: "note" },
+    { key: "Shopping",        color: "#1F7A5A", icon: "bag" },
+    { key: "Groceries",       color: "#8F6310", icon: "basket" },
+    { key: "Activities",      color: "#A03C6E", icon: "star" }
+  ];
+  var BC = {}; BUCKETS.forEach(function (b) { BC[b.key] = b; });
+
+  var ICONS = {
+    utensils: '<path d="M4 3v7a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V3M6 12v9M17 3c-1.7 1-2.5 3-2.5 5.5S15.3 13 17 13v8"/>',
+    glass:    '<path d="M5 4h14l-6 8v6h3M11 18H8m3 0v-6L5 4"/>',
+    cup:      '<path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8zM17 9h1.5a2.5 2.5 0 0 1 0 5H17M6 3v2M10 2v3M14 3v2"/>',
+    note:     '<circle cx="7" cy="18" r="3"/><circle cx="18" cy="15" r="3"/><path d="M10 18V6l11-2v11"/>',
+    bag:      '<path d="M4 8h16l-1.2 12.2a1 1 0 0 1-1 .8H6.2a1 1 0 0 1-1-.8L4 8z"/><path d="M8.5 8V6a3.5 3.5 0 0 1 7 0v2"/>',
+    basket:   '<path d="M3 9h18l-1.6 9.3a1 1 0 0 1-1 .7H5.6a1 1 0 0 1-1-.7L3 9z"/><path d="M8 9 10 3M16 9 14 3M10 13v3M14 13v3"/>',
+    star:     '<path d="m12 3 2.7 5.9 6.3.8-4.7 4.4 1.3 6.4L12 17.3 6.4 20.5l1.3-6.4L3 9.7l6.3-.8L12 3z"/>'
+  };
+  function svg(name) {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" ' +
+           'stroke-linecap="round" stroke-linejoin="round">' + (ICONS[name] || ICONS.star) + '</svg>';
+  }
+  function shorten(s, n) {
+    s = String(s);
+    return s.length <= n ? s : s.slice(0, n - 1).replace(/[\s,;:.-]+$/, "") + "…";
+  }
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  var HOME = { center: [-73.94, 40.70], zoom: 10.4 };
+  var LABEL_ZOOM = 13.2;   // pins become named pills
+  var NOTE_ZOOM  = 14.6;   // pills also show the note
+
+  var state = { bucket: "All", hood: "All", q: "", sel: null, moveSearch: false, bounds: null };
+  var markers = [], cardEls = [];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var cardsEl = $("cards"), countEl = $("count"), subEl = $("sub");
+
+  /* ---------------- map ---------------- */
+  mapboxgl.accessToken = MAPBOX_TOKEN;
+  var map = new mapboxgl.Map({
+    container: "map",
+    style: "mapbox://styles/mapbox/light-v11",
+    center: HOME.center,
+    zoom: HOME.zoom,
+    minZoom: 8,
+    maxZoom: 18,
+    attributionControl: true,
+    cooperativeGestures: false
+  });
+  map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "bottom-right");
+  map.addControl(new mapboxgl.GeolocateControl({ positionOptions: { enableHighAccuracy: true }, trackUserLocation: false }), "bottom-right");
+
+  /* ---------------- markers ---------------- */
+  PLACES.forEach(function (p, i) {
+    p._i = i;
+    var b = BC[p.bucket] || BUCKETS[0];
+    var el = document.createElement("div");
+    el.className = "mk";
+    el.innerHTML =
+      '<div class="dot" style="background:' + b.color + '"></div>' +
+      '<div class="lab"><i style="background:' + b.color + '"></i>' +
+      '<span>' + esc(p.name) + '</span>' +
+      (p.notes ? ' <em class="nt">' + esc(shorten(p.notes, 34)) + '</em>' : '') +
+      '</div>';
+    el.addEventListener("click", function (e) { e.stopPropagation(); select(i, true); });
+    el.addEventListener("mouseenter", function () { hover(i, true); });
+    el.addEventListener("mouseleave", function () { hover(i, false); });
+    var m = new mapboxgl.Marker({ element: el, anchor: "center" })
+      .setLngLat([p.lon, p.lat]).addTo(map);
+    markers.push({ el: el, m: m, p: p });
+  });
+
+  function applyZoomClass() {
+    var z = map.getZoom();
+    document.body.classList.toggle("zlab", z >= LABEL_ZOOM);
+    var showNotes = z >= NOTE_ZOOM;
+    markers.forEach(function (mk) {
+      var nt = mk.el.querySelector(".nt");
+      if (nt) nt.style.display = showNotes ? "" : "none";
+    });
+  }
+
+  /* Hide labels that would overlap, so the map never looks like a pile of pills.
+     Priority: the selected place first, then whatever is nearest the map centre. */
+  var declutterPending = false;
+  function declutter() {
+    declutterPending = false;
+    if (!document.body.classList.contains("zlab")) {
+      markers.forEach(function (mk) { mk.el.classList.remove("clash"); });
+      return;
+    }
+    var pane = document.getElementById("map").getBoundingClientRect();
+    var cx = pane.left + pane.width / 2, cy = pane.top + pane.height / 2;
+    var live = [];
+    markers.forEach(function (mk) {
+      mk.el.classList.remove("clash");
+      if (mk.el.style.display === "none") return;
+      var r = mk.el.getBoundingClientRect();
+      if (r.width === 0 || r.right < pane.left || r.left > pane.right ||
+          r.bottom < pane.top || r.top > pane.bottom) return;
+      var dx = (r.left + r.right) / 2 - cx, dy = (r.top + r.bottom) / 2 - cy;
+      live.push({ mk: mk, r: r, d: Math.sqrt(dx * dx + dy * dy), sel: mk.p._i === state.sel });
+    });
+    live.sort(function (a, b) { return (b.sel - a.sel) || (a.d - b.d); });
+    var placed = [];
+    live.forEach(function (o) {
+      var r = o.r, pad = 3, hit = false;
+      for (var i = 0; i < placed.length; i++) {
+        var q = placed[i];
+        if (r.left - pad < q.right && r.right + pad > q.left &&
+            r.top - pad < q.bottom && r.bottom + pad > q.top) { hit = true; break; }
+      }
+      if (hit) o.mk.el.classList.add("clash");
+      else placed.push(r);
+    });
+  }
+  function queueDeclutter() {
+    if (declutterPending) return;
+    declutterPending = true;
+    requestAnimationFrame(declutter);
+  }
+
+  map.on("zoom", function () { applyZoomClass(); queueDeclutter(); });
+  map.on("move", queueDeclutter);
+  map.on("load", function () { applyZoomClass(); render(); queueDeclutter(); });
+  map.on("moveend", function () {
+    if (state.moveSearch) { state.bounds = map.getBounds(); render(); }
+    queueDeclutter();
+  });
+  map.on("click", function () { select(null); });
+
+  /* ---------------- filtering ---------------- */
+  function visible() {
+    var q = state.q.trim().toLowerCase();
+    return PLACES.filter(function (p) {
+      if (state.bucket !== "All" && p.bucket !== state.bucket) return false;
+      if (state.hood !== "All" && p.neighborhood !== state.hood) return false;
+      if (q) {
+        var hay = (p.name + " " + p.type + " " + p.neighborhood + " " + (p.notes || "") + " " + (p.price || "")).toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
+      if (state.moveSearch && state.bounds) {
+        var b = state.bounds;
+        if (p.lon < b.getWest() || p.lon > b.getEast() || p.lat < b.getSouth() || p.lat > b.getNorth()) return false;
+      }
+      return true;
+    });
+  }
+
+  function render() {
+    var list = visible();
+    var on = {}; list.forEach(function (p) { on[p._i] = 1; });
+
+    markers.forEach(function (mk) {
+      var show = on[mk.p._i];
+      mk.el.style.display = show ? "" : "none";
+      mk.el.classList.toggle("dim", false);
+    });
+
+    countEl.textContent = list.length + (list.length === 1 ? " place" : " places");
+    var bits = [];
+    if (state.bucket !== "All") bits.push(state.bucket.toLowerCase());
+    if (state.hood !== "All") bits.push("in " + state.hood);
+    if (state.q.trim()) bits.push('matching "' + state.q.trim() + '"');
+    subEl.textContent = bits.length ? bits.join(" ") : "across the five boroughs";
+
+    cardsEl.innerHTML = "";
+    cardEls = [];
+    if (!list.length) {
+      cardsEl.innerHTML = '<div class="empty"><b>Nothing here yet</b>Try a different category, neighborhood, or search.</div>';
+      return;
+    }
+    var frag = document.createDocumentFragment();
+    list.forEach(function (p) {
+      var b = BC[p.bucket] || BUCKETS[0];
+      var el = document.createElement("button");
+      el.className = "card";
+      el.type = "button";
+      el.innerHTML =
+        '<div class="tile" style="background:' + b.color + '">' + svg(b.icon) + '</div>' +
+        '<div>' +
+          '<h3>' + esc(p.name) + '</h3>' +
+          '<div class="meta">' + esc(p.type) + ' &middot; ' + esc(p.neighborhood) + '</div>' +
+          (p.notes ? '<div class="note">' + esc(p.notes) + '</div>' : '') +
+          (p.price ? '<div class="price">' + esc(p.price) + '</div>' : '') +
+          (p.multi ? '<div class="tag">multiple locations</div>' : '') +
+        '</div>';
+      el.addEventListener("click", function () { select(p._i, false, true); });
+      el.addEventListener("mouseenter", function () { hover(p._i, true); });
+      el.addEventListener("mouseleave", function () { hover(p._i, false); });
+      cardEls[p._i] = el;
+      frag.appendChild(el);
+    });
+    cardsEl.appendChild(frag);
+    if (state.sel != null && cardEls[state.sel]) cardEls[state.sel].classList.add("sel");
+    queueDeclutter();
+  }
+
+  function hover(i, on) {
+    if (markers[i]) markers[i].el.classList.toggle("hot", on);
+    if (cardEls[i]) cardEls[i].classList.toggle("hot", on);
+  }
+
+  /* ---------------- selection + detail ---------------- */
+  var sheet = $("sheet");
+  function select(i, fromMarker, fromCard) {
+    if (state.sel != null) {
+      if (markers[state.sel]) markers[state.sel].el.classList.remove("sel");
+      if (cardEls[state.sel]) cardEls[state.sel].classList.remove("sel");
+    }
+    state.sel = i;
+    if (i == null) { sheet.classList.remove("on"); return; }
+
+    var p = PLACES[i], b = BC[p.bucket] || BUCKETS[0];
+    if (markers[i]) markers[i].el.classList.add("sel");
+    if (cardEls[i]) {
+      cardEls[i].classList.add("sel");
+      if (fromMarker) cardEls[i].scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+
+    $("shtop").style.background = b.color;
+    $("shicon").innerHTML = svg(b.icon);
+    $("shname").textContent = p.name;
+    $("shmeta").innerHTML =
+      '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ICONS.star.replace(/stroke-width="[^"]*"/, "") + '</svg>' +
+      '<div>' + esc(p.type) + ' &middot; ' + esc(p.neighborhood) + '</div>';
+    $("shaddr").innerHTML = p.address
+      ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>' +
+        '<div>' + esc(p.address) + (p.multi ? ' <span style="color:var(--ink3)">(one of several)</span>' : '') + '</div>'
+      : "";
+    $("shaddr").style.display = p.address ? "" : "none";
+    $("shprice").innerHTML = p.price
+      ? '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 6.5c0-2-2.2-3-5-3s-5 1-5 3 2.2 2.8 5 3.5 5 1.5 5 3.5-2.2 3-5 3-5-1-5-3"/></svg>' +
+        '<div>' + esc(p.price) + '</div>'
+      : "";
+    $("shprice").style.display = p.price ? "" : "none";
+    var noteEl = $("shnote");
+    if (p.notes) { noteEl.innerHTML = "<b>My note</b>" + esc(p.notes); noteEl.style.display = ""; }
+    else { noteEl.style.display = "none"; }
+    sheet.classList.add("on");
+
+    if (fromCard) {
+      if (window.innerWidth <= 900) document.body.classList.add("mapview"), syncToggle();
+      map.flyTo({ center: [p.lon, p.lat], zoom: Math.max(map.getZoom(), NOTE_ZOOM), speed: 1.5, curve: 1.3, essential: true });
+    } else if (fromMarker) {
+      var z = map.getZoom();
+      if (z < LABEL_ZOOM) map.easeTo({ center: [p.lon, p.lat], zoom: LABEL_ZOOM + 0.4, duration: 600 });
+    }
+  }
+  $("shclose").addEventListener("click", function (e) { e.stopPropagation(); select(null); });
+  sheet.addEventListener("click", function (e) { e.stopPropagation(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") select(null); });
+
+  /* ---------------- controls ---------------- */
+  var pillsEl = $("pills");
+  function counts() {
+    var c = { All: PLACES.length };
+    PLACES.forEach(function (p) { c[p.bucket] = (c[p.bucket] || 0) + 1; });
+    return c;
+  }
+  (function buildPills() {
+    var c = counts();
+    var items = [{ key: "All", color: null }].concat(BUCKETS);
+    items.forEach(function (b) {
+      var el = document.createElement("button");
+      el.className = "pill" + (b.key === "All" ? " on" : "");
+      el.innerHTML = (b.color ? '<span class="dot" style="background:' + b.color + '"></span>' : "") +
+                     esc(b.key) + ' <span class="n">' + (c[b.key] || 0) + "</span>";
+      el.addEventListener("click", function () {
+        state.bucket = b.key;
+        [].forEach.call(pillsEl.children, function (x) { x.classList.remove("on"); });
+        el.classList.add("on");
+        select(null); render(); $("listpane").scrollTop = 0;
+      });
+      pillsEl.appendChild(el);
+    });
+  })();
+
+  (function buildHoods() {
+    var hs = {};
+    PLACES.forEach(function (p) { hs[p.neighborhood] = (hs[p.neighborhood] || 0) + 1; });
+    var keys = Object.keys(hs).sort();
+    var sel = $("hood");
+    sel.innerHTML = '<option value="All">All neighborhoods</option>' +
+      keys.map(function (k) { return '<option value="' + esc(k) + '">' + esc(k) + " (" + hs[k] + ")</option>"; }).join("");
+    sel.addEventListener("change", function () {
+      state.hood = sel.value;
+      select(null); render(); $("listpane").scrollTop = 0;
+      var list = visible();
+      if (list.length) {
+        var bb = new mapboxgl.LngLatBounds();
+        list.forEach(function (p) { bb.extend([p.lon, p.lat]); });
+        map.fitBounds(bb, { padding: 90, maxZoom: 15, duration: 800 });
+      }
+    });
+  })();
+
+  var qEl = $("q"), qt;
+  qEl.addEventListener("input", function () {
+    clearTimeout(qt);
+    qt = setTimeout(function () { state.q = qEl.value; select(null); render(); $("listpane").scrollTop = 0; }, 140);
+  });
+
+  $("movesearch").addEventListener("change", function () {
+    state.moveSearch = this.checked;
+    state.bounds = this.checked ? map.getBounds() : null;
+    render();
+  });
+
+  $("reset").addEventListener("click", function () {
+    select(null);
+    map.flyTo({ center: HOME.center, zoom: HOME.zoom, speed: 1.4, essential: true });
+  });
+
+  /* ---------------- mobile toggle ---------------- */
+  function syncToggle() {
+    var onMap = document.body.classList.contains("mapview");
+    $("mobtxt").textContent = onMap ? "List" : "Map";
+  }
+  $("mobtog").addEventListener("click", function () {
+    document.body.classList.toggle("mapview");
+    syncToggle();
+    if (document.body.classList.contains("mapview")) setTimeout(function () { map.resize(); }, 60);
+  });
+  syncToggle();
+
+  /* ---------------- hint ---------------- */
+  var hintEl = $("hint"), hintDone = false;
+  function killHint() { if (!hintDone) { hintDone = true; hintEl.classList.add("off"); } }
+  map.on("zoom", function () { if (map.getZoom() >= LABEL_ZOOM) killHint(); });
+  setTimeout(killHint, 7000);
+
+  /* keep the neighborhood filter reachable on small screens */
+  var hoodEl = document.querySelector(".hood"), hrowEl = document.querySelector(".hrow");
+  function placeHood() {
+    var small = window.innerWidth <= 900;
+    if (small && hoodEl.parentNode !== pillsEl) pillsEl.insertBefore(hoodEl, pillsEl.firstChild);
+    else if (!small && hoodEl.parentNode !== hrowEl) hrowEl.appendChild(hoodEl);
+  }
+  placeHood();
+
+  window.addEventListener("resize", function () { map.resize(); placeHood(); queueDeclutter(); });
+  render();
+})();
+
+</script>
+</body>
+</html>
