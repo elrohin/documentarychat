@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover">
+<title>Colorado — a personal list</title>
+<meta name="description" content="A hand-kept list of places from Pikes Peak to Denver. Personal notes only, no reviews.">
+<meta name="theme-color" content="#FBF9F6">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='38' fill='%23A8442F'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..800;1,300..800&family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&display=swap" rel="stylesheet">
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.9.0/mapbox-gl.css" rel="stylesheet">
+<style>
+:root{
+  /* paper + ink */
+  --paper:#FBF9F6;
+  --paper-2:#F5F1EA;
+  --paper-3:#EFEAE1;
+  --ink:#1C1917;
+  --ink-2:#57514A;
+  --ink-3:#8B8279;
+  --rule:#E4DDD2;
+  --rule-2:#EDE7DD;
+
+  /* categories — dusty, not primary */
+  --eat:#A8442F;
+  --drink:#35636F;
+  --sweets:#8A5B34;
+  --music:#6B5480;
+  --shop:#3E6B52;
+  --groc:#8E6C22;
+  --act:#9A4667;
+
+  --sans:"Figtree",-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --grain:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='180' height='180' filter='url(%23n)' opacity='.04'/></svg>");
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%}
+body{
+  font-family:var(--sans);font-size:15px;color:var(--ink);background:var(--paper);
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  display:flex;flex-direction:column;overflow:hidden;
+  font-variant-numeric:tabular-nums;
+}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+a{color:inherit}
+h1,h2,h3{margin:0;font-weight:inherit}
+
+/* ══════════ header ══════════ */
+header{flex:0 0 auto;background:var(--paper);border-bottom:1px solid var(--rule);position:relative;z-index:40}
+.hrow{display:flex;align-items:flex-end;gap:26px;padding:16px 28px 12px;max-width:2000px;margin:0 auto}
+
+.brand{flex-shrink:0;display:flex;align-items:baseline;gap:10px;line-height:1}
+.brand b{
+  font-family:var(--serif);font-optical-sizing:auto;font-weight:600;font-size:27px;
+  letter-spacing:-.018em;font-variation-settings:"opsz" 40;
+}
+.brand span{
+  font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);
+  font-weight:500;padding-bottom:2px;
+}
+
+.searchwrap{flex:1;display:flex;justify-content:center;min-width:0}
+.search{
+  display:flex;align-items:center;gap:9px;width:100%;max-width:400px;
+  border-bottom:1px solid var(--rule);padding:5px 2px 6px;
+  transition:border-color .2s;
+}
+.search:focus-within{border-bottom-color:var(--ink)}
+.search svg{flex-shrink:0;color:var(--ink-3)}
+.search input{
+  border:0;outline:0;font-family:inherit;font-size:14.5px;width:100%;background:transparent;color:var(--ink);
+  padding:0;
+}
+.search input::placeholder{color:var(--ink-3);font-style:italic;font-family:var(--serif);font-size:14px}
+.search input::-webkit-search-cancel-button{-webkit-appearance:none}
+
+.hood{flex-shrink:0;position:relative;display:flex;align-items:center;border-bottom:1px solid var(--rule);padding-bottom:6px}
+.hood select{
+  appearance:none;-webkit-appearance:none;border:0;background:transparent;outline:0;cursor:pointer;
+  font-family:inherit;font-size:13.5px;color:var(--ink);padding:0 20px 0 0;
+  max-width:210px;text-overflow:ellipsis;
+}
+.hood::after{
+  content:"";position:absolute;right:3px;top:38%;width:6px;height:6px;pointer-events:none;
+  border-right:1.4px solid var(--ink-2);border-bottom:1.4px solid var(--ink-2);
+  transform:translateY(-60%) rotate(45deg);
+}
+
+/* filter row — quiet text, not chips */
+.filters{
+  display:flex;gap:22px;padding:0 28px 0;overflow-x:auto;scrollbar-width:none;
+  max-width:2000px;margin:0 auto;align-items:stretch;
+}
+.filters::-webkit-scrollbar{display:none}
+.filt{
+  display:inline-flex;align-items:center;gap:7px;white-space:nowrap;flex-shrink:0;
+  padding:9px 0 10px;font-size:13px;color:var(--ink-3);font-weight:500;
+  border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .16s,border-color .16s;
+}
+.filt:hover{color:var(--ink-2)}
+.filt .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;opacity:.75;transition:opacity .16s}
+.filt .n{font-size:11px;color:var(--ink-3);opacity:.8}
+.filt.on{color:var(--ink);border-bottom-color:var(--ink)}
+.filt.on .dot{opacity:1}
+.filt.on .n{color:var(--ink-3)}
+
+/* ══════════ layout ══════════ */
+main{flex:1 1 auto;display:flex;min-height:0;position:relative}
+#listpane{
+  width:43%;max-width:720px;min-width:370px;overflow-y:auto;overscroll-behavior:contain;
+  border-right:1px solid var(--rule);scroll-behavior:smooth;
+  background-color:var(--paper);background-image:var(--grain);
+}
+#mappane{flex:1;position:relative;background:var(--paper-3)}
+#map{position:absolute;inset:0}
+.mapboxgl-canvas{filter:sepia(.14) saturate(.82) brightness(1.03) contrast(.97)}
+
+/* ══════════ list ══════════ */
+.listhead{padding:26px 30px 4px;display:flex;align-items:flex-end;justify-content:space-between;gap:14px}
+.listhead h1{
+  font-family:var(--serif);font-size:30px;font-weight:400;letter-spacing:-.02em;line-height:1;
+  font-variation-settings:"opsz" 48;
+}
+.listhead h1 em{font-style:italic;font-weight:400}
+.listhead .sub{font-size:12.5px;color:var(--ink-3);margin-top:8px;font-family:var(--serif);font-style:italic}
+.moveto{
+  display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-2);cursor:pointer;
+  flex-shrink:0;user-select:none;padding-bottom:3px;
+}
+.moveto input{accent-color:var(--ink);width:14px;height:14px;cursor:pointer;margin:0}
+
+.cards{padding:14px 0 70px}
+
+.grp{
+  display:flex;align-items:baseline;gap:12px;padding:20px 30px 7px;
+  position:sticky;top:0;z-index:3;
+  background:var(--paper);
+}
+.grp::after{content:"";flex:1;height:1px;background:var(--rule)}
+.grp span{
+  font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;font-weight:600;color:var(--ink-2);
+}
+.grp em{font-style:normal;font-size:11px;color:var(--ink-3);order:3}
+
+.card{
+  display:grid;grid-template-columns:1fr auto;gap:18px;align-items:start;
+  padding:14px 30px 15px;text-align:left;width:100%;position:relative;
+  transition:background .14s;
+}
+.card::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:transparent;transition:background .14s;
+}
+.card+.card{box-shadow:inset 0 1px 0 var(--rule-2)}
+.card:hover,.card.hot{background:rgba(28,25,23,.028)}
+.card.sel{background:rgba(28,25,23,.05)}
+.card.sel::before{background:var(--accent,var(--ink))}
+
+.card h3{font-size:16.5px;font-weight:500;letter-spacing:-.011em;line-height:1.28}
+.c-type{
+  display:flex;align-items:center;gap:6px;margin-top:5px;
+  font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);font-weight:500;
+}
+.c-type i{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.c-note{
+  font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-2);
+  margin-top:8px;line-height:1.5;font-variation-settings:"opsz" 14;
+}
+.c-side{text-align:right;flex-shrink:0;padding-top:1px}
+.c-price{font-size:12.5px;color:var(--ink-2);white-space:nowrap}
+.c-multi{
+  display:block;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);
+  margin-top:6px;
+}
+
+.endnote{
+  padding:34px 30px 10px;font-family:var(--serif);font-style:italic;font-size:13.5px;
+  color:var(--ink-3);line-height:1.6;border-top:1px solid var(--rule);margin:26px 30px 0;
+}
+.empty{padding:70px 30px;color:var(--ink-3);font-size:14px;text-align:center;line-height:1.7}
+.empty b{
+  display:block;color:var(--ink);font-family:var(--serif);font-size:19px;font-weight:400;
+  margin-bottom:8px;font-style:italic;
+}
+
+/* ══════════ markers ══════════ */
+.mk{cursor:pointer;will-change:transform}
+.mk .dot{
+  width:11px;height:11px;border-radius:50%;border:2px solid var(--paper);
+  box-shadow:0 1px 3px rgba(28,25,23,.34);transition:transform .16s;
+}
+.mk .lab{
+  display:none;align-items:center;gap:6px;background:var(--paper);border:1px solid var(--rule);
+  border-radius:3px;padding:4px 9px 4px 7px;box-shadow:0 2px 8px rgba(28,25,23,.13);
+  white-space:nowrap;font-size:12px;font-weight:500;letter-spacing:-.004em;max-width:210px;
+  transition:transform .16s;
+}
+.mk .lab i{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.mk .lab span{overflow:hidden;text-overflow:ellipsis}
+.mk .lab em{
+  font-family:var(--serif);font-style:italic;font-weight:400;color:var(--ink-3);font-size:11.5px;
+}
+body.zlab .mk .dot{display:none}
+body.zlab .mk .lab{display:inline-flex}
+.mk.clash .lab{display:none}
+body.zlab .mk.clash .dot{display:block;width:8px;height:8px;border-width:1.5px;opacity:.7}
+body.zlab .mk.clash.sel .lab,body.zlab .mk.clash:hover .lab{display:inline-flex}
+body.zlab .mk.clash.sel .dot,body.zlab .mk.clash:hover .dot{display:none}
+.mk:hover{z-index:5}
+.mk:hover .dot{transform:scale(1.3)}
+.mk:hover .lab{transform:scale(1.05)}
+.mk.hot{z-index:6}
+.mk.hot .dot{transform:scale(1.4)}
+.mk.hot .lab{transform:scale(1.06);box-shadow:0 4px 14px rgba(28,25,23,.2)}
+.mk.sel{z-index:8}
+.mk.sel .dot{transform:scale(1.45)}
+.mk.sel .lab{background:var(--ink);color:var(--paper);border-color:var(--ink);transform:scale(1.08)}
+.mk.sel .lab em{color:rgba(251,249,246,.68)}
+
+/* ══════════ detail sheet ══════════ */
+#sheet{
+  position:absolute;left:22px;bottom:22px;width:340px;max-width:calc(100% - 44px);
+  background:var(--paper);border:1px solid var(--rule);border-radius:4px;
+  box-shadow:0 10px 34px rgba(28,25,23,.16);z-index:20;
+  opacity:0;transform:translateY(12px);pointer-events:none;
+  transition:opacity .2s ease,transform .2s cubic-bezier(.2,.8,.3,1);
+  background-image:var(--grain);
+}
+#sheet.on{opacity:1;transform:none;pointer-events:auto}
+.sh-body{padding:20px 22px 22px;position:relative}
+.sh-cat{
+  display:flex;align-items:center;gap:7px;
+  font-size:10px;letter-spacing:.15em;text-transform:uppercase;font-weight:600;color:var(--ink-3);
+}
+.sh-cat i{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+#shname{
+  font-family:var(--serif);font-size:23px;font-weight:500;letter-spacing:-.018em;line-height:1.16;
+  margin:9px 0 2px;font-variation-settings:"opsz" 36;padding-right:22px;
+}
+.sh-meta{font-size:12.5px;color:var(--ink-3);margin-bottom:15px}
+.sh-row{
+  display:flex;gap:9px;font-size:13px;color:var(--ink-2);line-height:1.5;padding:7px 0;
+  border-top:1px solid var(--rule-2);
+}
+.sh-row svg{flex-shrink:0;margin-top:2px;color:var(--ink-3)}
+.sh-note{
+  font-family:var(--serif);font-style:italic;font-size:14px;line-height:1.55;color:var(--ink);
+  margin-top:14px;padding-left:13px;border-left:2px solid var(--rule);
+}
+#shclose{
+  position:absolute;top:16px;right:16px;width:22px;height:22px;
+  display:grid;place-items:center;color:var(--ink-3);font-size:17px;line-height:1;border-radius:50%;
+}
+#shclose:hover{color:var(--ink);background:var(--paper-2)}
+
+/* ══════════ map ui ══════════ */
+.mapbtns{position:absolute;top:18px;right:18px;z-index:15;display:flex;flex-direction:column;gap:8px}
+.mbtn{
+  width:34px;height:34px;border-radius:3px;background:var(--paper);border:1px solid var(--rule);
+  box-shadow:0 1px 4px rgba(28,25,23,.1);display:grid;place-items:center;color:var(--ink-2);
+  transition:color .15s,background .15s;
+}
+.mbtn:hover{background:var(--paper-2);color:var(--ink)}
+.hint{
+  position:absolute;left:50%;bottom:24px;transform:translateX(-50%);z-index:14;
+  background:var(--ink);color:var(--paper);font-size:12px;padding:7px 15px;border-radius:3px;
+  box-shadow:0 3px 12px rgba(28,25,23,.22);pointer-events:none;transition:opacity .5s;
+  font-family:var(--serif);font-style:italic;white-space:nowrap;
+}
+.hint.off{opacity:0}
+.mapboxgl-ctrl-logo,.mapboxgl-ctrl-attrib{font-size:10px}
+.mapboxgl-ctrl-attrib.mapboxgl-compact{background:rgba(251,249,246,.9)}
+
+/* ══════════ mobile ══════════ */
+#mobtog{display:none}
+@media (max-width:900px){
+  .hrow{padding:13px 17px 10px;gap:14px;flex-wrap:wrap}
+  .brand b{font-size:23px}
+  .brand span{display:none}
+  .searchwrap{order:3;flex-basis:100%}
+  .search{max-width:none}
+  .filters{padding:0 17px;gap:18px}
+  .hood select{max-width:150px;font-size:13px}
+  main{display:block}
+  #listpane{width:100%;max-width:none;min-width:0;height:100%;border:0}
+  #mappane{position:absolute;inset:0;z-index:5;visibility:hidden}
+  body.mapview #listpane{visibility:hidden}
+  body.mapview #mappane{visibility:visible}
+  .listhead{padding:20px 20px 4px}
+  .grp{padding:18px 20px 7px}
+  .card{padding:13px 20px 14px}
+  .endnote{margin:26px 20px 0;padding:30px 0 10px}
+  #sheet{left:12px;right:12px;bottom:12px;width:auto;max-width:none}
+  #mobtog{
+    display:flex;align-items:center;gap:8px;position:fixed;bottom:24px;left:50%;
+    transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--paper);
+    border-radius:999px;padding:11px 21px;font-size:13.5px;font-weight:500;
+    box-shadow:0 5px 18px rgba(28,25,23,.28);
+  }
+  .hint{bottom:78px}
+  .mapbtns{top:12px;right:12px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hrow">
+    <div class="brand"><b>Colorado</b><span><a href="/">Seattle</a> &middot; <a href="/nyc/">New York</a></span></div>
+    <div class="searchwrap">
+      <label class="search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="search names, food, notes" autocomplete="off" spellcheck="false">
+      </label>
+    </div>
+    <div class="hood"><select id="hood"></select></div>
+  </div>
+  <div class="filters" id="filters"></div>
+</header>
+
+<main>
+  <section id="listpane">
+    <div class="listhead">
+      <div>
+        <h1 id="count">&mdash;</h1>
+        <div class="sub" id="sub">pikes peak to denver</div>
+      </div>
+      <label class="moveto"><input type="checkbox" id="movesearch"> search this area</label>
+    </div>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <section id="mappane">
+    <div id="map"></div>
+    <div class="mapbtns">
+      <button class="mbtn" id="reset" title="Reset view" aria-label="Reset view">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+      </button>
+    </div>
+    <div class="hint" id="hint">zoom in for names and notes</div>
+    <div id="sheet">
+      <div class="sh-body">
+        <div class="sh-cat" id="shcat"></div>
+        <h2 id="shname"></h2>
+        <div class="sh-meta" id="shmeta"></div>
+        <div class="sh-row" id="shaddr"></div>
+        <div class="sh-row" id="shprice"></div>
+        <div class="sh-note" id="shnote"></div>
+        <button id="shclose" aria-label="Close">&times;</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<button id="mobtog">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3z"/><path d="M9 3v15M15 6v15"/></svg>
+  <span id="mobtxt">Map</span>
+</button>
+
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.9.0/mapbox-gl.js"></script>
+<script>
+const MAPBOX_TOKEN = "pk.eyJ1IjoiZWxyb2hpbiIsImEiOiJjbXQwaTBjYm0wNGo3Mnlwdno3bmR5Zm1hIn0.P8B9rpnYn0Xc6V3via-6wg";
+const PLACES = [{"name":"Ephemera","neighborhood":"Downtown, Colorado Springs","type":"Tasting Menu","bucket":"Eat","lon":-104.82426,"lat":38.82615,"price":"$79 pp","notes":"5 courses upstairs at coati, tock, closed mon","address":"514 S Tejon St Ste 250a, Colorado Springs, CO"},{"name":"Taytacha Peruvian Cuisine","neighborhood":"Northeast, Colorado Springs","type":"Peruvian","bucket":"Eat","lon":-104.76464,"lat":38.89111,"price":"$22 pp","notes":"no sign yet, ceviche, anticuchos, lucuma ice cream","address":"3332 Austin Bluffs Pkwy, Colorado Springs, CO"},{"name":"Tong Tong","neighborhood":"South Academy, Colorado Springs","type":"Korean","bucket":"Eat","lon":-104.75853,"lat":38.80326,"price":"$18 pp","notes":"kimchi jjigae, galbi, closed sun, call first","address":"2036 S Academy Blvd, Colorado Springs, CO"},{"name":"Shin Sa Dong","neighborhood":"East, Colorado Springs","type":"Korean","bucket":"Eat","lon":-104.7563,"lat":38.83113,"price":"$18 pp","notes":"strip mall, dolsot bibimbap, slow when busy","address":"3845 E Pikes Peak Ave, Colorado Springs, CO"},{"name":"Shanxi Noodles & Dumplings House","neighborhood":"Northeast, Colorado Springs","type":"Chinese","bucket":"Eat","lon":-104.74749,"lat":38.89619,"price":"$16 pp","notes":"hand-pulled, red oil chicken, open daily","address":"4543 Austin Bluffs Pkwy, Colorado Springs, CO"},{"name":"ArkCleoRich African Kitchen","neighborhood":"North Academy, Colorado Springs","type":"Ghanaian","bucket":"Eat","lon":-104.75576,"lat":38.85241,"price":"$18 pp","notes":"sign still says pho viet, jollof, waakye, slow","address":"1371 N Academy Blvd, Colorado Springs, CO"},{"name":"Don Turi's Tacos y Tortas","neighborhood":"Centennial, Colorado Springs","type":"Mexican","bucket":"Eat","lon":-104.84989,"lat":38.89543,"price":"$12 pp","notes":"guadalajara style, breakfast chilaquiles","address":"4423 Centennial Blvd, Colorado Springs, CO"},{"name":"Tacos El Amigo","neighborhood":"East, Colorado Springs","type":"Taqueria","bucket":"Eat","lon":-104.78257,"lat":38.83857,"price":"$10 pp","notes":"quesabirria, open till midnight daily","address":"2416 E Boulder St, Colorado Springs, CO"},{"name":"Moctezuma Mexican Grill","neighborhood":"North Academy, Colorado Springs","type":"Mexican","bucket":"Eat","lon":-104.75644,"lat":38.84756,"price":"$14 pp","notes":"cinnamon birria, was a truck","address":"1015 N Academy Blvd, Colorado Springs, CO"},{"name":"Por Favor Tacos & Tragos","neighborhood":"Centennial, Colorado Springs","type":"Taqueria","bucket":"Eat","lon":-104.85002,"lat":38.89915,"price":"$12 pp","notes":"birria burro, sip the consome","address":"4657 Centennial Blvd Ste 100, Colorado Springs, CO"},{"name":"Chiba Bar","neighborhood":"Downtown, Colorado Springs","type":"Izakaya","bucket":"Eat","lon":-104.82421,"lat":38.83524,"price":"$28 pp","notes":"cyberpunk, spicy donburi, tiny","address":"19 E Kiowa St, Colorado Springs, CO"},{"name":"Night Ramen","neighborhood":"Downtown, Colorado Springs","type":"Ramen","bucket":"Eat","lon":-104.81838,"lat":38.83404,"price":"$20 pp","notes":"neon, miso caramel torte","address":"324 E Pikes Peak Ave, Colorado Springs, CO"},{"name":"Pho and Grill","neighborhood":"East, Colorado Springs","type":"Vietnamese","bucket":"Eat","lon":-104.71685,"lat":38.88134,"price":"$14 pp","notes":"bun bowls, closed tue","address":"3357 Cinema Point, Colorado Springs, CO"},{"name":"Mausam Indian Flavors","neighborhood":"West Side, Colorado Springs","type":"Indian","bucket":"Eat","lon":-104.87527,"lat":38.85475,"price":"$28 pp","notes":"jafrani chicken, indian whiskies, daily","address":"3167 W Colorado Ave, Colorado Springs, CO"},{"name":"Uchenna","neighborhood":"Old Colorado City, Colorado Springs","type":"Ethiopian","bucket":"Eat","lon":-104.86334,"lat":38.84719,"price":"$22 pp","notes":"5 tables, reservation only, closed mon","address":"2501 W Colorado Ave #105, Colorado Springs, CO"},{"name":"Sushi Mori","neighborhood":"East, Colorado Springs","type":"Sushi","bucket":"Eat","lon":-104.73545,"lat":38.84089,"price":"$30 pp","notes":"by asian pacific market, opened nov 2025","address":"4980 Edison Ave ste 100, Colorado Springs, CO"},{"name":"Dozo Sushi","neighborhood":"South 8th, Colorado Springs","type":"Sushi","bucket":"Eat","lon":-104.84111,"lat":38.80985,"price":"$28 pp","notes":"pandemic baby","address":"1606 S 8th St, Colorado Springs, CO"},{"name":"Paravicini's","neighborhood":"Old Colorado City, Colorado Springs","type":"Italian","bucket":"Eat","lon":-104.86715,"lat":38.85014,"price":"$26 pp","notes":"arancini, big tables","address":"2802 W Colorado Ave, Colorado Springs, CO"},{"name":"Stellina Pizza Cafe","neighborhood":"Shooks Run, Colorado Springs","type":"Pizza","bucket":"Eat","lon":-104.81041,"lat":38.84172,"price":"$18 pp","notes":"neapolitan, supper club nights","address":"749 E Willamette Ave, Colorado Springs, CO"},{"name":"Red Gravy","neighborhood":"Downtown, Colorado Springs","type":"Italian","bucket":"Eat","lon":-104.82347,"lat":38.83289,"price":"$26 pp","notes":"butternut ravioli, buttercake","address":"23 S Tejon St, Colorado Springs, CO"},{"name":"Bonny & Read","neighborhood":"Downtown, Colorado Springs","type":"Seafood","bucket":"Eat","lon":-104.82309,"lat":38.83542,"price":"$40 pp","notes":"raw bar","address":"101 N Tejon St Ste 102, Colorado Springs, CO"},{"name":"Oro","neighborhood":"Downtown, Colorado Springs","type":"Italian","bucket":"Eat","lon":-104.82239,"lat":38.83365,"price":"$38 pp","notes":"mining exchange hotel, bison carpaccio","address":"123 E Pikes Peak Ave, Colorado Springs, CO"},{"name":"The Warehouse","neighborhood":"Downtown, Colorado Springs","type":"Contemporary","bucket":"Eat","lon":-104.83521,"lat":38.87192,"price":"$45 pp","notes":"game meats, offal","address":"2805 N Chestnut St, Colorado Springs, CO"},{"name":"The Rabbit Hole","neighborhood":"Downtown, Colorado Springs","type":"Contemporary","bucket":"Eat","lon":-104.82294,"lat":38.8354,"price":"$35 pp","notes":"underground, whiskey ribs","address":"101 N Tejon St, Colorado Springs, CO"},{"name":"Shuga's","neighborhood":"Downtown, Colorado Springs","type":"Latin Fusion","bucket":"Eat","lon":-104.82612,"lat":38.82432,"price":"$16 pp","notes":"brazilian coconut shrimp soup","address":"702 S Cascade Ave, Colorado Springs, CO"},{"name":"Penrose Room","neighborhood":"Broadmoor, Colorado Springs","type":"Fine Dining","bucket":"Eat","lon":-104.85019,"lat":38.7899,"price":"$120 pp","notes":"tableside wellington, jacket","address":"1 Lake Ave, Colorado Springs, CO"},{"name":"Summit","neighborhood":"Broadmoor, Colorado Springs","type":"Fine Dining","bucket":"Eat","lon":-104.84926,"lat":38.79215,"price":"$90 pp","notes":"peruvian leaning","address":"19 Lake Cir, Colorado Springs, CO"},{"name":"Four by Brother Luck","neighborhood":"Downtown, Colorado Springs","type":"New American","bucket":"Eat","lon":-104.8231,"lat":38.83907,"price":"$60 pp","notes":"michelin recommended, cocktails are the point","address":"321 N Tejon St, Colorado Springs, CO"},{"name":"Provision Bread & Bakery","neighborhood":"Downtown, Colorado Springs","type":"Bakery","bucket":"Coffee & Sweets","lon":-104.81852,"lat":38.83319,"price":"$8","notes":"grain obsessive, ham and cheese croissant","address":"4 S Wahsatch Ave, Colorado Springs, CO"},{"name":"Boonzaaijer's Dutch Bakery","neighborhood":"Fillmore, Colorado Springs","type":"Bakery","bucket":"Coffee & Sweets","lon":-104.81384,"lat":38.87445,"price":"$6","notes":"since 1896, bavarian cream","address":"610 E Fillmore St, Colorado Springs, CO"},{"name":"Nightingale Bread","neighborhood":"Downtown, Colorado Springs","type":"Bakery","bucket":"Coffee & Sweets","lon":-104.82221,"lat":38.87135,"price":"$8","notes":"wood fired sourdough, check days","address":"2727 N Cascade Ave #165, Colorado Springs, CO"},{"name":"The French Kitchen","neighborhood":"North Academy, Colorado Springs","type":"Bakery","bucket":"Coffee & Sweets","lon":-104.76714,"lat":38.90201,"price":"$8","notes":"croissants, cooking classes","address":"4771 N Academy Blvd, Colorado Springs, CO"},{"name":"Switchback Coffee Roasters","neighborhood":"Shooks Run, Colorado Springs","type":"Coffee","bucket":"Coffee & Sweets","lon":-104.80821,"lat":38.83887,"price":"$5","notes":"the roaster locals ship","address":"330 N Institute St, Colorado Springs, CO"},{"name":"Loyal Coffee","neighborhood":"Downtown, Colorado Springs","type":"Coffee","bucket":"Coffee & Sweets","lon":-104.8223,"lat":38.82776,"price":"$5","notes":"south nevada","address":"408 S Nevada Ave, Colorado Springs, CO"},{"name":"High Rise Coffee","neighborhood":"Downtown, Colorado Springs","type":"Coffee","bucket":"Coffee & Sweets","lon":-104.86293,"lat":38.84613,"price":"$5","notes":"cucharras","address":"2421 W Cucharras St, Colorado Springs, CO"},{"name":"Carnelian Coffee","neighborhood":"Old Colorado City, Colorado Springs","type":"Coffee","bucket":"Coffee & Sweets","lon":-104.86221,"lat":38.84714,"price":"$5","notes":"w colorado ave","address":"2428 W Colorado Ave, Colorado Springs, CO"},{"name":"Corter Coffee","neighborhood":"South 8th, Colorado Springs","type":"Coffee","bucket":"Coffee & Sweets","lon":-104.84126,"lat":38.82784,"price":"$5","notes":"origin over technique","address":"406 S 8th St B, Colorado Springs, CO"},{"name":"Building Three Coffee","neighborhood":"Downtown, Colorado Springs","type":"Coffee","bucket":"Coffee & Sweets","lon":-104.82224,"lat":38.8714,"price":"$5","notes":"cascade","address":"2727 N Cascade Ave Ste 155, Colorado Springs, CO"},{"name":"Coaltrain Fine Wine","neighborhood":"West Side, Colorado Springs","type":"Wine Shop","bucket":"Shopping","lon":-104.8306,"lat":38.85128,"price":"$","notes":"long time indie bottle shop","address":"330 W Uintah St, Colorado Springs, CO"},{"name":"The Wine Gallery","neighborhood":"Downtown, Colorado Springs","type":"Wine Shop","bucket":"Shopping","lon":-104.82389,"lat":38.91702,"price":"$","notes":"small production","address":"5903 Delmonico Dr, Colorado Springs, CO"},{"name":"Uva Wine Bar","neighborhood":"Downtown, Colorado Springs","type":"Wine Bar","bucket":"Drink","lon":-104.80496,"lat":38.99178,"price":"$14 glasses","notes":"downtown wine bar","address":"1268 Interquest Pkwy #160, Colorado Springs, CO"},{"name":"Shame & Regret","neighborhood":"Downtown, Colorado Springs","type":"Whiskey Bar","bucket":"Drink","lon":-104.8243,"lat":38.83637,"price":"$14 drinks","notes":"back alley, 120 single malts","address":"15 E Bijou St Ste c, Colorado Springs, CO"},{"name":"Bristol Brewing","neighborhood":"Ivywild, Colorado Springs","type":"Brewery","bucket":"Drink","lon":-104.82714,"lat":38.81111,"price":"$7 beers","notes":"in the old school, board games, kids ok","address":"1604 S Cascade Ave, Colorado Springs, CO"},{"name":"Ivywild School","neighborhood":"Ivywild, Colorado Springs","type":"Food Hall","bucket":"Eat","lon":-104.82749,"lat":38.81102,"price":"$15 pp","notes":"1916 schoolhouse, bbq, distillery, cornhole","address":"1604 S Cascade Ave, Colorado Springs, CO"},{"name":"Axe and the Oak Distillery","neighborhood":"Ivywild, Colorado Springs","type":"Distillery","bucket":"Drink","lon":-104.74174,"lat":38.83742,"price":"$12 drinks","notes":"whiskey, in ivywild","address":"4665 Town Center Dr #140, Colorado Springs, CO"},{"name":"Red Leg Brewing","neighborhood":"Garden of the Gods Rd, Colorado Springs","type":"Brewery","bucket":"Drink","lon":-104.87043,"lat":38.8964,"price":"$7 beers","notes":"turf yard, lawn games, kids out by 8","address":"2323 Garden of the Gods Rd Ste 107, Colorado Springs, CO"},{"name":"Lumen8 Rooftop Social","neighborhood":"Downtown, Colorado Springs","type":"Rooftop Bar","bucket":"Drink","lon":-104.82398,"lat":38.82805,"price":"$14 drinks","notes":"on the hyatt, sunset over the peak","address":"402 S Tejon St, Colorado Springs, CO"},{"name":"Rail Yard Gaming + Gastropub","neighborhood":"North Nevada, Colorado Springs","type":"Duckpin Bowling","bucket":"Activities","lon":-104.82136,"lat":38.87601,"price":"$25 pp","notes":"duckpin, pinball, book lanes for 8","address":"3030 N Nevada Ave Ste A, Colorado Springs, CO"},{"name":"Level Up VR","neighborhood":"Garden of the Gods Rd, Colorado Springs","type":"VR Arcade","bucket":"Activities","lon":-104.68812,"lat":38.85987,"price":"$30 pp","notes":"free roam vr, all ages","address":"7658 Colorado Tech Dr, Colorado Springs, CO"},{"name":"Cosmo's Magic Theater","neighborhood":"Downtown, Colorado Springs","type":"Magic Theater","bucket":"Music & Film","lon":-104.84195,"lat":38.89617,"price":"$30","notes":"close up magic, check schedule","address":"1045 Garden of the Gods Rd, Colorado Springs, CO"},{"name":"Colorado Springs Pioneers Museum","neighborhood":"Downtown, Colorado Springs","type":"Museum","bucket":"Activities","lon":-104.82282,"lat":38.83025,"price":"free","notes":"1903 courthouse, van briggle, closed sun mon","address":"Colorado Springs, Colorado Springs, CO"},{"name":"Ghost Town Museum","neighborhood":"West Side, Colorado Springs","type":"Museum","bucket":"Activities","lon":-104.86066,"lat":38.84044,"price":"$10","notes":"indoor 1890s town, gold panning","address":"400 21st St, Colorado Springs, CO"},{"name":"U.S. Olympic & Paralympic Museum","neighborhood":"Downtown, Colorado Springs","type":"Museum","bucket":"Activities","lon":-104.82962,"lat":38.82968,"price":"$25","notes":"indoor, interactive, good for teens","address":"Colorado Springs, Colorado Springs, CO"},{"name":"Garden of the Gods","neighborhood":"Garden of the Gods, Colorado Springs","type":"Park","bucket":"Activities","lon":-104.88617,"lat":38.8718,"price":"free","notes":"perkins central trail is paved and flat, go by 9","address":"1805 N 30th St, Colorado Springs, CO"},{"name":"Garden of the Gods Trading Post","neighborhood":"Garden of the Gods, Colorado Springs","type":"Trading Post","bucket":"Shopping","lon":-104.89271,"lat":38.86388,"price":"$","notes":"1900s, biggest gift shop, fine","address":"Garden of the Gods Park, Manitou Springs, CO"},{"name":"Rock Ledge Ranch","neighborhood":"Garden of the Gods, Colorado Springs","type":"Historic Site","bucket":"Activities","lon":-104.87144,"lat":38.87729,"price":"free","notes":"grounds open dawn to dusk, buildings summer only","address":"3105 Gateway Rd, Colorado Springs, CO"},{"name":"Red Rock Canyon Open Space","neighborhood":"West Side, Colorado Springs","type":"Park","bucket":"Activities","lon":-104.87849,"lat":38.85186,"price":"free","notes":"contemplative trail, use the west lot","address":"3550 W High St, Colorado Springs, CO"},{"name":"Ute Valley Park","neighborhood":"Rockrimmon, Colorado Springs","type":"Park","bucket":"Activities","lon":-104.85812,"lat":38.92508,"price":"free","notes":"short walk to the peak view","address":"1705 Vindicator Dr, Colorado Springs, CO"},{"name":"Palmer Park","neighborhood":"East, Colorado Springs","type":"Park","bucket":"Activities","lon":-104.7679,"lat":38.87851,"price":"free","notes":"grandview overlook, sunset","address":"3344-3376 Paseo Rd, Colorado Springs, CO"},{"name":"Bear Creek Nature Center","neighborhood":"West Side, Colorado Springs","type":"Nature Center","bucket":"Activities","lon":-104.87867,"lat":38.82943,"price":"free","notes":"short loops, tue-sat","address":"245 Bear Creek Rd, Colorado Springs, CO"},{"name":"Helen Hunt Falls","neighborhood":"North Cheyenne Canon, Colorado Springs","type":"Waterfall","bucket":"Activities","lon":-104.90304,"lat":38.7886,"price":"free","notes":"roadside falls, before 9 or after 3","address":"Colorado Springs, CO"},{"name":"Starsmore Visitor and Nature Center","neighborhood":"North Cheyenne Canon, Colorado Springs","type":"Nature Center","bucket":"Activities","lon":-104.86527,"lat":38.79084,"price":"free","notes":"hummingbird garden, canyon exhibits","address":"2120 S Cheyenne Canyon Rd, Colorado Springs, CO"},{"name":"Broadmoor Seven Falls","neighborhood":"Broadmoor, Colorado Springs","type":"Waterfall","bucket":"Activities","lon":-104.8487,"lat":38.82316,"price":"$20","notes":"shuttle from gold camp rd lot, elevator up","address":"1045 Lower Gold Camp Rd, Colorado Springs, CO"},{"name":"Cheyenne Mountain Zoo","neighborhood":"Broadmoor, Colorado Springs","type":"Zoo","bucket":"Activities","lon":-104.8357,"lat":38.80345,"price":"$40","notes":"on the mountainside, giraffes","address":"Colorado Springs, CO"},{"name":"The Broadmoor","neighborhood":"Broadmoor, Colorado Springs","type":"Hotel","bucket":"Activities","lon":-104.84994,"lat":38.79108,"price":"$","notes":"walk the lake","address":"1 Lake Ave, Colorado Springs, CO"},{"name":"Pikes Peak Highway","neighborhood":"Pikes Peak, Colorado Springs","type":"Scenic Drive","bucket":"Activities","lon":-104.76449,"lat":38.78924,"price":"$15 pp","notes":"no permit in oct, gate 9-3, donuts on top","address":"3465 Astrozon Ct, Colorado Springs, CO"},{"name":"Pikes Peak Cog Railway","neighborhood":"Ruxton, Manitou Springs","type":"Train","bucket":"Activities","lon":-104.9313,"lat":38.8561,"price":"$67","notes":"book online, pick seats, 3 hrs","address":"515 Ruxton Ave, Manitou Springs, CO"},{"name":"Manitou Incline","neighborhood":"Ruxton, Manitou Springs","type":"Trail","bucket":"Activities","lon":-104.93212,"lat":38.85684,"price":"free","notes":"watch from the base, timed reservation to climb","address":"Manitou Springs, CO"},{"name":"Manitou Springs Penny Arcade","neighborhood":"Manitou Ave, Manitou Springs","type":"Arcade","bucket":"Activities","lon":-104.918,"lat":38.85888,"price":"$","notes":"penny machines, bring quarters, closes in cold","address":"930 Manitou Ave, Manitou Springs, CO"},{"name":"Miramont Castle","neighborhood":"Manitou Ave, Manitou Springs","type":"Museum","bucket":"Activities","lon":-104.92249,"lat":38.85926,"price":"$15","notes":"1895, 9 styles, tearoom, closed mon","address":"9 Capitol Hill Ave, Manitou Springs, CO"},{"name":"Manitou Springs Heritage Center","neighborhood":"Manitou Ave, Manitou Springs","type":"Museum","bucket":"Activities","lon":-104.91188,"lat":38.85749,"price":"free","notes":"noon-4 daily, ghost tour start","address":"517 Manitou Ave, Manitou Springs, CO"},{"name":"Manitou Art Center","neighborhood":"Manitou Ave, Manitou Springs","type":"Art Center","bucket":"Activities","lon":-104.9113,"lat":38.85751,"price":"free","notes":"art-o-mat, fri sat only","address":"513 Manitou Ave, Manitou Springs, CO"},{"name":"Manitou Cliff Dwellings","neighborhood":"Highway 24, Manitou Springs","type":"Historic Site","bucket":"Activities","lon":-104.91235,"lat":38.86307,"price":"$14","notes":"walk into the rooms","address":"10 Cliff Rd, Manitou Springs, CO"},{"name":"Cave of the Winds","neighborhood":"Highway 24, Manitou Springs","type":"Cave","bucket":"Activities","lon":-104.9222,"lat":38.87147,"price":"$30","notes":"discovery tour, 196 stairs","address":"100 Cave of the Winds Rd, Cascade, CO"},{"name":"Iron Springs Chateau","neighborhood":"Ruxton, Manitou Springs","type":"Dinner Theater","bucket":"Music & Film","lon":-104.93014,"lat":38.85632,"price":"$50","notes":"melodrama, call for nights","address":"444 Ruxton Ave, Manitou Springs, CO"},{"name":"Seven Minute Spring","neighborhood":"Manitou Ave, Manitou Springs","type":"Mineral Spring","bucket":"Activities","lon":-104.91168,"lat":38.85868,"price":"free","notes":"start of the springs walk, bring a cup","address":"422 Washington Ave, Manitou Springs, CO"},{"name":"Cheyenne Spring","neighborhood":"Manitou Ave, Manitou Springs","type":"Mineral Spring","bucket":"Activities","lon":-104.91833,"lat":38.85899,"price":"free","notes":"tastes best","address":"934 Manitou Ave, Manitou Springs, CO"},{"name":"Iron Spring Geyser","neighborhood":"Ruxton, Manitou Springs","type":"Mineral Spring","bucket":"Activities","lon":-104.92832,"lat":38.85685,"price":"free","notes":"strongest tonic","address":"Manitou Springs, CO"},{"name":"Adam's Mountain Cafe","neighborhood":"Manitou Ave, Manitou Springs","type":"Cafe","bucket":"Eat","lon":-104.88903,"lat":38.85736,"price":"$20 pp","notes":"40 years, slow food, breakfast","address":"26 Manitou Ave, Manitou Springs, CO"},{"name":"Manitou Thai & Ramen","neighborhood":"Manitou Ave, Manitou Springs","type":"Thai","bucket":"Eat","lon":-104.91711,"lat":38.85777,"price":"$18 pp","notes":"barker house lobby, pa lo pork belly","address":"819 Manitou Ave, Manitou Springs, CO"},{"name":"Swirl Wine Bar","neighborhood":"Manitou Ave, Manitou Springs","type":"Wine Bar","bucket":"Drink","lon":-104.91533,"lat":38.85711,"price":"$12 glasses","notes":"locals, 24h notice for 8","address":"717 Manitou Ave, Manitou Springs, CO"},{"name":"Crystal Park Cantina","neighborhood":"Crystal Park Rd, Manitou Springs","type":"Mexican","bucket":"Eat","lon":-104.89668,"lat":38.85259,"price":"$18 pp","notes":"patio, easy with 8","address":"178 Crystal Park Rd, Manitou Springs, CO"},{"name":"Starving Colorado Creperie","neighborhood":"Manitou Ave, Manitou Springs","type":"Ice Cream","bucket":"Coffee & Sweets","lon":-104.91521,"lat":38.85733,"price":"$8","notes":"whiskey pistachio","address":"720 Manitou Ave, Manitou Springs, CO"},{"name":"Sahara Cafe","neighborhood":"Manitou Ave, Manitou Springs","type":"Middle Eastern","bucket":"Eat","lon":-104.91897,"lat":38.85914,"price":"$14 pp","notes":"coffee, hummus, patio","address":"954 Manitou Ave, Manitou Springs, CO"},{"name":"Townhouse Sports Bar & Grill","neighborhood":"Manitou Ave, Manitou Springs","type":"Sports Bar","bucket":"Drink","lon":-104.91775,"lat":38.85822,"price":"$7 drinks","notes":"pool tables, beer garden","address":"907 Manitou Ave, Manitou Springs, CO"},{"name":"Border Burger Bar","neighborhood":"Manitou Ave, Manitou Springs","type":"Burgers","bucket":"Eat","lon":-104.91826,"lat":38.85907,"price":"$14 pp","notes":"creekside patio, a few games","address":"934 Manitou Ave, Manitou Springs, CO"},{"name":"Kinfolks","neighborhood":"Manitou Ave, Manitou Springs","type":"Bar","bucket":"Drink","lon":-104.91883,"lat":38.8591,"price":"$7 beers","notes":"small, eclectic, live music","address":"950 Manitou Ave, Manitou Springs, CO"},{"name":"Korean Garden","neighborhood":"Fountain Mesa, Fountain","type":"Korean","bucket":"Eat","lon":-104.70007,"lat":38.71446,"price":"$16 pp","notes":"unlimited banchan, daily, roomy","address":"8025 Fountain Mesa Rd, Fountain, CO"},{"name":"Green Box Skyspace","neighborhood":"Green Mountain Falls, Ute Pass","type":"Art Installation","bucket":"Activities","lon":-105.01432,"lat":38.93451,"price":"$","notes":"turrell sunset show, 25 seats, thu-sun","address":"6990 Lake St, Green Mountain Falls, CO"},{"name":"Rocky Mountain Dinosaur Resource Center","neighborhood":"Woodland Park, Ute Pass","type":"Museum","bucket":"Activities","lon":-105.05112,"lat":38.99395,"price":"$13","notes":"30 skeletons, working lab","address":"201 S Fairview St, Woodland Park, CO"},{"name":"Mueller State Park","neighborhood":"Divide, Ute Pass","type":"State Park","bucket":"Activities","lon":-105.16182,"lat":38.88456,"price":"$15 car","notes":"drive up overlooks, elk","address":"21045 CO-67, Divide, CO"},{"name":"Mollie Kathleen Gold Mine","neighborhood":"Cripple Creek, Cripple Creek","type":"Mine Tour","bucket":"Activities","lon":-105.16054,"lat":38.75304,"price":"$35","notes":"1000 ft down, ends late oct","address":"Cripple Creek, CO"},{"name":"Cripple Creek Heritage Center","neighborhood":"Cripple Creek, Cripple Creek","type":"Museum","bucket":"Activities","lon":-105.16299,"lat":38.7514,"price":"free","notes":"overlook of the district, daily","address":"9283 CO-67, Cripple Creek, CO"},{"name":"Victor Lowell Thomas Museum","neighborhood":"Victor, Cripple Creek","type":"Museum","bucket":"Activities","lon":-105.13989,"lat":38.71002,"price":"$","notes":"the sleepier mining town","address":"298 Victor Ave, Victor, CO"},{"name":"Paint Mines Interpretive Park","neighborhood":"Calhan, Calhan","type":"Park","bucket":"Activities","lon":-104.27437,"lat":39.02072,"price":"free","notes":"hoodoos on the prairie, golden hour","address":"29950 Paint Mine Rd, Calhan, CO"},{"name":"Gray's Coors Tavern","neighborhood":"Downtown, Pueblo","type":"Slopper","bucket":"Eat","lon":-104.61402,"lat":38.27075,"price":"$14 pp","notes":"birthplace of the slopper, 2026 champ","address":"515 W 4th St, Pueblo, CO"},{"name":"Cactus Flower","neighborhood":"North, Pueblo","type":"Mexican","bucket":"Eat","lon":-104.6172,"lat":38.31945,"price":"$16 pp","notes":"slopper runner up, big room","address":"4610 N Elizabeth St, Pueblo, CO"},{"name":"Sunset Inn","neighborhood":"South, Pueblo","type":"Slopper","bucket":"Eat","lon":-104.64433,"lat":38.25833,"price":"$12 pp","notes":"gray's rival, open till 2","address":"2808 Thatcher Ave, Pueblo, CO"},{"name":"Musso Farms","neighborhood":"Highway 50, Pueblo","type":"Farm Stand","bucket":"Groceries","lon":-104.46108,"lat":38.24389,"price":"$","notes":"since 1904, roasted pueblo chile","address":"35779 Hillside Rd, Pueblo, CO"},{"name":"Milberger Farms","neighborhood":"Highway 50, Pueblo","type":"Farm Stand","bucket":"Groceries","lon":-104.51922,"lat":38.24473,"price":"$","notes":"roasted chile, 7-3","address":"28570 E US Hwy 50, Pueblo, CO"},{"name":"Pueblo Riverwalk","neighborhood":"Downtown, Pueblo","type":"Park","bucket":"Activities","lon":-104.60907,"lat":38.26526,"price":"free","notes":"canal walk, boats done for the season","address":"130 E Riverwalk, Pueblo, CO"},{"name":"Royal Gorge Bridge","neighborhood":"Royal Gorge, Cañon City","type":"Bridge","bucket":"Activities","lon":-105.30984,"lat":38.46026,"price":"$35","notes":"walk the bridge, gondola","address":"4218 Co Rd 3A, Cañon City, CO"},{"name":"Royal Gorge Route Railroad","neighborhood":"Downtown, Cañon City","type":"Train","bucket":"Activities","lon":-105.24055,"lat":38.438,"price":"$90","notes":"lunch train on the river","address":"401 Water St, Cañon City, CO"},{"name":"Museum of Colorado Prisons","neighborhood":"Downtown, Cañon City","type":"Museum","bucket":"Activities","lon":-105.2473,"lat":38.43944,"price":"$12","notes":"1935 women's prison","address":"201 N 1st St, Cañon City, CO"},{"name":"Colorado Pinball Pub","neighborhood":"Monument, Monument","type":"Pinball","bucket":"Activities","lon":-104.8649,"lat":39.09374,"price":"$","notes":"200 whiskeys, call re minors","address":"303 E Hwy 105, Monument, CO"},{"name":"Chef Liu's Kitchen","neighborhood":"Havana St, Aurora","type":"Sichuan","bucket":"Eat","lon":-104.86551,"lat":39.67587,"price":"$22 pp","notes":"mouthwatering chicken, watch the wok, open mon","address":"2222 S Havana St Unit A2, Aurora, CO"},{"name":"Nile Ethiopian","neighborhood":"Havana St, Aurora","type":"Ethiopian","bucket":"Eat","lon":-104.86735,"lat":39.68083,"price":"$22 pp","notes":"40 years, big platters, coffee ceremony","address":"1951 S Havana St, Aurora, CO"},{"name":"Tofu Story","neighborhood":"Havana St, Aurora","type":"Korean","bucket":"Eat","lon":-104.86524,"lat":39.67902,"price":"$22 pp","notes":"house tofu, soondubu, daily","address":"2060 S Havana St, Aurora, CO"},{"name":"Yemen Grill","neighborhood":"Havana St, Aurora","type":"Yemeni","bucket":"Eat","lon":-104.86766,"lat":39.6741,"price":"$14 pp","notes":"lamb over basmati","address":"2353 S Havana St UnitD#15A, Aurora, CO"},{"name":"Pupusas La Salvadoreña","neighborhood":"Havana St, Aurora","type":"Salvadoran","bucket":"Eat","lon":-104.86541,"lat":39.72013,"price":"$10 pp","notes":"loroco pupusas","address":"304 Havana St, Aurora, CO"},{"name":"Shin Myung Gwan","neighborhood":"Havana St, Aurora","type":"Korean BBQ","bucket":"Eat","lon":-104.86434,"lat":39.66782,"price":"$35 pp","notes":"spicy pork, mom ships the spices","address":"2680 S Havana St B, Aurora, CO"},{"name":"Coffee Story by Barakah Brews","neighborhood":"Havana St, Aurora","type":"Coffee","bucket":"Coffee & Sweets","lon":-104.86558,"lat":39.67588,"price":"$6","notes":"late night","address":"2222 S Havana St Unit A1, Aurora, CO"},{"name":"Dân Dã","neighborhood":"East Colfax, Aurora","type":"Vietnamese","bucket":"Eat","lon":-104.87244,"lat":39.74038,"price":"$28 pp","notes":"new saigon daughters, clay pot catfish, closed mon","address":"9945 East Colfax Avenue, Aurora, CO"},{"name":"Society 303","neighborhood":"East Colfax, Aurora","type":"Natural Wine Bar","bucket":"Drink","lon":-105.00087,"lat":39.74913,"price":"$14 glasses","notes":"next to dan da, opened 2025","address":"1434 Blake St, Denver, CO"},{"name":"La Plaza Colorado","neighborhood":"East Colfax, Aurora","type":"Food Hall","bucket":"Eat","lon":-104.8118,"lat":39.73828,"price":"$12 pp","notes":"24 latin kitchens","address":"15200 E Colfax Ave Unit B, Aurora, CO"},{"name":"Stanley Marketplace","neighborhood":"Stapleton, Aurora","type":"Food Hall","bucket":"Eat","lon":-104.87706,"lat":39.75283,"price":"$20 pp","notes":"old hangar, 20 min to den, open mon","address":"2501 Dallas St, Aurora, CO"},{"name":"Annette","neighborhood":"Stapleton, Aurora","type":"New American","bucket":"Eat","lon":-104.87752,"lat":39.75258,"price":"$45 pp","notes":"bib gourmand, in stanley","address":"2501 Dallas St Ste 108, Aurora, CO"},{"name":"Bánh & Butter","neighborhood":"Aurora, Aurora","type":"Bakery","bucket":"Coffee & Sweets","lon":-104.8725,"lat":39.74034,"price":"$8","notes":"french viet crepe cakes","address":"9935 E Colfax Ave, Aurora, CO"},{"name":"Rocky Mountain Momo","neighborhood":"Arapahoe Rd, Englewood","type":"Nepali","bucket":"Eat","lon":-104.87695,"lat":39.59426,"price":"$14 pp","notes":"kathmandu couple, choila, closed mon","address":"9678 E Arapahoe Rd, Greenwood Village, CO"},{"name":"MAKfam","neighborhood":"Baker, Denver","type":"Chinese","bucket":"Eat","lon":-104.98791,"lat":39.71847,"price":"$30 pp","notes":"bib gourmand, mala wings, open mon closed tue","address":"39 West 1st Avenue, Denver, CO"},{"name":"Yuan Wonton","neighborhood":"Park Hill, Denver","type":"Chinese","bucket":"Eat","lon":-104.92811,"lat":39.75788,"price":"$40 pp","notes":"tue-fri lunch only, book","address":"2878 Fairfax St, Denver, CO"},{"name":"Pig and Tiger","neighborhood":"Five Points, Denver","type":"Taiwanese","bucket":"Eat","lon":-104.98466,"lat":39.75081,"price":"$50 pp","notes":"fried chicken hot honey, closed mon","address":"2200 California St, Denver, CO"},{"name":"El Taco de Mexico","neighborhood":"La Alma, Denver","type":"Taqueria","bucket":"Eat","lon":-104.9983,"lat":39.72749,"price":"$12 pp","notes":"40 years, lengua, the green chile","address":"714 Santa Fe Dr, Denver, CO"},{"name":"Tacos Marlene","neighborhood":"South Federal, Denver","type":"Taqueria","bucket":"Eat","lon":-104.95929,"lat":39.67897,"price":"$10 pp","notes":"barbacoa, crispy tripa","address":"2060 S University Blvd, Denver, CO"},{"name":"Tacos Selene","neighborhood":"Santa Fe Dr, Denver","type":"Taqueria","bucket":"Eat","lon":-104.96182,"lat":39.74024,"price":"$10 pp","notes":"trompo pastor","address":"2101 E Colfax Ave, Denver, CO"},{"name":"Ô Liên Kitchen","neighborhood":"South Federal, Denver","type":"Vietnamese","bucket":"Eat","lon":-105.02549,"lat":39.70264,"price":"$16 pp","notes":"hue food, bun bo hue","address":"781 S Federal Blvd B, Denver, CO"},{"name":"New Saigon Bakery & Deli","neighborhood":"South Federal, Denver","type":"Banh Mi","bucket":"Eat","lon":-105.02464,"lat":39.70474,"price":"$9","notes":"16 banh mi, road food for den","address":"640 S Federal Blvd, Denver, CO"},{"name":"Pho Duy","neighborhood":"South Federal, Denver","type":"Vietnamese","bucket":"Eat","lon":-104.84473,"lat":39.72672,"price":"$14 pp","notes":"the pho","address":"680 Peoria St, Aurora, CO"},{"name":"Star Kitchen","neighborhood":"Athmar Park, Denver","type":"Dim Sum","bucket":"Eat","lon":-105.02426,"lat":39.69727,"price":"$25 pp","notes":"cantonese, live tanks, no dim sum wed","address":"2917 W Mississippi Ave, Denver, CO"},{"name":"Com Nha Kitchen & Bar","neighborhood":"Harvey Park, Denver","type":"Vietnamese","bucket":"Eat","lon":-105.05359,"lat":39.67794,"price":"$28 pp","notes":"tiger moon snails, pho tacos","address":"2133 S Sheridan Blvd, Denver, CO"},{"name":"Adobo","neighborhood":"Highland, Denver","type":"Filipino","bucket":"Eat","lon":-105.02546,"lat":39.76105,"price":"$18 pp","notes":"filipino x new mexico, longsilog","address":"3109 N Federal Blvd, Denver, CO"},{"name":"Woody's Wings & Things","neighborhood":"Westminster, Denver","type":"Lao","bucket":"Eat","lon":-105.03502,"lat":39.82044,"price":"$18 pp","notes":"binder menu, duck larb, whole fish","address":"6817 Lowell Blvd, Westminster, CO"},{"name":"Ohana Island Kitchen","neighborhood":"LoHi, Denver","type":"Hawaiian","bucket":"Eat","lon":-105.01136,"lat":39.7582,"price":"$16 pp","notes":"shoyu poke, spam musubi","address":"2563 15th St Ste. 105, Denver, CO"},{"name":"Insee Father Noodle House","neighborhood":"LoHi, Denver","type":"Thai","bucket":"Eat","lon":-105.04495,"lat":39.76904,"price":"$18 pp","notes":"street noodles, opened nov 2025","address":"4450 W 38th Ave #130, Denver, CO"},{"name":"Cimera","neighborhood":"RiNo, Denver","type":"Peruvian","bucket":"Eat","lon":-104.98056,"lat":39.76875,"price":"$55 pp","notes":"rooftop, anticuchos","address":"3330 Brighton Blvd #200-2, Denver, CO"},{"name":"Xiquita","neighborhood":"Uptown, Denver","type":"Mexican Fine Dining","bucket":"Eat","lon":-104.98083,"lat":39.74602,"price":"$70 pp","notes":"nixtamal, duck carnitas","address":"500 E 19th Ave, Denver, CO"},{"name":"Kizaki","neighborhood":"Sunnyside, Denver","type":"Omakase","bucket":"Eat","lon":-104.98068,"lat":39.68844,"price":"$200 pp","notes":"one star","address":"1551 S Pearl St, Denver, CO"},{"name":"Mondo Vino","neighborhood":"Highland, Denver","type":"Wine Shop","bucket":"Shopping","lon":-105.03475,"lat":39.76221,"price":"$","notes":"organic and biodynamic bottles","address":"3601 W 32nd Ave, Denver, CO"},{"name":"Proof Wine & Spirits","neighborhood":"RiNo, Denver","type":"Wine Shop","bucket":"Shopping","lon":-104.97576,"lat":39.76588,"price":"$","notes":"small production","address":"3360 Larimer St, Denver, CO"},{"name":"Cafe Tres","neighborhood":"Curtis Park, Denver","type":"Bakery","bucket":"Coffee & Sweets","lon":-104.97708,"lat":39.75942,"price":"$7","notes":"guava queso pastelitos","address":"2960 Champa St, Denver, CO"},{"name":"Rebel Bread","neighborhood":"South Broadway, Denver","type":"Bakery","bucket":"Coffee & Sweets","lon":-104.98849,"lat":39.70497,"price":"$8","notes":"cacio e pepe croissant","address":"675 S Broadway Ste 600, Denver, CO"},{"name":"Reunion Bakery","neighborhood":"RiNo, Denver","type":"Bakery","bucket":"Coffee & Sweets","lon":-104.98013,"lat":39.6941,"price":"$7","notes":"venezuelan golfeados","address":"1240 S Pearl St, Denver, CO"},{"name":"Coffee Sarap","neighborhood":"RiNo, Denver","type":"Coffee","bucket":"Coffee & Sweets","lon":-104.97486,"lat":39.7665,"price":"$6","notes":"ube cold brew","address":"3460 Larimer St, Denver, CO"},{"name":"Meow Wolf Convergence Station","neighborhood":"Sun Valley, Denver","type":"Art Museum","bucket":"Activities","lon":-105.01567,"lat":39.74096,"price":"$50","notes":"4 floors, 3 hrs, timed entry, verify mon","address":"1338 1st St, Denver, CO"},{"name":"Denver Art Museum","neighborhood":"Golden Triangle, Denver","type":"Museum","bucket":"Activities","lon":-104.98962,"lat":39.73744,"price":"$25","notes":"open mon, under 18 free","address":"100 West 14th Avenue Parkway, Denver, CO"},{"name":"Union Station","neighborhood":"LoDo, Denver","type":"Train Station","bucket":"Activities","lon":-105.00279,"lat":39.75557,"price":"free","notes":"great hall, snacks, rest stop","address":"Denver, CO"},{"name":"Red Rocks Park","neighborhood":"Morrison, Morrison","type":"Park","bucket":"Activities","lon":-105.20522,"lat":39.66555,"price":"free","notes":"walk the rows, visitor center 7-7, morning only oct 12","address":"18300 W Alameda Pkwy, Morrison, CO"}];
+</script>
+<script>
+/* Seattle map — personal list. No external reviews or ratings; notes are the author's own. */
+(function () {
+  "use strict";
+
+  var BUCKETS = [
+    { key: "Eat",             color: "#A8442F" },
+    { key: "Drink",           color: "#35636F" },
+    { key: "Coffee & Sweets", color: "#8A5B34" },
+    { key: "Music & Film",    color: "#6B5480" },
+    { key: "Shopping",        color: "#3E6B52" },
+    { key: "Groceries",       color: "#8E6C22" },
+    { key: "Activities",      color: "#9A4667" }
+  ];
+  var BC = {}; BUCKETS.forEach(function (b) { BC[b.key] = b; });
+
+  /* the sheet spells a few neighborhoods more than one way; settle them here
+     so the filter and the group headings don't split in two. */
+  var HOOD_FIX = {
+    "Capitol HIll": "Capitol Hill",
+    "Greenlake": "Green Lake",
+    "Lower Queen Anne (Uptown)": "Lower Queen Anne",
+    "Many": "Around town"
+  };
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function shorten(s, n) {
+    s = String(s);
+    return s.length <= n ? s : s.slice(0, n - 1).replace(/[\s,;:.-]+$/, "") + "…";
+  }
+
+  var HOME = { center: [-104.86, 38.85], zoom: 10.3 };
+  var LABEL_ZOOM = 13.2;   // pins become named labels
+  var NOTE_ZOOM  = 14.6;   // labels also carry the note
+
+  var state = { bucket: "All", hood: "All", q: "", sel: null, moveSearch: false, bounds: null };
+  var markers = [], cardEls = [];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var cardsEl = $("cards"), countEl = $("count"), subEl = $("sub");
+
+  PLACES.forEach(function (p, i) {
+    p._i = i;
+    if (HOOD_FIX[p.neighborhood]) p.neighborhood = HOOD_FIX[p.neighborhood];
+  });
+
+  /* ──────────────── map ──────────────── */
+  mapboxgl.accessToken = MAPBOX_TOKEN;
+  var map = new mapboxgl.Map({
+    container: "map",
+    style: "mapbox://styles/mapbox/light-v11",
+    center: HOME.center,
+    zoom: HOME.zoom,
+    minZoom: 8,
+    maxZoom: 18,
+    attributionControl: true,
+    cooperativeGestures: false
+  });
+  map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), "bottom-right");
+  map.addControl(new mapboxgl.GeolocateControl({ positionOptions: { enableHighAccuracy: true }, trackUserLocation: false }), "bottom-right");
+
+  /* ──────────────── markers ──────────────── */
+  PLACES.forEach(function (p, i) {
+    var b = BC[p.bucket] || BUCKETS[0];
+    var el = document.createElement("div");
+    el.className = "mk";
+    el.innerHTML =
+      '<div class="dot" style="background:' + b.color + '"></div>' +
+      '<div class="lab"><i style="background:' + b.color + '"></i>' +
+      '<span>' + esc(p.name) + '</span>' +
+      (p.notes ? ' <em class="nt">' + esc(shorten(p.notes, 34)) + '</em>' : '') +
+      '</div>';
+    el.addEventListener("click", function (e) { e.stopPropagation(); select(i, true); });
+    el.addEventListener("mouseenter", function () { hover(i, true); });
+    el.addEventListener("mouseleave", function () { hover(i, false); });
+    var m = new mapboxgl.Marker({ element: el, anchor: "center" })
+      .setLngLat([p.lon, p.lat]).addTo(map);
+    markers.push({ el: el, m: m, p: p });
+  });
+
+  function applyZoomClass() {
+    var z = map.getZoom();
+    document.body.classList.toggle("zlab", z >= LABEL_ZOOM);
+    var showNotes = z >= NOTE_ZOOM;
+    markers.forEach(function (mk) {
+      var nt = mk.el.querySelector(".nt");
+      if (nt) nt.style.display = showNotes ? "" : "none";
+    });
+  }
+
+  /* Hide labels that would overlap, so the map never looks like a pile of pills.
+     Priority: the selected place first, then whatever is nearest the map centre. */
+  var declutterPending = false;
+  function declutter() {
+    declutterPending = false;
+    if (!document.body.classList.contains("zlab")) {
+      markers.forEach(function (mk) { mk.el.classList.remove("clash"); });
+      return;
+    }
+    var pane = document.getElementById("map").getBoundingClientRect();
+    var cx = pane.left + pane.width / 2, cy = pane.top + pane.height / 2;
+    var live = [];
+    markers.forEach(function (mk) {
+      mk.el.classList.remove("clash");
+      if (mk.el.style.display === "none") return;
+      var r = mk.el.getBoundingClientRect();
+      if (r.width === 0 || r.right < pane.left || r.left > pane.right ||
+          r.bottom < pane.top || r.top > pane.bottom) return;
+      var dx = (r.left + r.right) / 2 - cx, dy = (r.top + r.bottom) / 2 - cy;
+      live.push({ mk: mk, r: r, d: Math.sqrt(dx * dx + dy * dy), sel: mk.p._i === state.sel });
+    });
+    live.sort(function (a, b) { return (b.sel - a.sel) || (a.d - b.d); });
+    var placed = [];
+    live.forEach(function (o) {
+      var r = o.r, pad = 3, hit = false;
+      for (var i = 0; i < placed.length; i++) {
+        var q = placed[i];
+        if (r.left - pad < q.right && r.right + pad > q.left &&
+            r.top - pad < q.bottom && r.bottom + pad > q.top) { hit = true; break; }
+      }
+      if (hit) o.mk.el.classList.add("clash");
+      else placed.push(r);
+    });
+  }
+  function queueDeclutter() {
+    if (declutterPending) return;
+    declutterPending = true;
+    requestAnimationFrame(declutter);
+  }
+
+  map.on("zoom", function () { applyZoomClass(); queueDeclutter(); });
+  map.on("move", queueDeclutter);
+  map.on("load", function () { applyZoomClass(); render(); queueDeclutter(); });
+  map.on("moveend", function () {
+    if (state.moveSearch) { state.bounds = map.getBounds(); render(); }
+    queueDeclutter();
+  });
+  map.on("click", function () { select(null); });
+
+  /* ──────────────── filtering ──────────────── */
+  function visible() {
+    var q = state.q.trim().toLowerCase();
+    return PLACES.filter(function (p) {
+      if (state.bucket !== "All" && p.bucket !== state.bucket) return false;
+      if (state.hood !== "All" && p.neighborhood !== state.hood) return false;
+      if (q) {
+        var hay = (p.name + " " + p.type + " " + p.neighborhood + " " + (p.notes || "") + " " + (p.price || "")).toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
+      if (state.moveSearch && state.bounds) {
+        var b = state.bounds;
+        if (p.lon < b.getWest() || p.lon > b.getEast() || p.lat < b.getSouth() || p.lat > b.getNorth()) return false;
+      }
+      return true;
+    });
+  }
+
+  function render() {
+    var list = visible();
+    var on = {}; list.forEach(function (p) { on[p._i] = 1; });
+
+    markers.forEach(function (mk) {
+      mk.el.style.display = on[mk.p._i] ? "" : "none";
+    });
+
+    countEl.innerHTML = list.length + (list.length === 1 ? " <em>place</em>" : " <em>places</em>");
+    var bits = [];
+    if (state.bucket !== "All") bits.push(state.bucket.toLowerCase());
+    if (state.hood !== "All") bits.push("in " + state.hood);
+    if (state.q.trim()) bits.push("matching “" + state.q.trim() + "”");
+    subEl.textContent = bits.length ? bits.join(" ") : "pikes peak to denver";
+
+    cardsEl.innerHTML = "";
+    cardEls = [];
+    if (!list.length) {
+      cardsEl.innerHTML = '<div class="empty"><b>Nothing here yet</b>Try another category, another neighborhood, or a looser search.</div>';
+      return;
+    }
+
+    /* group by neighborhood — it reads like the list it is, rather than a feed */
+    var LAST = "Around town";   // the chains sit at the bottom, not the top
+    var sorted = list.slice().sort(function (a, b) {
+      if (a.neighborhood !== b.neighborhood) {
+        if (a.neighborhood === LAST) return 1;
+        if (b.neighborhood === LAST) return -1;
+        return a.neighborhood < b.neighborhood ? -1 : 1;
+      }
+      return a.name < b.name ? -1 : 1;
+    });
+    var counts = {};
+    sorted.forEach(function (p) { counts[p.neighborhood] = (counts[p.neighborhood] || 0) + 1; });
+
+    var frag = document.createDocumentFragment(), lastHood = null;
+    sorted.forEach(function (p) {
+      if (p.neighborhood !== lastHood) {
+        lastHood = p.neighborhood;
+        var g = document.createElement("div");
+        g.className = "grp";
+        g.innerHTML = "<span>" + esc(p.neighborhood) + "</span><em>" + counts[p.neighborhood] + "</em>";
+        frag.appendChild(g);
+      }
+      var b = BC[p.bucket] || BUCKETS[0];
+      var el = document.createElement("button");
+      el.className = "card";
+      el.type = "button";
+      el.style.setProperty("--accent", b.color);
+      el.innerHTML =
+        '<div class="c-main">' +
+          '<h3>' + esc(p.name) + '</h3>' +
+          '<div class="c-type"><i style="background:' + b.color + '"></i>' + esc(p.type) + '</div>' +
+          (p.notes ? '<div class="c-note">' + esc(p.notes) + '</div>' : '') +
+        '</div>' +
+        '<div class="c-side">' +
+          (p.price ? '<div class="c-price">' + esc(p.price) + '</div>' : '') +
+          (p.multi ? '<span class="c-multi">several</span>' : '') +
+        '</div>';
+      el.addEventListener("click", function () { select(p._i, false, true); });
+      el.addEventListener("mouseenter", function () { hover(p._i, true); });
+      el.addEventListener("mouseleave", function () { hover(p._i, false); });
+      cardEls[p._i] = el;
+      frag.appendChild(el);
+    });
+    cardsEl.appendChild(frag);
+
+    var end = document.createElement("div");
+    end.className = "endnote";
+    end.textContent = "That’s the whole list. No ratings and no reviews, just places I’ve been and what I remember about them.";
+    cardsEl.appendChild(end);
+
+    if (state.sel != null && cardEls[state.sel]) cardEls[state.sel].classList.add("sel");
+    queueDeclutter();
+  }
+
+  function hover(i, on) {
+    if (markers[i]) markers[i].el.classList.toggle("hot", on);
+    if (cardEls[i]) cardEls[i].classList.toggle("hot", on);
+  }
+
+  /* ──────────────── selection + detail ──────────────── */
+  var sheet = $("sheet");
+  var PIN_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>';
+  var TAG_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 6.5c0-2-2.2-3-5-3s-5 1-5 3 2.2 2.8 5 3.5 5 1.5 5 3.5-2.2 3-5 3-5-1-5-3"/></svg>';
+
+  function select(i, fromMarker, fromCard) {
+    if (state.sel != null) {
+      if (markers[state.sel]) markers[state.sel].el.classList.remove("sel");
+      if (cardEls[state.sel]) cardEls[state.sel].classList.remove("sel");
+    }
+    state.sel = i;
+    if (i == null) { sheet.classList.remove("on"); return; }
+
+    var p = PLACES[i], b = BC[p.bucket] || BUCKETS[0];
+    if (markers[i]) markers[i].el.classList.add("sel");
+    if (cardEls[i]) {
+      cardEls[i].classList.add("sel");
+      if (fromMarker) cardEls[i].scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+
+    $("shcat").innerHTML = '<i style="background:' + b.color + '"></i>' + esc(p.bucket);
+    $("shname").textContent = p.name;
+    $("shmeta").textContent = p.type + " · " + p.neighborhood;
+
+    var addr = $("shaddr");
+    addr.innerHTML = p.address
+      ? PIN_SVG + '<div>' + esc(p.address) + (p.multi ? ' <span style="color:var(--ink-3)">(one of several)</span>' : '') + '</div>'
+      : "";
+    addr.style.display = p.address ? "" : "none";
+
+    var price = $("shprice");
+    price.innerHTML = p.price ? TAG_SVG + '<div>' + esc(p.price) + '</div>' : "";
+    price.style.display = p.price ? "" : "none";
+
+    var noteEl = $("shnote");
+    if (p.notes) { noteEl.textContent = p.notes; noteEl.style.display = ""; }
+    else { noteEl.style.display = "none"; }
+    sheet.classList.add("on");
+    killHint();
+
+    if (fromCard) {
+      if (window.innerWidth <= 900) { document.body.classList.add("mapview"); syncToggle(); }
+      map.flyTo({ center: [p.lon, p.lat], zoom: Math.max(map.getZoom(), NOTE_ZOOM), speed: 1.5, curve: 1.3, essential: true });
+    } else if (fromMarker) {
+      var z = map.getZoom();
+      if (z < LABEL_ZOOM) map.easeTo({ center: [p.lon, p.lat], zoom: LABEL_ZOOM + 0.4, duration: 600 });
+    }
+  }
+  $("shclose").addEventListener("click", function (e) { e.stopPropagation(); select(null); });
+  sheet.addEventListener("click", function (e) { e.stopPropagation(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") select(null); });
+
+  /* ──────────────── controls ──────────────── */
+  var filtersEl = $("filters");
+  (function buildFilters() {
+    var c = { All: PLACES.length };
+    PLACES.forEach(function (p) { c[p.bucket] = (c[p.bucket] || 0) + 1; });
+    var items = [{ key: "All", color: null }].concat(BUCKETS);
+    items.forEach(function (b) {
+      var el = document.createElement("button");
+      el.className = "filt" + (b.key === "All" ? " on" : "");
+      el.innerHTML = (b.color ? '<span class="dot" style="background:' + b.color + '"></span>' : "") +
+                     esc(b.key) + ' <span class="n">' + (c[b.key] || 0) + "</span>";
+      el.addEventListener("click", function () {
+        state.bucket = b.key;
+        [].forEach.call(filtersEl.children, function (x) { x.classList.remove("on"); });
+        el.classList.add("on");
+        select(null); render(); $("listpane").scrollTop = 0;
+      });
+      filtersEl.appendChild(el);
+    });
+  })();
+
+  (function buildHoods() {
+    var hs = {};
+    PLACES.forEach(function (p) { hs[p.neighborhood] = (hs[p.neighborhood] || 0) + 1; });
+    var keys = Object.keys(hs).sort();
+    var sel = $("hood");
+    sel.innerHTML = '<option value="All">Every neighborhood</option>' +
+      keys.map(function (k) { return '<option value="' + esc(k) + '">' + esc(k) + " (" + hs[k] + ")</option>"; }).join("");
+    sel.addEventListener("change", function () {
+      state.hood = sel.value;
+      select(null); render(); $("listpane").scrollTop = 0;
+      var list = visible();
+      if (list.length) {
+        var bb = new mapboxgl.LngLatBounds();
+        list.forEach(function (p) { bb.extend([p.lon, p.lat]); });
+        map.fitBounds(bb, { padding: 90, maxZoom: 15, duration: 800 });
+      }
+    });
+  })();
+
+  var qEl = $("q"), qt;
+  qEl.addEventListener("input", function () {
+    clearTimeout(qt);
+    qt = setTimeout(function () { state.q = qEl.value; select(null); render(); $("listpane").scrollTop = 0; }, 140);
+  });
+
+  $("movesearch").addEventListener("change", function () {
+    state.moveSearch = this.checked;
+    state.bounds = this.checked ? map.getBounds() : null;
+    render();
+  });
+
+  $("reset").addEventListener("click", function () {
+    select(null);
+    map.flyTo({ center: HOME.center, zoom: HOME.zoom, speed: 1.4, essential: true });
+  });
+
+  /* ──────────────── mobile toggle ──────────────── */
+  function syncToggle() {
+    var onMap = document.body.classList.contains("mapview");
+    $("mobtxt").textContent = onMap ? "List" : "Map";
+  }
+  $("mobtog").addEventListener("click", function () {
+    document.body.classList.toggle("mapview");
+    syncToggle();
+    if (document.body.classList.contains("mapview")) setTimeout(function () { map.resize(); }, 60);
+  });
+  syncToggle();
+
+  /* ──────────────── hint ──────────────── */
+  var hintEl = $("hint"), hintDone = false;
+  function killHint() { if (!hintDone && hintEl) { hintDone = true; hintEl.classList.add("off"); } }
+  map.on("zoom", function () { if (map.getZoom() >= LABEL_ZOOM) killHint(); });
+  setTimeout(killHint, 7000);
+
+  window.addEventListener("resize", function () { map.resize(); queueDeclutter(); });
+  render();
+})();
+
+</script>
+</body>
+</html>
