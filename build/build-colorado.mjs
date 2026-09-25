@@ -37,7 +37,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const BORO = {
   "Manitou Springs": [-104.9172, 38.8597], "Colorado Springs": [-104.8214, 38.8339],
   Fountain: [-104.7003, 38.6822], "Ute Pass": [-105.02, 38.94], "Cripple Creek": [-105.1786, 38.7466],
-  Calhan: [-104.30, 39.03], Pueblo: [-104.6091, 38.2544], Rye: [-105.09, 38.06],
+  Calhan: [-104.30, 39.03], Pueblo: [-104.6091, 38.2544], Rye: [-105.0945, 38.0616],
   "Cañon City": [-105.2424, 38.4410], Monument: [-104.87, 39.09],
   Denver: [-104.9903, 39.7392], Aurora: [-104.8319, 39.7294], Englewood: [-104.88, 39.65],
   Morrison: [-105.19, 39.65],
