@@ -3,27 +3,27 @@ Taytacha Peruvian Cuisine|Northeast|Colorado Springs|Peruvian|Eat|$22 pp|no sign
 Tong Tong|South Academy|Colorado Springs|Korean|Eat|$18 pp|kimchi jjigae, galbi, closed sun, call first
 Shin Sa Dong|East|Colorado Springs|Korean|Eat|$18 pp|strip mall, dolsot bibimbap, slow when busy
 Shanxi Noodles & Dumplings House|Northeast|Colorado Springs|Chinese|Eat|$16 pp|hand-pulled, red oil chicken, open daily
-Nana's Dim Sum & Dumplings|North|Colorado Springs|Dim Sum|Eat|$25 pp|chili wontons, xlb, open window kitchen
+Nana Dim Sum|North|Colorado Springs|Dim Sum|Eat|$25 pp|chili wontons, xlb, open window kitchen
 ArkCleoRich African Kitchen|North Academy|Colorado Springs|Ghanaian|Eat|$18 pp|sign still says pho viet, jollof, waakye, slow
-Monse's Pupuseria|Downtown|Colorado Springs|Salvadoran|Eat|$15 pp|pupusas, aguachile, opened june 2026
+Monse's Pupuseria Colorado|Downtown|Colorado Springs|Salvadoran|Eat|$15 pp|pupusas, aguachile, opened june 2026
 Juicy Kebab|Garden of the Gods Rd|Colorado Springs|Afghan|Eat|$13 pp|kabuli pulao, 20 portions a day
 Don Turi's Tacos y Tortas|Centennial|Colorado Springs|Mexican|Eat|$12 pp|guadalajara style, breakfast chilaquiles
-Taqueria Los Gallitos|East|Colorado Springs|Taqueria|Eat|$10 pp|$3 tacos, crispy tripa
+Los Gallitos|East|Colorado Springs|Taqueria|Eat|$10 pp|$3 tacos, crispy tripa
 Tacos El Amigo|East|Colorado Springs|Taqueria|Eat|$10 pp|quesabirria, open till midnight daily
-Sofia's Antojitos|North Academy|Colorado Springs|Mexican|Eat|$10 pp|pierna tacos, desserts
+Sofia Antojitos|North Academy|Colorado Springs|Mexican|Eat|$10 pp|pierna tacos, desserts
 Moctezuma Mexican Grill|North Academy|Colorado Springs|Mexican|Eat|$14 pp|cinnamon birria, was a truck
-Taco's Revolution|Northeast|Colorado Springs|Mexican|Eat|$14 pp|hidden behind an arch, carnitas
+Tacos Revolution|Northeast|Colorado Springs|Mexican|Eat|$14 pp|hidden behind an arch, carnitas
 Por Favor Tacos & Tragos|Centennial|Colorado Springs|Taqueria|Eat|$12 pp|birria burro, sip the consome
-Totem|Downtown|Colorado Springs|Mexican|Eat|$25 pp|mazatlan cafe, brunch to dinner, open daily
+Totem Restaurant|Downtown|Colorado Springs|Mexican|Eat|$25 pp|mazatlan cafe, brunch to dinner, open daily
 Chiba Bar|Downtown|Colorado Springs|Izakaya|Eat|$28 pp|cyberpunk, spicy donburi, tiny
 Night Ramen|Downtown|Colorado Springs|Ramen|Eat|$20 pp|neon, miso caramel torte
 Pho and Grill|East|Colorado Springs|Vietnamese|Eat|$14 pp|bun bowls, closed tue
 Mausam Indian Flavors|West Side|Colorado Springs|Indian|Eat|$28 pp|jafrani chicken, indian whiskies, daily
 Uchenna|Old Colorado City|Colorado Springs|Ethiopian|Eat|$22 pp|5 tables, reservation only, closed mon
-The Kopi Den|North|Colorado Springs|Malaysian|Eat|$16 pp|laksa, char kway teow
+Kopi Den|North|Colorado Springs|Malaysian|Eat|$16 pp|laksa, char kway teow
 Sushi Mori|East|Colorado Springs|Sushi|Eat|$30 pp|by asian pacific market, opened nov 2025
 Dozo Sushi|South 8th|Colorado Springs|Sushi|Eat|$28 pp|pandemic baby
-Marigold Cafe & Bakery|Centennial|Colorado Springs|French Bistro|Eat|$24 pp|pastry counter, cafe burger
+Marigold Cafe and Bakery|Centennial|Colorado Springs|French Bistro|Eat|$24 pp|pastry counter, cafe burger
 Paravicini's|Old Colorado City|Colorado Springs|Italian|Eat|$26 pp|arancini, big tables
 Stellina Pizza Cafe|Shooks Run|Colorado Springs|Pizza|Eat|$18 pp|neapolitan, supper club nights
 Red Gravy|Downtown|Colorado Springs|Italian|Eat|$26 pp|butternut ravioli, buttercake
@@ -51,21 +51,21 @@ Uva Wine Bar|Downtown|Colorado Springs|Wine Bar|Drink|$14 glasses|downtown wine 
 Shame & Regret|Downtown|Colorado Springs|Whiskey Bar|Drink|$14 drinks|back alley, 120 single malts
 Bristol Brewing|Ivywild|Colorado Springs|Brewery|Drink|$7 beers|in the old school, board games, kids ok
 Ivywild School|Ivywild|Colorado Springs|Food Hall|Eat|$15 pp|1916 schoolhouse, bbq, distillery, cornhole
-COATI Uprise|Downtown|Colorado Springs|Food Hall|Eat|$15 pp|8 vendors, most closed mon
+COATI|Downtown|Colorado Springs|Food Hall|Eat|$15 pp|8 vendors, most closed mon
 Axe and the Oak Distillery|Ivywild|Colorado Springs|Distillery|Drink|$12 drinks|whiskey, in ivywild
 Red Leg Brewing|Garden of the Gods Rd|Colorado Springs|Brewery|Drink|$7 beers|turf yard, lawn games, kids out by 8
-Atomic Cowboy|Downtown|Colorado Springs|Bar|Drink|$10 drinks|fire pits, giant jenga, biscuits in the morning
+Atomic Cowboy Colorado Springs|Downtown|Colorado Springs|Bar|Drink|$10 drinks|fire pits, giant jenga, biscuits in the morning
 Lumen8 Rooftop Social|Downtown|Colorado Springs|Rooftop Bar|Drink|$14 drinks|on the hyatt, sunset over the peak
 Rail Yard Gaming + Gastropub|North Nevada|Colorado Springs|Duckpin Bowling|Activities|$25 pp|duckpin, pinball, book lanes for 8
-Super Nova Arcade|Downtown|Colorado Springs|Arcade|Activities|$10|barcade, all ages till 8
-Dungeons & Javas|Austin Bluffs|Colorado Springs|Board Game Cafe|Activities|$8|free game library, private rooms
-Fifty-Niner|Old Colorado City|Colorado Springs|Board Game Bar|Drink|$8 drinks|board game bar near manitou
+Super Nova|Downtown|Colorado Springs|Arcade|Activities|$10|barcade, all ages till 8
+Dungeons and Javas|Austin Bluffs|Colorado Springs|Board Game Cafe|Activities|$8|free game library, private rooms
+The Fifty-Niner|Old Colorado City|Colorado Springs|Board Game Bar|Drink|$8 drinks|board game bar near manitou
 Level Up VR|Garden of the Gods Rd|Colorado Springs|VR Arcade|Activities|$30 pp|free roam vr, all ages
 Cosmo's Magic Theater|Downtown|Colorado Springs|Magic Theater|Music & Film|$30|close up magic, check schedule
-Money Museum|Downtown|Colorado Springs|Museum|Activities|$8|coin striking, $1m in gold, closed sun mon
+ANA Money Museum|Downtown|Colorado Springs|Museum|Activities|$8|coin striking, $1m in gold, closed sun mon
 Colorado Springs Pioneers Museum|Downtown|Colorado Springs|Museum|Activities|free|1903 courthouse, van briggle, closed sun mon
 Ghost Town Museum|West Side|Colorado Springs|Museum|Activities|$10|indoor 1890s town, gold panning
-Western Museum of Mining & Industry|North|Colorado Springs|Museum|Activities|$14|running steam engines, closed sun
+Western Museum of Mining and Industry|North|Colorado Springs|Museum|Activities|$14|running steam engines, closed sun
 U.S. Olympic & Paralympic Museum|Downtown|Colorado Springs|Museum|Activities|$25|indoor, interactive, good for teens
 Garden of the Gods|Garden of the Gods|Colorado Springs|Park|Activities|free|perkins central trail is paved and flat, go by 9
 Garden of the Gods Trading Post|Garden of the Gods|Colorado Springs|Trading Post|Shopping|$|1900s, biggest gift shop, fine
@@ -76,7 +76,6 @@ Palmer Park|East|Colorado Springs|Park|Activities|free|grandview overlook, sunse
 Bear Creek Nature Center|West Side|Colorado Springs|Nature Center|Activities|free|short loops, tue-sat
 Helen Hunt Falls|North Cheyenne Canon|Colorado Springs|Waterfall|Activities|free|roadside falls, before 9 or after 3
 Starsmore Visitor and Nature Center|North Cheyenne Canon|Colorado Springs|Nature Center|Activities|free|hummingbird garden, canyon exhibits
-Gold Camp Road|North Cheyenne Canon|Colorado Springs|Scenic Drive|Activities|free|old rail grade, tunnels, scrub oak color
 Broadmoor Seven Falls|Broadmoor|Colorado Springs|Waterfall|Activities|$20|shuttle from gold camp rd lot, elevator up
 Cheyenne Mountain Zoo|Broadmoor|Colorado Springs|Zoo|Activities|$40|on the mountainside, giraffes
 The Broadmoor|Broadmoor|Colorado Springs|Hotel|Activities|$|walk the lake
@@ -104,10 +103,10 @@ Border Burger Bar|Manitou Ave|Manitou Springs|Burgers|Eat|$14 pp|creekside patio
 Kinfolks|Manitou Ave|Manitou Springs|Bar|Drink|$7 beers|small, eclectic, live music
 Korean Garden|Fountain Mesa|Fountain|Korean|Eat|$16 pp|unlimited banchan, daily, roomy
 Green Box Skyspace|Green Mountain Falls|Ute Pass|Art Installation|Activities|$|turrell sunset show, 25 seats, thu-sun
-Gazebo Lake|Green Mountain Falls|Ute Pass|Park|Activities|free|10 min flat loop
+Green Mountain Falls Gazebo|Green Mountain Falls|Ute Pass|Park|Activities|free|10 min flat loop
 Rocky Mountain Dinosaur Resource Center|Woodland Park|Ute Pass|Museum|Activities|$13|30 skeletons, working lab
 Mueller State Park|Divide|Ute Pass|State Park|Activities|$15 car|drive up overlooks, elk
-Florissant Fossil Beds|Florissant|Ute Pass|National Monument|Activities|$10 pp|petrified redwood stumps, paved loop
+Florissant Fossil Beds National Monument|Florissant|Ute Pass|National Monument|Activities|$10 pp|petrified redwood stumps, paved loop
 Mollie Kathleen Gold Mine|Cripple Creek|Cripple Creek|Mine Tour|Activities|$35|1000 ft down, ends late oct
 Cripple Creek Heritage Center|Cripple Creek|Cripple Creek|Museum|Activities|free|overlook of the district, daily
 Victor Lowell Thomas Museum|Victor|Cripple Creek|Museum|Activities|$|the sleepier mining town
@@ -117,7 +116,7 @@ Cactus Flower|North|Pueblo|Mexican|Eat|$16 pp|slopper runner up, big room
 Sunset Inn|South|Pueblo|Slopper|Eat|$12 pp|gray's rival, open till 2
 Musso Farms|Highway 50|Pueblo|Farm Stand|Groceries|$|since 1904, roasted pueblo chile
 Milberger Farms|Highway 50|Pueblo|Farm Stand|Groceries|$|roasted chile, 7-3
-Mauro Farms & Bakery|St Charles Mesa|Pueblo|Farm Stand|Groceries|$|chile and pastries
+Mauro Farms|St Charles Mesa|Pueblo|Farm Stand|Groceries|$|chile and pastries
 Pueblo Riverwalk|Downtown|Pueblo|Park|Activities|free|canal walk, boats done for the season
 Bishop Castle|Rye|Rye|Castle|Activities|donation|one man 50 years, rickety, teens love it
 Royal Gorge Bridge|Royal Gorge|Cañon City|Bridge|Activities|$35|walk the bridge, gondola
@@ -131,7 +130,7 @@ Yemen Grill|Havana St|Aurora|Yemeni|Eat|$14 pp|lamb over basmati
 Pupusas La Salvadoreña|Havana St|Aurora|Salvadoran|Eat|$10 pp|loroco pupusas
 Shin Myung Gwan|Havana St|Aurora|Korean BBQ|Eat|$35 pp|spicy pork, mom ships the spices
 Coffee Story by Barakah Brews|Havana St|Aurora|Coffee|Coffee & Sweets|$6|late night
-Dae Bak Korean Bar & Grill|Parker Rd|Aurora|Korean|Eat|$22 pp|ox head soup, homestyle
+Dae Bak Korean BBQ|Parker Rd|Aurora|Korean|Eat|$22 pp|ox head soup, homestyle
 Dân Dã|East Colfax|Aurora|Vietnamese|Eat|$28 pp|new saigon daughters, clay pot catfish, closed mon
 Society 303|East Colfax|Aurora|Natural Wine Bar|Drink|$14 glasses|next to dan da, opened 2025
 La Plaza Colorado|East Colfax|Aurora|Food Hall|Eat|$12 pp|24 latin kitchens
@@ -157,9 +156,9 @@ Ohana Island Kitchen|LoHi|Denver|Hawaiian|Eat|$16 pp|shoyu poke, spam musubi
 Insee Father Noodle House|LoHi|Denver|Thai|Eat|$18 pp|street noodles, opened nov 2025
 Cimera|RiNo|Denver|Peruvian|Eat|$55 pp|rooftop, anticuchos
 Xiquita|Uptown|Denver|Mexican Fine Dining|Eat|$70 pp|nixtamal, duck carnitas
-The Wolf's Tailor|Sunnyside|Denver|Tasting Menu|Eat|$225 pp|colorado's only two stars
+Wolf's Tailor|Sunnyside|Denver|Tasting Menu|Eat|$225 pp|colorado's only two stars
 Kizaki|Sunnyside|Denver|Omakase|Eat|$200 pp|one star
-Noble Riot|RiNo|Denver|Natural Wine Bar|Drink|$15 glasses|long running natural list
+Noble Riot Natural Wine Bar|RiNo|Denver|Natural Wine Bar|Drink|$15 glasses|long running natural list
 Mondo Vino|Highland|Denver|Wine Shop|Shopping|$|organic and biodynamic bottles
 Proof Wine & Spirits|RiNo|Denver|Wine Shop|Shopping|$|small production
 Cafe Tres|Curtis Park|Denver|Bakery|Coffee & Sweets|$7|guava queso pastelitos
@@ -168,6 +167,24 @@ Reunion Bakery|RiNo|Denver|Bakery|Coffee & Sweets|$7|venezuelan golfeados
 Coffee Sarap|RiNo|Denver|Coffee|Coffee & Sweets|$6|ube cold brew
 Meow Wolf Convergence Station|Sun Valley|Denver|Art Museum|Activities|$50|4 floors, 3 hrs, timed entry, verify mon
 Denver Art Museum|Golden Triangle|Denver|Museum|Activities|$25|open mon, under 18 free
-Denver Botanic Gardens|Cheesman Park|Denver|Garden|Activities|$16|9-4 in october
+Denver Botanic Gardens York Street|Cheesman Park|Denver|Garden|Activities|$16|9-4 in october
 Union Station|LoDo|Denver|Train Station|Activities|free|great hall, snacks, rest stop
 Red Rocks Park|Morrison|Morrison|Park|Activities|free|walk the rows, visitor center 7-7, morning only oct 12
+Momo Korean Restaurant|Briargate|Colorado Springs|Korean|Eat|$18 pp|2761 briargate blvd, no social, dinner 4:30-9, kimchi stew, feels like an aunt's house
+Happy Time Korean Restaurant|Powers|Colorado Springs|Korean|Eat|$16 pp|5547 powers center pt, spicy squid, 10 years, tiny
+92 Chicken|Centennial|Colorado Springs|Korean Fried Chicken|Eat|$16 pp|4431 centennial next to safeway, honey garlic drumsticks
+Don Guillo|Delta Dr|Colorado Springs|Puerto Rican|Eat|$16 pp|2551 delta dr, since 2019, daily specials not on the menu
+Cubaneate|Academy|Colorado Springs|Cuban|Eat|$16 pp|miami people vouch, fried pork ribs, tamal cubano
+Owambe|Downtown|Colorado Springs|Nigerian|Eat|$25 pp|10 n sierra madre, first nigerian spot in town, lounge
+Kung Fu Noodles and Dumplings|North|Colorado Springs|Chinese|Eat|$15 pp|hand pulled noodles
+Lanshing Cafe|Briargate|Colorado Springs|Chinese|Eat|$15 pp|strip mall corner, new owners, big flavors
+Zesty Thai|North|Colorado Springs|Thai|Eat|$16 pp|indonesian dishes too, fresh
+Egg Lush|Downtown|Colorado Springs|Breakfast|Eat|$14 pp|asian owned, old urban steam space, salisbury steak sandwich
+Norma's Bakery|East|Colorado Springs|Mexican Bakery|Coffee & Sweets|$5|cortadillo, hugs from norma
+Estela's Mill Stop Cafe|South|Pueblo|Mexican|Eat|$12 pp|by the steel mill, weekdays only, 40 years, free sopapillas
+Tortilleria Delicias|Downtown|Pueblo|Tortilleria|Eat|$8|green chile reviews pick, fresh tortillas
+Gold Dust Saloon|Downtown|Pueblo|Slopper|Eat|$14 pp|top 10 slopper 2026
+Mi Ranchito The Original|Pueblo|Pueblo|Mexican|Eat|$14 pp|top 10 slopper, the original
+Garlic & Onions|Pueblo|Pueblo|Mexican|Eat|$12 pp|green chile reviews ep 131
+Romero's Cafe|Pueblo|Pueblo|Mexican|Eat|$12 pp|green chile reviews ep 165
+Leezakaya|Havana St|Aurora|Izakaya|Eat|$25 pp|hosts the havana st night market
