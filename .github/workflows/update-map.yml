@@ -1,10 +1,18 @@
 name: Update map from spreadsheet
 
-# Runs every Monday at 8am Pacific, and whenever you click "Run workflow".
+# Runs every Monday at 8am Pacific, whenever you click "Run workflow", and whenever a build file changes.
 on:
   schedule:
     - cron: "0 15 * * 1"
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "build/*-source.txt"
+      - "build/trip-source.json"
+      - "build/build-*.mjs"
+      - "build/template.html"
+      - ".github/workflows/update-map.yml"
 
 # lets the action commit the rebuilt pages back to the repo
 permissions:
