@@ -33,3 +33,22 @@ note, so the next session doesn't have to rediscover it.
 - Re-enabling anything a note says Rohin turned off (for example `amie-watch` / The Daily).
 - Changing a TV or receiver input: never switch sources while the TV is on or the
   Apple TV is playing.
+
+## One-off commands: never leave them running
+On 2026-10-07 two quick lookups left by earlier sessions (`docker exec quiznight python -c ...`
+and the same in `heard`) had been stuck for 12 hours, each using a full CPU core. Both used
+`glob('/**/x.db', recursive=True)`, which walks `/proc` and `/sys` and never ends. A
+"scissor search" container had also been left running with 4.7 GB of memory. Rules:
+- **Never search the whole filesystem** (`glob('/**')`, `find /`, `grep -r /`, `du /`). Use the
+  known path from the compose file (`docker inspect` → Mounts) or a single directory.
+- **Put a time limit on every ad-hoc command**: `docker exec <c> timeout 60 python -c ...`,
+  `timeout 120 <cmd>` on Linux hosts. Containers often lack `kill`, `ps` and `timeout`; if
+  `timeout` is missing, use `python3 -c` with `signal.alarm(60)`.
+- **Clean up before you finish**: one-off containers (`docker run --rm`, never a named
+  long-lived one for a single job), background jobs, temp scripts. A finished experiment gets
+  removed, or written up in the Drive notes as something that is meant to keep running.
+- **Heavy jobs get limits** (`cpus:`/`mem_limit` in compose, `CPUQuota=`/`Nice=` in systemd).
+  The Proxmox laptop (192.168.1.90) in particular runs hot: keep its jobs single-threaded.
+- **Check for leftovers**: a process in a container that isn't PID 1 and has run for hours is
+  almost always an old session's leftover. To stop it when `kill` is missing:
+  `docker exec <c> python3 -c "import os,signal; os.kill(<pid>, signal.SIGTERM)"`.
