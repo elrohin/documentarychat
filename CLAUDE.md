@@ -28,6 +28,19 @@ note, so the next session doesn't have to rediscover it.
   `/homeassistant/.claude_token` (read with `sudo -n cat`; never print it).
 - The Minisforum is `ssh 192.168.1.165` from the mini (use the IP, not the name).
 
+### Everything else is reachable from the mini too (check here before saying "I can't get in")
+| Machine | How (run from the mini) |
+|---|---|
+| **Hubitat** C-8 Pro, 192.168.1.6 (no login) | `docker exec homewatch python /data/hub.py <cmd>`: `devices`, `room <id> <roomId>`, `label`, `maker add <id..>` (shares a device with HA), `pair 90`, `cmd <id> on`. Room ids: `rooms`. |
+| **Mac** (MacBookPro, 192.168.1.112) | `ssh rohinelangovan@192.168.1.112` (key-only; reads ~/Library/Messages) |
+| **Z13** (192.168.1.119, Windows) | `ssh 192.168.1.119` (user elang); drop files in `Downloads\` |
+| **Shield** (192.168.1.80, SDR) | `adb -s 192.168.1.80:5555 shell ...`; radios started by `/data/local/sdr/start-all.sh` |
+| **Proxmox laptop** (192.168.1.90) | `docker run --rm -i -v pvekeys:/keys kroniak/ssh-client ssh -i /keys/id -o StrictHostKeyChecking=no root@192.168.1.90 bash -s < script` |
+| **UniFi** | HA's `unifi` integration (device trackers); PoE per port is set in the UniFi app |
+
+Home Assistant also links Hubitat (Maker API, app 17) and Matter. A new Hubitat device shows up in HA after
+`hub.py maker add <id>` plus a reload of HA's hubitat config entry.
+
 ## Ask before
 - Restarting Home Assistant or the mini, or anything that interrupts the house.
 - Re-enabling anything a note says Rohin turned off (for example `amie-watch` / The Daily).
