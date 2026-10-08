@@ -126,11 +126,13 @@ main{flex:1 1 auto;display:flex;min-height:0;position:relative}
 }
 .listhead h1 em{font-style:italic;font-weight:400}
 .listhead .sub{font-size:12.5px;color:var(--ink-3);margin-top:8px;font-family:var(--serif);font-style:italic}
-.moveto{
-  display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-2);cursor:pointer;
-  flex-shrink:0;user-select:none;padding-bottom:3px;
+.showall{
+  flex-shrink:0;font-size:12px;color:var(--ink-2);padding-bottom:3px;
+  border-bottom:1px solid var(--rule);
 }
-.moveto input{accent-color:var(--ink);width:14px;height:14px;cursor:pointer;margin:0}
+.showall:hover{color:var(--ink);border-bottom-color:var(--ink)}
+.showall[hidden]{display:none}
+.empty .showall{display:inline-block;margin-top:14px;font-size:13px}
 
 .cards{padding:14px 0 70px}
 
@@ -270,6 +272,16 @@ body.zlab .mk.clash.sel .dot,body.zlab .mk.clash:hover .dot{display:none}
   font-family:var(--serif);font-style:italic;white-space:nowrap;
 }
 .hint.off{opacity:0}
+.areabtn{
+  position:absolute;left:50%;top:18px;transform:translateX(-50%);z-index:16;
+  display:flex;align-items:center;gap:7px;background:var(--paper);color:var(--ink);
+  border:1px solid var(--rule);border-radius:999px;padding:8px 16px 8px 13px;
+  font-size:13px;font-weight:500;white-space:nowrap;
+  box-shadow:0 3px 12px rgba(28,25,23,.16);transition:opacity .2s,transform .2s;
+}
+.areabtn:hover{background:var(--paper-2)}
+.areabtn svg{color:var(--ink-2)}
+.areabtn[hidden]{display:flex;opacity:0;pointer-events:none;transform:translate(-50%,-6px)}
 .mapboxgl-ctrl-logo,.mapboxgl-ctrl-attrib{font-size:10px}
 .mapboxgl-ctrl-attrib.mapboxgl-compact{background:rgba(251,249,246,.9)}
 
@@ -327,7 +339,7 @@ body.zlab .mk.clash.sel .dot,body.zlab .mk.clash:hover .dot{display:none}
         <h1 id="count">&mdash;</h1>
         <div class="sub" id="sub">across Seattle and around</div>
       </div>
-      <label class="moveto"><input type="checkbox" id="movesearch"> search this area</label>
+      <button class="showall" id="showall" type="button" hidden>show everywhere</button>
     </div>
     <div class="cards" id="cards"></div>
   </section>
@@ -339,6 +351,10 @@ body.zlab .mk.clash.sel .dot,body.zlab .mk.clash:hover .dot{display:none}
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
       </button>
     </div>
+    <button class="areabtn" id="areabtn" type="button" hidden>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      Search this area
+    </button>
     <div class="hint" id="hint">zoom in for names and notes</div>
     <div id="sheet">
       <div class="sh-body">
@@ -403,11 +419,12 @@ const PLACES = __DATA__;
   var LABEL_ZOOM = 13.2;   // pins become named labels
   var NOTE_ZOOM  = 14.6;   // labels also carry the note
 
-  var state = { bucket: "All", hood: "All", q: "", sel: null, moveSearch: false, bounds: null };
+  var state = { bucket: "All", hood: "All", q: "", sel: null, area: null };   // area = map box from "Search this area"
   var markers = [], cardEls = [];
 
   var $ = function (id) { return document.getElementById(id); };
   var cardsEl = $("cards"), countEl = $("count"), subEl = $("sub");
+  var areaBtn = $("areabtn"), showAllEl = $("showall"), lastCount = PLACES.length;
 
   PLACES.forEach(function (p, i) {
     p._i = i;
@@ -501,8 +518,10 @@ const PLACES = __DATA__;
   map.on("zoom", function () { applyZoomClass(); queueDeclutter(); });
   map.on("move", queueDeclutter);
   map.on("load", function () { applyZoomClass(); render(); queueDeclutter(); });
-  map.on("moveend", function () {
-    if (state.moveSearch) { state.bounds = map.getBounds(); render(); }
+  /* our own camera moves pass {auto:true}; anything else is the reader panning, zooming or locating,
+     which offers "Search this area" the way a maps app does */
+  map.on("moveend", function (e) {
+    if (!e.auto) areaBtn.hidden = false;
     queueDeclutter();
   });
   map.on("click", function () { select(null); });
@@ -517,9 +536,9 @@ const PLACES = __DATA__;
         var hay = (p.name + " " + p.type + " " + p.neighborhood + " " + (p.notes || "") + " " + (p.price || "")).toLowerCase();
         if (hay.indexOf(q) === -1) return false;
       }
-      if (state.moveSearch && state.bounds) {
-        var b = state.bounds;
-        if (p.lon < b.getWest() || p.lon > b.getEast() || p.lat < b.getSouth() || p.lat > b.getNorth()) return false;
+      if (state.area) {
+        var a = state.area;
+        if (p.lon < a.w || p.lon > a.e || p.lat < a.s || p.lat > a.n) return false;
       }
       return true;
     });
@@ -538,12 +557,20 @@ const PLACES = __DATA__;
     if (state.bucket !== "All") bits.push(state.bucket.toLowerCase());
     if (state.hood !== "All") bits.push("in " + state.hood);
     if (state.q.trim()) bits.push("matching “" + state.q.trim() + "”");
+    if (state.area) bits.push("in this part of the map");
     subEl.textContent = bits.length ? bits.join(" ") : "across Seattle and around";
+    showAllEl.hidden = !state.area;
+    lastCount = list.length;
+    syncToggle();
 
     cardsEl.innerHTML = "";
     cardEls = [];
     if (!list.length) {
-      cardsEl.innerHTML = '<div class="empty"><b>Nothing here yet</b>Try another category, another neighborhood, or a looser search.</div>';
+      cardsEl.innerHTML = state.area
+        ? '<div class="empty"><b>Nothing in this part of the map</b>Move the map and search again, or<br><button class="showall" type="button" data-all>show everywhere</button></div>'
+        : '<div class="empty"><b>Nothing here yet</b>Try another category, another neighborhood, or a looser search.</div>';
+      var all = cardsEl.querySelector("[data-all]");
+      if (all) all.addEventListener("click", clearArea);
       return;
     }
 
@@ -648,10 +675,10 @@ const PLACES = __DATA__;
 
     if (fromCard) {
       if (window.innerWidth <= 900) { document.body.classList.add("mapview"); syncToggle(); }
-      map.flyTo({ center: [p.lon, p.lat], zoom: Math.max(map.getZoom(), NOTE_ZOOM), speed: 1.5, curve: 1.3, essential: true });
+      map.flyTo({ center: [p.lon, p.lat], zoom: Math.max(map.getZoom(), NOTE_ZOOM), speed: 1.5, curve: 1.3, essential: true }, { auto: true });
     } else if (fromMarker) {
       var z = map.getZoom();
-      if (z < LABEL_ZOOM) map.easeTo({ center: [p.lon, p.lat], zoom: LABEL_ZOOM + 0.4, duration: 600 });
+      if (z < LABEL_ZOOM) map.easeTo({ center: [p.lon, p.lat], zoom: LABEL_ZOOM + 0.4, duration: 600 }, { auto: true });
     }
   }
   $("shclose").addEventListener("click", function (e) { e.stopPropagation(); select(null); });
@@ -673,7 +700,7 @@ const PLACES = __DATA__;
         state.bucket = b.key;
         [].forEach.call(filtersEl.children, function (x) { x.classList.remove("on"); });
         el.classList.add("on");
-        select(null); render(); $("listpane").scrollTop = 0;
+        select(null); render(); $("listpane").scrollTop = 0; fitToList();
       });
       filtersEl.appendChild(el);
     });
@@ -688,37 +715,59 @@ const PLACES = __DATA__;
       keys.map(function (k) { return '<option value="' + esc(k) + '">' + esc(k) + " (" + hs[k] + ")</option>"; }).join("");
     sel.addEventListener("change", function () {
       state.hood = sel.value;
-      select(null); render(); $("listpane").scrollTop = 0;
-      var list = visible();
-      if (list.length) {
-        var bb = new mapboxgl.LngLatBounds();
-        list.forEach(function (p) { bb.extend([p.lon, p.lat]); });
-        map.fitBounds(bb, { padding: 90, maxZoom: 15, duration: 800 });
-      }
+      state.area = null;   // picking a neighborhood is its own "where"
+      select(null); render(); $("listpane").scrollTop = 0; fitToList();
     });
   })();
 
-  var qEl = $("q"), qt;
+  var qEl = $("q"), qt, qf;
   qEl.addEventListener("input", function () {
-    clearTimeout(qt);
+    clearTimeout(qt); clearTimeout(qf);
     qt = setTimeout(function () { state.q = qEl.value; select(null); render(); $("listpane").scrollTop = 0; }, 140);
+    qf = setTimeout(fitToList, 650);   // move the map once typing settles, not on every letter
   });
 
-  $("movesearch").addEventListener("change", function () {
-    state.moveSearch = this.checked;
-    state.bounds = this.checked ? map.getBounds() : null;
-    render();
+  /* Keep the map showing what the list shows. Inside a searched area the map is already the area,
+     so leave it alone; otherwise frame the results (or go home when nothing is filtered). */
+  function fitToList() {
+    if (state.area) return;
+    if (state.bucket === "All" && state.hood === "All" && !state.q.trim()) {
+      map.flyTo({ center: HOME.center, zoom: HOME.zoom, speed: 1.4, essential: true }, { auto: true });
+      return;
+    }
+    var list = visible();
+    if (!list.length) return;
+    var bb = new mapboxgl.LngLatBounds();
+    list.forEach(function (p) { bb.extend([p.lon, p.lat]); });
+    var box = $("map").getBoundingClientRect();
+    var pad = Math.max(30, Math.min(90, Math.min(box.width, box.height) / 6));
+    map.fitBounds(bb, { padding: pad, maxZoom: 15, duration: 800 }, { auto: true });
+  }
+
+  areaBtn.addEventListener("click", function () {
+    var b = map.getBounds();
+    state.area = { w: b.getWest(), e: b.getEast(), s: b.getSouth(), n: b.getNorth() };
+    areaBtn.hidden = true;
+    select(null); render(); $("listpane").scrollTop = 0;
   });
+
+  function clearArea() {
+    state.area = null;
+    select(null); render(); $("listpane").scrollTop = 0; fitToList();
+  }
+  showAllEl.addEventListener("click", clearArea);
 
   $("reset").addEventListener("click", function () {
     select(null);
-    map.flyTo({ center: HOME.center, zoom: HOME.zoom, speed: 1.4, essential: true });
+    state.area = null; render();
+    map.flyTo({ center: HOME.center, zoom: HOME.zoom, speed: 1.4, essential: true }, { auto: true });
+    areaBtn.hidden = true;
   });
 
   /* ──────────────── mobile toggle ──────────────── */
   function syncToggle() {
     var onMap = document.body.classList.contains("mapview");
-    $("mobtxt").textContent = onMap ? "List" : "Map";
+    $("mobtxt").textContent = onMap ? "List · " + lastCount : "Map";
   }
   $("mobtog").addEventListener("click", function () {
     document.body.classList.toggle("mapview");
