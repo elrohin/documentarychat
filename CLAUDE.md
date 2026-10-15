@@ -22,7 +22,8 @@ note, so the next session doesn't have to rediscover it.
   (`Trojan:Win32/Commando.A!ml`) and pops up alerts on Rohin's computer.
 - Docker image pulls over SSH fail on the Windows credential helper; use a temporary
   `DOCKER_CONFIG` folder whose `config.json` is `{"auths":{"placeholder.invalid":{}}}`.
-- Home Assistant (192.168.1.224) from the mini:
+- Home Assistant (192.168.1.224) runs as the libvirt VM `ha` on the **Minisforum**, not on the
+  mini (restarting the Minisforum restarts HA). Reach it from the mini:
   `ssh -c aes256-gcm@openssh.com hassio@192.168.1.224`, and run scripts with
   `cmd /c "ssh ... bash -s < C:\path\script.sh"`. The HA API token is in
   `/homeassistant/.claude_token` (read with `sudo -n cat`; never print it).
